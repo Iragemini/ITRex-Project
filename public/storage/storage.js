@@ -1,6 +1,6 @@
 const queue = [];
-const patients = [];
+const patients = [{name: 'Vasia', resolution: 'bed rest'}, {name: 'Vasia', resolution: 'bed rest 3 days'}];
 
-const store = { queue, patients };
+const storage = { queue, patients };
 
-export default store;
+export default storage;

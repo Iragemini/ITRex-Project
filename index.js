@@ -13,7 +13,7 @@ app.set('views', './public');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  res.render('index', { title: 'Clinic', patient: '123' });
+  res.render('index', { title: 'Clinic', queue, patients });
 });
 
 app.listen(PORT, () => {

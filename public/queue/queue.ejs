@@ -6,17 +6,19 @@
                 <div class="queue card-body d-flex justify-content-between align-items-center">
                     <div class="d-flex flex-column justify-content-center">
                         <h5 class="m-1 text-dark">Current patient: </h5>
-                        <h2 class="m-1 text-info" id='current'>
-                            <%= patient %>
+                        <h2 class="m-2 text-info" id='currentInQueue'>
+                            <% if (queue.length> 0) {%>
+                                <%= queue[0].name %>
+                            <%}%>
                         </h2>
                     </div>
                     <div class="input__patient d-flex flex-column">
                         <div class="form-group has-success">
-                            <input type="text" placeholder="Name: reason" class="form-control" id="newPatient"
-                                name="newPatient" size="55" required />
+                            <input type="text" placeholder="Name: reason" class="form-control" id="newPatient" size="55"
+                                required />
                         </div>
                         <div class="d-flex align-items-center justify-content-end">
-                            <button type="button" id="addPatient" name="addPatient" class="btn btn-success mt-2">Add</button>
+                            <button type="button" id="addPatient" class="btn btn-success mt-2">Add</button>
                         </div>
                     </div>
                 </div>
@@ -25,7 +27,7 @@
                         <div class="form-group">
                             <div class="input-group mb-2">
                                 <span class="input-group-text"></span>
-                                <input type="text" class="form-control">
+                                <input type="text" id="searchResolution" class="form-control">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                             </div>
                         </div>
