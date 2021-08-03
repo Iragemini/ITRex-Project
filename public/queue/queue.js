@@ -7,9 +7,9 @@ import {
 const addPatient = document.getElementById('addPatient');
 const searchResolution = document.getElementById('searchResolution');
 const queueResolution = document.getElementById('queueResolution');
+const newPatient = document.getElementById('newPatient');
 
 addPatient.onclick = () => {
-  const newPatient = document.getElementById('newPatient');
   if (newPatient.value.trim() === '') {
     newPatient.classList.add('is-invalid');
     return;

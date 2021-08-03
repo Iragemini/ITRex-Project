@@ -12,16 +12,16 @@ const searchResolutionByDoctor = document.getElementById('searchResolutionByDoct
 const doctorResolutionFound = document.getElementById('doctorResolutionFound');
 const deleteResolutionBtn = document.getElementById('deleteResolution');
 const nextBtn = document.getElementById('next');
+const resolution = document.getElementById('doctorResolution');
 
 newResolution.onclick = () => {
-  const resolution = document.getElementById('doctorResolution');
   addResolution(current.innerText, resolution.value);
   resolution.value = '';
 };
 
 showResolution.onclick = () => {
-  const resolution = findResolution(searchResolutionByDoctor.value.trim());
-  doctorResolutionFound.value = resolution;
+  const foundResolution = findResolution(searchResolutionByDoctor.value.trim());
+  doctorResolutionFound.value = foundResolution;
 };
 
 deleteResolutionBtn.onclick = () => {
