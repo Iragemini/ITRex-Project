@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "lint": "node node_modules/eslint/bin/eslint.js ./",
     "prepare": "husky install"
   },
@@ -11,14 +14,19 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^7.31.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
-    "husky": "^7.0.1"
+    "husky": "^7.0.1",
+    "nodemon": "^2.0.12"
   },
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint"
     }
+  },
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1"
   }
 }
