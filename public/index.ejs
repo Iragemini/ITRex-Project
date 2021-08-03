@@ -17,7 +17,7 @@
 <body>
     <div class="container">
         <%- include('./queue/queue.ejs', {queue}); %>
-        <%- include('./doctor/doctor.ejs', {queue, patients}); %>
+        <%- include('./doctor/doctor.ejs', {queue}); %>
     </div>
     <script type="module" src="./doctor/doctor.js"></script>
     <script type="module" src="./queue/queue.js"></script>
