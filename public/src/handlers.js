@@ -5,8 +5,8 @@ const { queue, patients } = storage;
 const currentInQueue = document.getElementById('currentInQueue');
 const current = document.getElementById('current');
 
-export const setCurrentPatient = (name) => {
-  if (queue.length > 1) {
+export const setCurrentPatient = (name, mode) => {
+  if (queue.length > 1 && mode === 'queue') {
     return;
   }
   currentInQueue.innerText = name;
@@ -43,9 +43,10 @@ export const addPatientToQueue = (patient) => {
 };
 
 export const findResolution = (name) => {
+  const message = 'No resolutions';
   const resolution = patients.filter((item) => item.name === name);
   if (resolution.length === 0) {
-    return 'No resolutions';
+    return message;
   }
   if (resolution.length > 1) {
     let allResolutions = '';
@@ -58,7 +59,7 @@ export const findResolution = (name) => {
     });
     return allResolutions;
   }
-  return resolution[0].resolution;
+  return resolution[0].resolution || message;
 };
 
 export const deleteResolution = (name) => {
@@ -82,9 +83,9 @@ export const deletePatientFromQueue = () => {
   }
   const previous = queue.splice(0, 1);
   if (queue.length > 0) {
-    setCurrentPatient(queue[0].name);
+    setCurrentPatient(queue[0].name, '');
     return { previous };
   }
-  setCurrentPatient(message);
+  setCurrentPatient(message, '');
   return { previous };
 };

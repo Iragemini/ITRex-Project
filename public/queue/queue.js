@@ -16,7 +16,7 @@ addPatient.onclick = () => {
   }
   newPatient.classList.remove('is-invalid');
   const name = addPatientToQueue(newPatient.value.trim());
-  setCurrentPatient(name);
+  setCurrentPatient(name, 'queue');
   newPatient.value = '';
 };
 
