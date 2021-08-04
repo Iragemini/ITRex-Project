@@ -9,7 +9,7 @@
                         <h2 class="m-2 text-info" id='current'>
                             <% if (queue.length> 0) {%>
                                 <%= queue[0].name %>
-                            <%}%>
+                                    <%}%>
                         </h2>
                     </div>
                     <div class="d-flex align-items-center justify-content-end">
@@ -18,12 +18,28 @@
                 </div>
                 <div class="add card-body d-flex justify-content-center align-items-start">
                     <h5 class="text-dark m-2">Set appointment resolution </h5>
-                    <div class="d-flex flex-column justify-content-center">
-                        <div class="form-group m-2">
-                            <textarea class="form-control" id="doctorResolution" rows="3" cols="100"></textarea>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-end">
-                            <button type="button" id="newResolution" class="btn btn-success mt-2">Add</button>
+                    <div class="d-flex justify-content-end align-items-start">
+                        <div class="input__patient d-flex flex-column">
+                            <div class="form-group has-success d-flex">
+                                <div class="form-group m-2">
+                                    <textarea class="form-control" id="doctorResolution" rows="3" cols="100"></textarea>
+                                </div>
+                                <div class="set__ttl d-flex flex-column justify-content-between align-items-center m-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="ttl" />
+                                        <label class="form-check-label text-dark" for="ttl">
+                                            Set TTL
+                                        </label>
+                                    </div>
+                                    <div class="ttl__input mt-2">
+                                        <input type="text" class="form-control" id="ttlInput"
+                                            placeholder="enter time" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-end">
+                                <button type="button" id="newResolution" class="btn btn-success mt-2">Add</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -44,7 +60,8 @@
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="form-group m-2">
-                            <textarea class="form-control" id="doctorResolutionFound" rows="5" cols="100" readonly></textarea>
+                            <textarea class="form-control" id="doctorResolutionFound" rows="5" cols="100"
+                                readonly></textarea>
                         </div>
                         <div class="d-flex align-items-center justify-content-end">
                             <button type="button" id="deleteResolution" class="btn btn-success">Delete</button>
