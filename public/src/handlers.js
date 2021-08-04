@@ -1,4 +1,5 @@
 import storage from '../storage/storage.js';
+import { isExpired } from './utils/check.js';
 
 const { queue, patients } = storage;
 
@@ -13,9 +14,20 @@ export const setCurrentPatient = (name, mode) => {
   current.innerText = name;
 };
 
-export const addResolution = (name, resolution) => {
+export const addResolution = (name, resolution, ttl) => {
+  if (!name || queue.length === 0) {
+    return;
+  }
+  let expire = '';
+  if (ttl) {
+    expire = ttl * 1000 + Date.now();
+  }
+  const resolutionObj = {
+    resolution,
+    expire,
+  };
   if (patients.length === 0) {
-    patients.push({ name, resolution });
+    patients.push({ name, resolutionObj });
     return;
   }
   let isExists = false;
@@ -23,16 +35,18 @@ export const addResolution = (name, resolution) => {
   for (let i = 0; i < patients.length; i += 1) {
     const patient = patients[i].name;
     if (patient === name) {
-      if (patients[i].resolution.trim()) {
-        patients[i].resolution += delimiter;
+      const obj = patients[i].resolutionObj;
+      if (obj.resolution.trim()) {
+        obj.resolution += delimiter;
       }
-      patients[i].resolution += resolution;
+      obj.resolution += resolution;
+      obj.expire = expire;
       isExists = true;
       break;
     }
   }
   if (!isExists) {
-    patients.push({ name, resolution });
+    patients.push({ name, resolutionObj });
   }
 };
 
@@ -40,26 +54,6 @@ export const addPatientToQueue = (patient) => {
   const [name, reason = ''] = patient.split(':');
   queue.push({ name, reason });
   return name;
-};
-
-export const findResolution = (name) => {
-  const message = 'No resolutions';
-  const resolution = patients.filter((item) => item.name === name);
-  if (resolution.length === 0) {
-    return message;
-  }
-  if (resolution.length > 1) {
-    let allResolutions = '';
-    const delimiter = '\n';
-    resolution.forEach((item) => {
-      if (allResolutions) {
-        allResolutions += delimiter;
-      }
-      allResolutions += item.resolution;
-    });
-    return allResolutions;
-  }
-  return resolution[0].resolution || message;
 };
 
 export const deleteResolution = (name) => {
@@ -70,10 +64,26 @@ export const deleteResolution = (name) => {
   for (let i = 0; i < patients.length; i += 1) {
     const patient = patients[i].name;
     if (patient === name) {
-      patients[i].resolution = '';
+      patients[i].resolutionObj.resolution = '';
+      patients[i].resolutionObj.expire = '';
       break;
     }
   }
+};
+
+export const findResolution = (name) => {
+  const message = 'No resolutions';
+  const patient = patients.filter((item) => item.name === name);
+  if (patient.length === 0) {
+    return message;
+  }
+  const { expire } = patient[0].resolutionObj;
+
+  if (!isExpired(expire)) {
+    return patient[0].resolutionObj.resolution || message;
+  }
+  deleteResolution(name);
+  return message;
 };
 
 export const deletePatientFromQueue = () => {
