@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "node node_modules/eslint/bin/eslint.js ./",
+    "lint": "eslint public --ext .js",
     "prepare": "husky install"
   },
   "keywords": [],

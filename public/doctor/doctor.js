@@ -4,6 +4,7 @@ import {
   deleteResolution,
   deletePatientFromQueue,
 } from '../src/handlers.js';
+import { checkTTL } from '../src/utils/check.js';
 
 const newResolution = document.getElementById('newResolution');
 const current = document.getElementById('current');
@@ -13,10 +14,26 @@ const doctorResolutionFound = document.getElementById('doctorResolutionFound');
 const deleteResolutionBtn = document.getElementById('deleteResolution');
 const nextBtn = document.getElementById('next');
 const resolution = document.getElementById('doctorResolution');
+const ttlDiv = document.querySelector('.ttl__input');
+const ttlCheckbox = document.getElementById('ttl');
+const ttlInput = document.getElementById('ttlInput');
 
 newResolution.onclick = () => {
-  addResolution(current.innerText, resolution.value);
+  let ttl = null;
+
+  if (ttlCheckbox.checked && !checkTTL(ttlInput.value)) {
+    ttlInput.classList.add('is-invalid');
+    ttlInput.value = '';
+    return;
+  }
+  ttlInput.classList.remove('is-invalid');
+  ttl = ttlCheckbox.checked ? ttlInput.value : null;
+
+  addResolution(current.innerText, resolution.value, ttl);
   resolution.value = '';
+  if (ttlCheckbox.checked) {
+    ttlCheckbox.click();
+  }
 };
 
 showResolution.onclick = () => {
@@ -34,4 +51,9 @@ nextBtn.onclick = () => {
   if (deleted.message) {
     current.innerText = deleted.message;
   }
+};
+
+ttlCheckbox.onchange = () => {
+  ttlDiv.classList.toggle('ttl__input');
+  ttlInput.value = '';
 };
