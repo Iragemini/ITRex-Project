@@ -31,8 +31,9 @@ newResolution.onclick = () => {
 
   addResolution(current.innerText, resolution.value, ttl);
   resolution.value = '';
-  ttlInput.value = '';
-  ttlCheckbox.checked = false;
+  if (ttlCheckbox.checked) {
+    ttlCheckbox.click();
+  }
 };
 
 showResolution.onclick = () => {
