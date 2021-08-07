@@ -4,7 +4,7 @@ import { isExpired } from './utils/check.js';
 const { queue, patients } = storage;
 
 export const addResolution = (name, resolution, ttl = '') => {
-  if (!name || queue.length === 0) {
+  if (!name) {
     return;
   }
   let expire = '';
@@ -16,15 +16,14 @@ export const addResolution = (name, resolution, ttl = '') => {
     expire,
   };
   if (patients.length === 0) {
-    patients.push({ name, resolutionObj });
+    patients.push({ [name]: resolutionObj });
     return;
   }
   let isExists = false;
   const delimiter = '\n';
   for (let i = 0; i < patients.length; i += 1) {
-    const patient = patients[i].name;
-    if (patient === name) {
-      const obj = patients[i].resolutionObj;
+    if (patients[i][name]) {
+      const obj = patients[i][name];
       if (obj.resolution.trim()) {
         obj.resolution += delimiter;
       }
@@ -35,8 +34,9 @@ export const addResolution = (name, resolution, ttl = '') => {
     }
   }
   if (!isExists) {
-    patients.push({ name, resolutionObj });
+    patients.push({ [name]: resolutionObj });
   }
+  console.log('patients', patients);
 };
 
 export const addPatientToQueue = (patient) => {
@@ -46,15 +46,14 @@ export const addPatientToQueue = (patient) => {
 };
 
 export const deleteResolution = (name) => {
-  const resolution = patients.filter((item) => item.name === name);
+  const resolution = patients.filter((item) => item[name]);
   if (resolution.length === 0) {
     return;
   }
   for (let i = 0; i < patients.length; i += 1) {
-    const patient = patients[i].name;
-    if (patient === name) {
-      patients[i].resolutionObj.resolution = '';
-      patients[i].resolutionObj.expire = '';
+    if (patients[i][name]) {
+      patients[i][name].resolution = '';
+      patients[i][name].expire = '';
       break;
     }
   }
@@ -62,14 +61,14 @@ export const deleteResolution = (name) => {
 
 export const findResolution = (name) => {
   const message = 'No resolutions';
-  const patient = patients.filter((item) => item.name === name);
+  const patient = patients.filter((item) => item[name]);
   if (patient.length === 0) {
     return message;
   }
-  const { expire } = patient[0].resolutionObj;
+  const { expire } = patient[0][name];
 
   if (!isExpired(expire)) {
-    return patient[0].resolutionObj.resolution || message;
+    return patient[0][name].resolution || message;
   }
   deleteResolution(name);
   return message;
