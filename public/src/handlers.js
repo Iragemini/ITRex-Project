@@ -1,18 +1,8 @@
 import storage from '../storage/storage.js';
 import { isExpired } from './utils/check.js';
+import setCurrentPatient from './utils/setCurrentPatient.js';
 
 const { queue, patients } = storage;
-
-const currentInQueue = document.getElementById('currentInQueue');
-const current = document.getElementById('current');
-
-export const setCurrentPatient = (name, mode) => {
-  if (queue.length > 1 && mode === 'queue') {
-    return;
-  }
-  currentInQueue.innerText = name;
-  current.innerText = name;
-};
 
 export const addResolution = (name, resolution, ttl) => {
   if (!name || queue.length === 0) {

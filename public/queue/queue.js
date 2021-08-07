@@ -1,8 +1,8 @@
 import {
   addPatientToQueue,
   findResolution,
-  setCurrentPatient,
 } from '../src/handlers.js';
+import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 
 const addPatient = document.getElementById('addPatient');
 const searchResolution = document.getElementById('searchResolution');
