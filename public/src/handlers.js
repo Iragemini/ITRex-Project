@@ -36,7 +36,6 @@ export const addResolution = (name, resolution, ttl = '') => {
   if (!isExists) {
     patients.push({ [name]: resolutionObj });
   }
-  console.log('patients', patients);
 };
 
 export const addPatientToQueue = (patient) => {
