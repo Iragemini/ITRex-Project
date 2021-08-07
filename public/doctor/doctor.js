@@ -5,6 +5,7 @@ import {
   deletePatientFromQueue,
 } from '../src/handlers.js';
 import { checkTTL } from '../src/utils/check.js';
+import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 
 const newResolution = document.getElementById('newResolution');
 const current = document.getElementById('current');
@@ -49,8 +50,10 @@ deleteResolutionBtn.onclick = () => {
 nextBtn.onclick = () => {
   const deleted = deletePatientFromQueue();
   if (deleted.message) {
-    current.innerText = deleted.message;
+    setCurrentPatient(deleted.message, '');
+    return;
   }
+  setCurrentPatient(deleted.next, '');
 };
 
 ttlCheckbox.onchange = () => {

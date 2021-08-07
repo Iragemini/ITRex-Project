@@ -1,6 +1,5 @@
 import storage from '../storage/storage.js';
 import { isExpired } from './utils/check.js';
-import setCurrentPatient from './utils/setCurrentPatient.js';
 
 const { queue, patients } = storage;
 
@@ -81,11 +80,9 @@ export const deletePatientFromQueue = () => {
   if (queue.length === 0) {
     return { message };
   }
-  const previous = queue.splice(0, 1);
+  queue.splice(0, 1);
   if (queue.length > 0) {
-    setCurrentPatient(queue[0].name, '');
-    return { previous };
+    return { next: queue[0].name };
   }
-  setCurrentPatient(message, '');
-  return { previous };
+  return { message };
 };
