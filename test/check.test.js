@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { checkTTL, isExpired } from '../public/src/utils/check.js';
 
 describe('Check values tests', () => {
-  describe('Check TTL', () => {
+  describe('Check expiration time', () => {
     const data = [
       {
         value: Date.now(),
