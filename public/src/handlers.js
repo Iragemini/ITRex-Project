@@ -3,7 +3,7 @@ import { isExpired } from './utils/check.js';
 
 const { queue, patients } = storage;
 
-export const addResolution = (name, resolution, ttl) => {
+export const addResolution = (name, resolution, ttl = '') => {
   if (!name || queue.length === 0) {
     return;
   }
