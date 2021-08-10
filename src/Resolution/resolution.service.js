@@ -12,7 +12,6 @@ export const addResolution = async (name, resolution, ttl = '') => {
     return;
   }
   const index = await patients.find(name);
-  console.log('index', index);
   if (index !== null) {
     const currentResolution = storage[index][name].resolution;
     const newValue = {

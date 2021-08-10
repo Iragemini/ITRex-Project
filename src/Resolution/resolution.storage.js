@@ -6,8 +6,6 @@ class Patients extends Storage {
   }
 
   async update(index, key, value) {
-    console.log(`index=${index} key=${key} value=${value}`);
-    console.log('this.storage[index][key]', this.storage[index][key]);
     this.storage[index][key] = value;
   }
 

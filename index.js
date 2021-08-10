@@ -6,7 +6,6 @@ import resolutionRouter from './src/Resolution/resolution.routes.js';
 
 const PORT = process.env.PORT || 3000;
 const __dirname = path.resolve();
-console.log(__dirname);
 const app = express();
 
 app.set('view engine', 'ejs');
