@@ -5,6 +5,7 @@ const url = 'http://localhost:3000';
 searchResolution.addEventListener('keyup', async (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
+    queueResolution.value = '';
     const name = searchResolution.value.trim();
     const response = await fetch(`${url}/resolution/${name}/show`);
     if (!response.ok) {
