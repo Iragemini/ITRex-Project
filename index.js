@@ -1,11 +1,12 @@
 import express from 'express';
 import path from 'path';
 import methodOverride from 'method-override';
+import { config } from './config/default.json';
 import queueRouter from './src/Queue/queue.routes.js';
 import resolutionRouter from './src/Resolution/resolution.routes.js';
 import { handle } from './src/Errors/errorHandler.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.get('port') || 3000;
 const __dirname = path.resolve();
 const app = express();
 
