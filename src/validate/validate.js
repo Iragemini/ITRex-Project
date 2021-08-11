@@ -11,3 +11,16 @@ export const validator = (schema, property) => {
     }
   };
 };
+
+export const checkTTL = (req, res, next) => {
+  const ttl = req.body.ttlInput;
+  console.log('ttl', ttl);
+  if (ttl) {
+    const valid = ttl > 0;
+    if (!valid) {
+      throw new AppError(400);
+    }
+    return next();
+  }
+  return next();
+};

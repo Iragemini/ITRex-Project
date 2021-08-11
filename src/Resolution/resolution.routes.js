@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { find, add, remove } from './resolution.controllers.js';
 import { nameSchema, resolutionSchema } from '../validate/schemas.js';
-import { validator } from '../validate/validate.js';
+import { validator, checkTTL } from '../validate/validate.js';
 
 const resolutionRouter = Router();
 
@@ -14,6 +14,7 @@ resolutionRouter.post(
   '/resolution/:name/add',
   validator(nameSchema, 'params'),
   validator(resolutionSchema, 'body'),
+  checkTTL,
   add
 );
 resolutionRouter.delete(

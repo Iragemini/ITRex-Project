@@ -4,10 +4,3 @@ export const isExpired = (expire) => {
   }
   return true;
 };
-
-export const checkTTL = (ttl) => {
-  const valid = ttl > 0;
-  if (!valid) {
-    throw new Error('invalid TTL value');
-  }
-};
