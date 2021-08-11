@@ -12,16 +12,28 @@ export const add = async (req, res) => {
     throw new AppError(400);
   }
   const ttl = req.body.ttlInput;
-  await addResolution(name, resolution, ttl);
-  res.status(200).redirect('/');
+  try {
+    await addResolution(name, resolution, ttl);
+    res.status(200).redirect('/');
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const find = async (req, res) => {
-  const resolution = await findResolution(req.params.name);
-  res.status(200).send(JSON.stringify(resolution));
+  try {
+    const resolution = await findResolution(req.params.name);
+    res.status(200).send(JSON.stringify(resolution));
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const remove = async (req, res) => {
-  await deleteResolution(req.params.name);
-  res.sendStatus(204);
+  try {
+    await deleteResolution(req.params.name);
+    res.sendStatus(204);
+  } catch (e) {
+    console.log(e);
+  }
 };
