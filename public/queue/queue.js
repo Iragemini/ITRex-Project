@@ -7,7 +7,11 @@ searchResolution.addEventListener('keyup', async (e) => {
     e.preventDefault();
     const name = searchResolution.value.trim();
     const response = await fetch(`${url}/resolution/${name}/show`);
-    const resolution = await response.json();
-    queueResolution.value = resolution;
+    if (!response.ok) {
+      const error = await response.json();
+      queueResolution.value = error.message;
+      return;
+    }
+    queueResolution.value = await response.json();
   }
 });

@@ -16,6 +16,11 @@ ttlCheckbox.onchange = () => {
 showResolution.onclick = async () => {
   const name = patientName.value.trim();
   const response = await fetch(`${url}/resolution/${name}/show`);
+  if (!response.ok) {
+    const error = await response.json();
+    doctorResolutionFound.value = error.message;
+    return;
+  }
   doctorResolutionFound.value = await response.json();
 };
 

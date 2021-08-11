@@ -1,6 +1,7 @@
 import patients from './resolution.storage.js';
 import { isExpired } from '../utils/check.js';
 import { getExpiration } from '../utils/getExpiration.js';
+import AppError from '../Errors/AppError.js';
 
 const storage = await patients.get();
 
@@ -28,7 +29,7 @@ export const addResolution = async (name, resolution, ttl = '') => {
 export const deleteResolution = async (name) => {
   const index = await patients.find(name);
   if (index === null) {
-    throw new Error(404);
+    throw new AppError('404');
   }
   await patients.removeValue(name, index);
 };
@@ -37,7 +38,7 @@ export const findResolution = async (name) => {
   const message = 'No resolutions';
   const index = await patients.find(name);
   if (index === null) {
-    throw new Error(404);
+    throw new AppError('404');
   }
   const { resolution, expire } = await patients.getResolution(index, name);
 
