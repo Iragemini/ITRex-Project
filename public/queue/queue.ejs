@@ -6,13 +6,9 @@
                 <div class="queue card-body d-flex justify-content-between align-items-center">
                     <div class="d-flex flex-column justify-content-center">
                         <h5 class="m-1 text-dark">Current patient: </h5>
-                        <%if (currentPatient) {%>
-                            <h2 class="m-2 text-info" id='currentInQueue' name='currentInQueue'>
-                                <%= currentPatient %>
-                            </h2>
-                        <% } else {%>
-                            <h2 class="m-2 text-info">No patients in the queue</h2>
-                        <%}%>
+                        <h2 class="m-2 text-info" id='currentInQueue' name='currentInQueue'>
+                            <%= currentPatient ? currentPatient : 'No patients in the queue' %>
+                        </h2>
                     </div>
                     <div class="input__patient d-flex flex-column">
                         <form action="/queue/add" method="POST">
