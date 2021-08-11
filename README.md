@@ -1,7 +1,7 @@
 ## For start application:
 
 - Git clone this repo
-- npm install && npm run dev
+- npm install && npm start
 
 ## Endpoints
 - Queue:
