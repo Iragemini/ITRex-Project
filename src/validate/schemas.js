@@ -1,11 +1,12 @@
 import Joi from 'joi';
 
 export const resolutionSchema = Joi.object().keys({
-  doctorResolution: Joi.string().required(),
-  ttlInput: Joi.string().optional().allow('').min(1),
-  ttl: Joi.any(),
+  resolution: Joi.string().required(),
+  ttl: Joi.string().optional().allow('').min(1),
 });
 
 export const nameSchema = Joi.object({
   name: Joi.string().required(),
 });
+
+export const bodySchema = Joi.object().min(1);
