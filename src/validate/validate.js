@@ -1,11 +1,11 @@
-import AppError from '../Errors/AppError.js';
+import ApiError from '../Errors/ApiError.js';
 
 export const validator = (schema, property) => {
   return (req, res, next) => {
     const { error } = schema.validate(req[property]);
     if (error) {
-      const statusCode = property === 'body' ? 422 : 400;
-      throw new AppError(statusCode);
+      const statusCode = property === 'body' ? '422' : '400';
+      throw new ApiError(statusCode);
     } else {
       return next();
     }
@@ -13,14 +13,16 @@ export const validator = (schema, property) => {
 };
 
 export const checkTTL = (req, res, next) => {
-  const ttl = req.body.ttlInput;
-  console.log('ttl', ttl);
-  if (ttl) {
-    const valid = ttl > 0;
-    if (!valid) {
-      throw new AppError(400);
-    }
+  let ttl = null;
+  if (req.body.ttl) {
+    ttl = req.body.ttl;
+  }
+  if (!ttl) {
     return next();
+  }
+  const valid = ttl > 0;
+  if (!valid) {
+    return next(new ApiError('400', 'TTL value must be positive numbers only'));
   }
   return next();
 };
