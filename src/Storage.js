@@ -18,7 +18,7 @@ export class Storage {
   async find(key) {
     let index = null;
     for (let i = 0; i < this.storage.length; i += 1) {
-      if (this.storage[i][key]) {
+      if (key in this.storage[i]) {
         index = i;
         break;
       }
