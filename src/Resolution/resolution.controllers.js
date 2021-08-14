@@ -13,8 +13,12 @@ export const add = async (req, res, next) => {
     const err = new ApiError('400', 'empty parameters');
     next(err);
   }
-  await addResolution(name, resolution, ttl);
-  res.status(200).json({ message: 'successfully added' });
+  try {
+    await addResolution(name, resolution, ttl);
+    res.status(200).json({ message: 'successfully added' });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const find = async (req, res, next) => {
@@ -27,7 +31,11 @@ export const find = async (req, res, next) => {
   }
 };
 
-export const remove = async (req, res) => {
-  await deleteResolution(req.params.name);
-  res.status(200).json({ message: 'successfully deleted' });
+export const remove = async (req, res, next) => {
+  try {
+    await deleteResolution(req.params.name);
+    res.status(200).json({ message: 'successfully deleted' });
+  } catch (err) {
+    next(err);
+  }
 };
