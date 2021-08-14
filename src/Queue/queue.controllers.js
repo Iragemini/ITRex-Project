@@ -1,44 +1,38 @@
-import { addPatientToQueue, nextPatient } from './queue.service.js';
-import queue from './queue.storage.js';
+import ApiError from '../Errors/ApiError.js';
+import {
+  addPatientToQueue,
+  nextPatient,
+  getCurrentPatient,
+} from './queue.service.js';
 
-const options = {
-  title: 'Clinic',
-  currentPatient: '',
-  searchInput: '',
-  resolution: '',
-};
-
-const storage = await queue.get();
-
-export const getCurrent = async (req, res) => {
+export const getCurrent = async (req, res, next) => {
   try {
-    const current = storage.length ? await queue.getCurrentKey() : '';
-    options.currentPatient = current;
-    options.searchInput = current;
-    res.render('index', options);
-  } catch (e) {
-    console.log(e);
+    const current = await getCurrentPatient();
+    res.status(200).json({ current });
+  } catch (err) {
+    next(err);
   }
 };
 
-export const add = async (req, res) => {
-  const patient = req.body.newPatient;
+export const add = async (req, res, next) => {
+  const patient = req.body.patient;
+  if (!patient) {
+    return next(new ApiError('400', 'empty parameters'));
+  }
   try {
-    await addPatientToQueue(patient);
-    res.status(201).redirect('/');
-  } catch (e) {
-    console.log(e);
+    const name = await addPatientToQueue(patient);
+    res.status(201).json({ name });
+  } catch (err) {
+    next(err);
   }
 };
 
-export const remove = async (req, res) => {
+export const remove = async (req, res, next) => {
   const name = req.params.name;
   try {
-    const { next } = await nextPatient(name);
-    options.currentPatient = next ? next : '';
-    options.searchInput = next ? next : '';
-    res.render('index', options);
-  } catch (e) {
-    console.log(e);
+    const nextInQueue = await nextPatient(name);
+    res.status(200).json({ next: nextInQueue });
+  } catch (err) {
+    next(err);
   }
 };

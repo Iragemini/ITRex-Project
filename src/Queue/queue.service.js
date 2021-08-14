@@ -1,4 +1,6 @@
 import queue from './queue.storage.js';
+import { lengthValidate } from '../utils/lengthValidate.js';
+import ApiError from '../Errors/ApiError.js';
 
 const storage = await queue.get();
 
@@ -9,14 +11,27 @@ export const addPatientToQueue = async (patient) => {
 };
 
 export const nextPatient = async (name) => {
-  const index = await queue.find(name);
-  if (storage.length === 0) {
-    return { next: null };
+  let nextInQueue = null;
+  const index = await queue.find(name.trim());
+  if (index === null) {
+    throw new ApiError('404', 'patient not found');
   }
   await queue.remove(index);
-  if (storage.length > 0) {
-    const next = await queue.getCurrentKey();
-    return { next };
+
+  if (lengthValidate(storage) && storage.length > index) {
+    nextInQueue = await queue.getNameByIndex(index);
   }
-  return { next: null };
+  if (nextInQueue === null) {
+    throw new ApiError('400', 'no patients in the queue');
+  }
+  return nextInQueue;
+};
+
+export const getCurrentPatient = async () => {
+  let current = null;
+  if (!lengthValidate(storage)) {
+    throw new ApiError('400', 'no patients in the queue');
+  }
+  current = await queue.getCurrentKey();
+  return current;
 };

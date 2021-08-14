@@ -3,37 +3,31 @@ import {
   findResolution,
   deleteResolution,
 } from './resolution.service.js';
-import AppError from '../Errors/AppError.js';
+import ApiError from '../Errors/ApiError.js';
 
-export const add = async (req, res) => {
+export const add = async (req, res, next) => {
   const name = req.params.name;
-  const resolution = req.body.doctorResolution;
-  if (!name || !resolution) {
-    throw new AppError(400);
+  const resolution = req.body.resolution;
+  const ttl = req.body.ttl;
+  if (!resolution) {
+    const err = new ApiError('400', 'empty parameters');
+    next(err);
   }
-  const ttl = req.body.ttlInput;
-  try {
-    await addResolution(name, resolution, ttl);
-    res.status(200).redirect('/');
-  } catch (e) {
-    console.log(e);
-  }
+  await addResolution(name, resolution, ttl);
+  res.status(200).json({ message: 'successfully added' });
 };
 
-export const find = async (req, res) => {
+export const find = async (req, res, next) => {
+  let resolution = '';
   try {
-    const resolution = await findResolution(req.params.name);
-    res.status(200).send(JSON.stringify(resolution));
-  } catch (e) {
-    console.log(e);
+    resolution = await findResolution(req.params.name);
+    res.status(200).json({ resolution });
+  } catch (err) {
+    next(err);
   }
 };
 
 export const remove = async (req, res) => {
-  try {
-    await deleteResolution(req.params.name);
-    res.sendStatus(204);
-  } catch (e) {
-    console.log(e);
-  }
+  await deleteResolution(req.params.name);
+  res.status(200).json({ message: 'successfully deleted' });
 };
