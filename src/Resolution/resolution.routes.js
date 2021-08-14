@@ -1,24 +1,26 @@
 import { Router } from 'express';
 import { find, add, remove } from './resolution.controllers.js';
-import { nameSchema, resolutionSchema } from '../validate/schemas.js';
+import {
+  nameSchema,
+  resolutionSchema,
+  bodySchema,
+} from '../validate/schemas.js';
 import { validator, checkTTL } from '../validate/validate.js';
 
 const resolutionRouter = Router();
+const prefix = '/api/resolution';
 
-resolutionRouter.get(
-  '/resolution/:name/show',
-  validator(nameSchema, 'params'),
-  find
-);
-resolutionRouter.post(
-  '/resolution/:name/add',
+resolutionRouter.get(`${prefix}/:name`, validator(nameSchema, 'params'), find);
+resolutionRouter.patch(
+  `${prefix}/:name`,
+  validator(bodySchema, 'body'),
   validator(nameSchema, 'params'),
   validator(resolutionSchema, 'body'),
   checkTTL,
   add
 );
-resolutionRouter.delete(
-  '/resolution/:name/delete',
+resolutionRouter.patch(
+  `${prefix}/:name/delete`,
   validator(nameSchema, 'params'),
   remove
 );

@@ -1,16 +1,13 @@
 import { Router } from 'express';
 import { add, remove, getCurrent } from './queue.controllers.js';
 import { validator } from '../validate/validate.js';
-import { nameSchema } from '../validate/schemas.js';
+import { nameSchema, bodySchema } from '../validate/schemas.js';
 
 const queueRouter = Router();
+const prefix = '/api/queue';
 
-queueRouter.get('/', getCurrent);
-queueRouter.post('/queue/add', add);
-queueRouter.delete(
-  '/queue/:name/delete',
-  validator(nameSchema, 'params'),
-  remove
-);
+queueRouter.get(`${prefix}`, getCurrent);
+queueRouter.post(`${prefix}`, validator(bodySchema, 'body'), add);
+queueRouter.delete(`${prefix}/:name`, validator(nameSchema, 'params'), remove);
 
 export default queueRouter;
