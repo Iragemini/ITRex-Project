@@ -1,4 +1,4 @@
-import queue from './queue.storage.js';
+import { queue } from '../storage/index.js';
 import { lengthValidate } from '../utils/lengthValidate.js';
 import ApiError from '../Errors/ApiError.js';
 

@@ -1,4 +1,4 @@
-import patients from './resolution.storage.js';
+import { patients } from '../storage/index.js';
 import { isExpired } from '../utils/check.js';
 import { getExpiration } from '../utils/getExpiration.js';
 import { lengthValidate } from '../utils/lengthValidate.js';

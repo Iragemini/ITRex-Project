@@ -1,6 +1,6 @@
-import { Storage } from '../Storage.js';
+import { Storage } from '../storage/Storage.js';
 
-class Queue extends Storage {
+export class Queue extends Storage {
     async getCurrentKey() {
         return Object.keys(this.storage[0])[0];
     }
@@ -10,6 +10,3 @@ class Queue extends Storage {
     }
 }
 
-const queue = new Queue();
-
-export default queue;

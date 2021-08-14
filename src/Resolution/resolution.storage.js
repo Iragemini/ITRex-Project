@@ -1,6 +1,6 @@
-import { Storage } from '../Storage.js';
+import { Storage } from '../storage/Storage.js';
 
-class Patients extends Storage {
+export class Patients extends Storage {
   async removeValue(key, index) {
     this.storage[index][key] = {resolution: '', expire: ''};
   }
@@ -14,6 +14,3 @@ class Patients extends Storage {
   }
 }
 
-const patients = new Patients();
-
-export default patients;
