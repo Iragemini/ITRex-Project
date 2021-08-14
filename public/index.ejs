@@ -21,7 +21,10 @@ const data = {currentPatient, resolution, searchInput};
     <div class="container">
         <%- include('./queue/queue.ejs', data); %>
         <%- include('./resolution/resolution.ejs', data); %>
-    </div>    
+        <input type="hidden" id="hiddenCurrent" value=""/>
+    </div>  
+    <script type="module" src="/src/index.js"></script>
+    <script type="module" src="/src/services/index.js"></script>
     <script type="module" src="/resolution/resolution.js"></script>
     <script type="module" src="/queue/queue.js"></script>
 </body>
