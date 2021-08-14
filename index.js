@@ -5,14 +5,13 @@ import queueRouter from './src/Queue/queue.routes.js';
 import resolutionRouter from './src/Resolution/resolution.routes.js';
 import { handle } from './src/Errors/errorHandler.js';
 
-const __dirname = path.resolve();
 const PORT = config.get('port') || 3000;
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', './public');
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static('public'));
 app.use(express.json());
 
 app.use(queueRouter);
