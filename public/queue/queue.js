@@ -6,7 +6,7 @@ const newPatient = document.getElementById('newPatient');
 const searchResolution = document.getElementById('searchResolution');
 const queueResolution = document.getElementById('queueResolution');
 
-addPatient.onclick = async () => {
+addPatient.onclick = () => {
   if (newPatient.value.trim() === '') {
     newPatient.classList.add('is-invalid');
     return;
@@ -24,7 +24,7 @@ addPatient.onclick = async () => {
     });
 };
 
-searchResolution.addEventListener('keyup', async (e) => {
+searchResolution.addEventListener('keyup', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
     queueResolution.value = '';
