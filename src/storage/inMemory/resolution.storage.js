@@ -1,4 +1,4 @@
-import { Storage } from '../storage/Storage.js';
+import { Storage } from './Storage.js';
 
 export class Patients extends Storage {
   async removeValue(key, index) {
