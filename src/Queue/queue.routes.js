@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { add, remove, getCurrent } from './queue.controllers.js';
-import { validator } from '../validate/validate.js';
-import { nameSchema, bodySchema } from '../validate/schemas.js';
+import { validator } from '../middlewares/validate.js';
+import { nameSchema, bodySchema } from '../schemas/schemas.js';
 
 const queueRouter = Router();
 const prefix = '/api/queue';

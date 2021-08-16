@@ -1,4 +1,4 @@
-import ApiError from '../Errors/ApiError.js';
+import ApiError from '../errors/ApiError.js';
 import {
   addPatientToQueue,
   nextPatient,

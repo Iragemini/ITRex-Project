@@ -3,7 +3,7 @@ import {
   findResolution,
   deleteResolution,
 } from './resolution.service.js';
-import ApiError from '../Errors/ApiError.js';
+import ApiError from '../errors/ApiError.js';
 
 export const add = async (req, res, next) => {
   const name = req.params.name;

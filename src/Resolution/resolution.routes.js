@@ -4,8 +4,8 @@ import {
   nameSchema,
   resolutionSchema,
   bodySchema,
-} from '../validate/schemas.js';
-import { validator, checkTTL } from '../validate/validate.js';
+} from '../schemas/schemas.js';
+import { validator, checkTTL } from '../middlewares/validate.js';
 
 const resolutionRouter = Router();
 const prefix = '/api/resolution';

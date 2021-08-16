@@ -1,6 +1,6 @@
 import { queue } from '../storage/index.js';
 import { lengthValidate } from '../utils/lengthValidate.js';
-import ApiError from '../Errors/ApiError.js';
+import ApiError from '../errors/ApiError.js';
 
 const storage = await queue.get();
 
