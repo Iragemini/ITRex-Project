@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<%
-const data = {currentPatient, resolution, searchInput};
-%>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,8 +16,8 @@ const data = {currentPatient, resolution, searchInput};
 
 <body>
     <div class="container">
-        <%- include('./queue/queue.ejs', data); %>
-        <%- include('./resolution/resolution.ejs', data); %>
+        <%- include('./queue/queue.ejs'); %>
+        <%- include('./resolution/resolution.ejs'); %>
         <input type="hidden" id="hiddenCurrent" value=""/>
     </div>  
     <script type="module" src="/src/index.js"></script>
