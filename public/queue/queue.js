@@ -1,4 +1,5 @@
 import queueService from '../http/queue.service.js';
+import resolutionService from '../http/resolution.service.js';
 import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 
 const addPatient = document.getElementById('addPatient');
@@ -28,7 +29,7 @@ searchResolution.onkeyup = async (e) => {
     queueResolution.value = '';
     const name = searchResolution.value.trim();
     try {
-      const { resolution } = await queueService.getResolution(name);
+      const { resolution } = await resolutionService.getResolution(name);
       if (resolution) {
         queueResolution.value = resolution;
       }

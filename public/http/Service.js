@@ -38,7 +38,8 @@ export default class Service {
       method: 'GET',
       headers: this.headers,
     };
-    return this.makeRequest(url, options);
+    const result = await this.makeRequest(url, options);
+    return result;
   };
 
   /* POST */
@@ -48,7 +49,8 @@ export default class Service {
       headers: this.headers,
       body: JSON.stringify(data),
     };
-    return this.makeRequest(url, options);
+    const result = await this.makeRequest(url, options);
+    return result;
   };
 
   /* PATCH */
@@ -58,7 +60,8 @@ export default class Service {
       headers: this.headers,
       body: JSON.stringify(data),
     };
-    return this.makeRequest(url, options);
+    const result = await this.makeRequest(url, options);
+    return result;
   };
 
   /* DELETE */
@@ -68,6 +71,7 @@ export default class Service {
       headers: this.headers,
       body: JSON.stringify(data),
     };
-    return this.makeRequest(url, options);
+    const result = await this.makeRequest(url, options);
+    return result;
   };
 }
