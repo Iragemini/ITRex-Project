@@ -1,4 +1,4 @@
-import service from '../src/services/index.js';
+import queueService from '../http/queue.service.js';
 import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 
 const addPatient = document.getElementById('addPatient');
@@ -14,7 +14,7 @@ addPatient.onclick = async () => {
   newPatient.classList.remove('is-invalid');
   const data = { patient: newPatient.value.trim() };
   try {
-    const { name } = await service.postPatientInQueue(data);
+    const { name } = await queueService.postPatientInQueue(data);
     setCurrentPatient(name, 'queue');
     newPatient.value = '';
   } catch (e) {
@@ -28,7 +28,7 @@ searchResolution.onkeyup = async (e) => {
     queueResolution.value = '';
     const name = searchResolution.value.trim();
     try {
-      const { resolution } = await service.getResolution(name);
+      const { resolution } = await queueService.getResolution(name);
       if (resolution) {
         queueResolution.value = resolution;
       }

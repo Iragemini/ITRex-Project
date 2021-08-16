@@ -1,4 +1,5 @@
-import service from '../src/services/index.js';
+import resolutionService from '../http/resolution.service.js';
+import queueService from '../http/queue.service.js';
 import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 
 const ttlDiv = document.querySelector('.ttl__input');
@@ -22,7 +23,7 @@ showResolution.onclick = async () => {
   doctorResolutionFound.value = '';
   const name = patientName.value.trim();
   try {
-    const { resolution } = await service.getResolution(name);
+    const { resolution } = await resolutionService.getResolution(name);
     if (resolution) {
       doctorResolutionFound.value = resolution;
     }
@@ -35,7 +36,7 @@ showResolution.onclick = async () => {
 deleteResolutionBtn.onclick = async () => {
   const name = patientName.value.trim();
   try {
-    await service.deleteResolution(name);
+    await resolutionService.deleteResolution(name);
     doctorResolutionFound.value = '';
   } catch (e) {
     console.log(e.text);
@@ -46,7 +47,7 @@ deleteResolutionBtn.onclick = async () => {
 newResolution.onclick = async () => {
   const data = { resolution: doctorResolution.value, ttl: ttlInput.value };
   try {
-    await service.patchResolution(hiddenCurrent.value, data);
+    await resolutionService.patchResolution(hiddenCurrent.value, data);
     doctorResolution.value = '';
     if (ttlCheckbox.checked) {
       ttlCheckbox.click();
@@ -59,7 +60,7 @@ newResolution.onclick = async () => {
 nextBtn.onclick = async () => {
   doctorResolutionFound.value = '';
   try {
-    const { next } = await service.deletePatientFromQueue(hiddenCurrent.value);
+    const { next } = await queueService.deletePatientFromQueue(hiddenCurrent.value);
     setCurrentPatient(next, '');
   } catch (e) {
     console.log(e.text);
