@@ -1,13 +1,11 @@
 import service from './services/index.js';
 import setCurrentPatient from './utils/setCurrentPatient.js';
 
-window.onload = () => {
-  service
-    .getCurrentInQueue()
-    .then((result) => {
-      setCurrentPatient(result.current, '');
-    })
-    .catch((err) => {
-      console.log(err.text);
-    });
+window.onload = async () => {
+  try {
+    const { current } = await service.getCurrentInQueue();
+    setCurrentPatient(current, '');
+  } catch (err) {
+    console.log(err.text);
+  }
 };
