@@ -8,19 +8,20 @@ import {
 import { validator, checkTTL } from '../middlewares/validate.js';
 
 const resolutionRouter = Router();
-const prefix = '/api/resolution';
+const prefix = '/api/resolution/:name';
 
-resolutionRouter.get(`${prefix}/:name`, validator(nameSchema, 'params'), find);
+resolutionRouter
+  .route(prefix)
+  .get(validator(nameSchema, 'params'), find)
+  .patch(
+    validator(bodySchema, 'body'),
+    validator(nameSchema, 'params'),
+    validator(resolutionSchema, 'body'),
+    checkTTL,
+    add
+  );
 resolutionRouter.patch(
-  `${prefix}/:name`,
-  validator(bodySchema, 'body'),
-  validator(nameSchema, 'params'),
-  validator(resolutionSchema, 'body'),
-  checkTTL,
-  add
-);
-resolutionRouter.patch(
-  `${prefix}/:name/delete`,
+  `${prefix}/delete`,
   validator(nameSchema, 'params'),
   remove
 );

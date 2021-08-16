@@ -6,8 +6,11 @@ import { nameSchema, bodySchema } from '../schemas/schemas.js';
 const queueRouter = Router();
 const prefix = '/api/queue';
 
-queueRouter.get(`${prefix}`, getCurrent);
-queueRouter.post(`${prefix}`, validator(bodySchema, 'body'), add);
+queueRouter
+  .route(prefix)
+  .get(getCurrent)
+  .post(validator(bodySchema, 'body'), add);
+
 queueRouter.delete(`${prefix}/:name`, validator(nameSchema, 'params'), remove);
 
 export default queueRouter;

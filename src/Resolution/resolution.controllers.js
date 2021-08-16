@@ -15,7 +15,7 @@ export const add = async (req, res, next) => {
   }
   try {
     await addResolution(name, resolution, ttl);
-    res.status(200).json({ message: 'successfully added' });
+    res.sendStatus(201);
   } catch (err) {
     next(err);
   }
@@ -34,7 +34,7 @@ export const find = async (req, res, next) => {
 export const remove = async (req, res, next) => {
   try {
     await deleteResolution(req.params.name);
-    res.status(200).json({ message: 'successfully deleted' });
+    res.sendStatus(200);
   } catch (err) {
     next(err);
   }
