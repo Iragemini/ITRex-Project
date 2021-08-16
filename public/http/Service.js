@@ -1,4 +1,4 @@
-class Service {
+export default class Service {
   constructor() {
     this.base = 'http://localhost:3000/api';
     this.headers = { 'Content-Type': 'application/json' };
@@ -77,40 +77,4 @@ class Service {
     const result = await response.json();
     return result;
   };
-
-  /* QUEUE */
-  getCurrentInQueue = async () => {
-    const res = await this.getResource('/queue');
-    return res;
-  };
-
-  postPatientInQueue = async (data) => {
-    const res = await this.postResource('/queue', data);
-    return res;
-  };
-
-  deletePatientFromQueue = async (name) => {
-    const res = await this.deleteResource(`/queue/${name}`);
-    return res;
-  };
-
-  /* RESOLUTION */
-  getResolution = async (name) => {
-    const res = await this.getResource(`/resolution/${name}`);
-    return res;
-  };
-
-  patchResolution = async (name, data) => {
-    const res = await this.patchResource(`/resolution/${name}`, data);
-    return res;
-  };
-
-  deleteResolution = async (name) => {
-    const res = await this.patchResource(`/resolution/${name}/delete`);
-    return res;
-  };
 }
-
-const service = new Service();
-
-export default service;
