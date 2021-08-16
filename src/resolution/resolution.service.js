@@ -1,5 +1,5 @@
 import { patients } from '../storage/index.js';
-import { isExpired } from '../utils/check.js';
+import { isResolutionExpired } from '../utils/resolution.js';
 import { getExpiration } from '../utils/getExpiration.js';
 import ApiError from '../errors/ApiError.js';
 
@@ -48,7 +48,7 @@ export const findResolution = async (name) => {
   }
   const { resolution, expire } = await patients.getResolution(index, name);
 
-  if (!isExpired(expire)) {
+  if (!isResolutionExpired(expire)) {
     return resolution || message;
   }
   await patients.remove(index);

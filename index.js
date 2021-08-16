@@ -2,9 +2,9 @@ import express from 'express';
 import config from './config/config.js';
 import queueRouter from './src/queue/queue.routes.js';
 import resolutionRouter from './src/resolution/resolution.routes.js';
-import { handle } from './src/middlewares/errorHandler.js';
+import { handle as errorHandler } from './src/middlewares/errorHandler.js';
 
-const PORT = config.server.port || 3000;
+const PORT = config.server.port;
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -27,7 +27,7 @@ app.use((req, res, next) => {
     res.send('Route not found');
   }
 });
-app.use(handle);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server has been started on port ${PORT}...`);
