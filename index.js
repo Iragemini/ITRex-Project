@@ -1,11 +1,10 @@
 import express from 'express';
-import path from 'path';
-import config from 'config';
-import queueRouter from './src/Queue/queue.routes.js';
-import resolutionRouter from './src/Resolution/resolution.routes.js';
-import { handle } from './src/Errors/errorHandler.js';
+import config from './config/config.js';
+import queueRouter from './src/queue/queue.routes.js';
+import resolutionRouter from './src/resolution/resolution.routes.js';
+import { handle } from './src/middlewares/errorHandler.js';
 
-const PORT = config.get('port') || 3000;
+const PORT = config.server.port || 3000;
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -16,19 +15,12 @@ app.use(express.json());
 
 app.use(queueRouter);
 app.use(resolutionRouter);
-app.get('/', (req, res) => {
-  res.render('index', {
-    title: 'Clinic',
-    currentPatient: '',
-    searchInput: '',
-    resolution: '',
-  });
-})
 app.use((req, res, next) => {
   res.status(404);
   if (req.accepts('json')) {
     res.json({ message: 'Route not found' });
-    return;
+  } else {
+    res.send('Route not found');
   }
 });
 app.use(handle);
