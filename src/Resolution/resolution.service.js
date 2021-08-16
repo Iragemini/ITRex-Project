@@ -1,12 +1,11 @@
 import { patients } from '../storage/index.js';
 import { isExpired } from '../utils/check.js';
 import { getExpiration } from '../utils/getExpiration.js';
-import { lengthValidate } from '../utils/lengthValidate.js';
 import ApiError from '../errors/ApiError.js';
 
 const storage = await patients.get();
 
-const updateResolution = async (index, name, resolution) => {
+const updateResolution = async (index, name, resolution, expire) => {
   let currentResolution = '';
   await patients.getResolution(index, name).then((result) => {
     currentResolution = result.resolution;
@@ -20,13 +19,13 @@ const updateResolution = async (index, name, resolution) => {
 
 export const addResolution = async (name, resolution, ttl = '') => {
   const expire = getExpiration(ttl);
-  if (!lengthValidate(storage)) {
+  if (!storage.length) {
     await patients.add(name, { resolution, expire });
     return;
   }
   const index = await patients.find(name);
   if (index !== null) {
-    await updateResolution(index, name, resolution);
+    await updateResolution(index, name, resolution, expire);
     return;
   }
 

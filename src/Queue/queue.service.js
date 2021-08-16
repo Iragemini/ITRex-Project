@@ -1,5 +1,4 @@
 import { queue } from '../storage/index.js';
-import { lengthValidate } from '../utils/lengthValidate.js';
 import ApiError from '../errors/ApiError.js';
 
 const storage = await queue.get();
@@ -18,7 +17,7 @@ export const nextPatient = async (name) => {
   }
   await queue.remove(index);
 
-  if (lengthValidate(storage) && storage.length > index) {
+  if (storage.length && storage.length > index) {
     nextInQueue = await queue.getNameByIndex(index);
   }
   if (nextInQueue === null) {
@@ -29,7 +28,7 @@ export const nextPatient = async (name) => {
 
 export const getCurrentPatient = async () => {
   let current = null;
-  if (!lengthValidate(storage)) {
+  if (!storage.length) {
     throw new ApiError(400, 'no patients in the queue');
   }
   current = await queue.getCurrentKey();
