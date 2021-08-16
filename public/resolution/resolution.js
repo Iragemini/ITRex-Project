@@ -11,60 +11,58 @@ const showResolution = document.getElementById('showResolution');
 const newResolution = document.getElementById('newResolution');
 const nextBtn = document.getElementById('next');
 const hiddenCurrent = document.getElementById('hiddenCurrent');
-const resolution = document.getElementById('doctorResolution');
+const doctorResolution = document.getElementById('doctorResolution');
 
 ttlCheckbox.onchange = () => {
   ttlDiv.classList.toggle('ttl__input');
   ttlInput.value = '';
 };
 
-showResolution.onclick = () => {
+showResolution.onclick = async () => {
   doctorResolutionFound.value = '';
   const name = patientName.value.trim();
-  service
-    .getResolution(name)
-    .then((result) => {
-      doctorResolutionFound.value = result.resolution;
-    })
-    .catch((e) => {
-      console.log(e.text);
-      doctorResolutionFound.value = e.message;
-    });
-};
-
-deleteResolutionBtn.onclick = () => {
-  const name = patientName.value.trim();
-  service.deleteResolution(name).catch((e) => {
+  try {
+    const { resolution } = await service.getResolution(name);
+    if (resolution) {
+      doctorResolutionFound.value = resolution;
+    }
+  } catch (e) {
     console.log(e.text);
     doctorResolutionFound.value = e.message;
-  });
-  doctorResolutionFound.value = '';
+  }
 };
 
-newResolution.onclick = () => {
-  const data = { resolution: resolution.value, ttl: ttlInput.value };
-  service
-    .patchResolution(hiddenCurrent.value, data)
-    .then(() => {
-      resolution.value = '';
-      if (ttlCheckbox.checked) {
-        ttlCheckbox.click();
-      }
-    })
-    .catch((e) => {
-      console.log(e.text);
-    });
+deleteResolutionBtn.onclick = async () => {
+  const name = patientName.value.trim();
+  try {
+    await service.deleteResolution(name);
+    doctorResolutionFound.value = '';
+  } catch (e) {
+    console.log(e.text);
+    doctorResolutionFound.value = e.message;
+  }
 };
 
-nextBtn.onclick = () => {
+newResolution.onclick = async () => {
+  const data = { resolution: doctorResolution.value, ttl: ttlInput.value };
+  try {
+    await service.patchResolution(hiddenCurrent.value, data);
+    doctorResolution.value = '';
+    if (ttlCheckbox.checked) {
+      ttlCheckbox.click();
+    }
+  } catch (e) {
+    console.log(e.text);
+  }
+};
+
+nextBtn.onclick = async () => {
   doctorResolutionFound.value = '';
-  service
-    .deletePatientFromQueue(hiddenCurrent.value)
-    .then((result) => {
-      setCurrentPatient(result.next, '');
-    })
-    .catch((e) => {
-      console.log(e.text);
-      setCurrentPatient(e.message, 'err');
-    });
+  try {
+    const { next } = await service.deletePatientFromQueue(hiddenCurrent.value);
+    setCurrentPatient(next, '');
+  } catch (e) {
+    console.log(e.text);
+    setCurrentPatient(e.message, 'err');
+  }
 };

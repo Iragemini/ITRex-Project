@@ -6,37 +6,35 @@ const newPatient = document.getElementById('newPatient');
 const searchResolution = document.getElementById('searchResolution');
 const queueResolution = document.getElementById('queueResolution');
 
-addPatient.onclick = () => {
+addPatient.onclick = async () => {
   if (newPatient.value.trim() === '') {
     newPatient.classList.add('is-invalid');
     return;
   }
   newPatient.classList.remove('is-invalid');
   const data = { patient: newPatient.value.trim() };
-  service
-    .postPatientInQueue(data)
-    .then((result) => {
-      setCurrentPatient(result.name, 'queue');
-      newPatient.value = '';
-    })
-    .catch((e) => {
-      console.log(e.text);
-    });
+  try {
+    const { name } = await service.postPatientInQueue(data);
+    setCurrentPatient(name, 'queue');
+    newPatient.value = '';
+  } catch (e) {
+    console.log(e.text);
+  }
 };
 
-searchResolution.addEventListener('keyup', (e) => {
+searchResolution.onkeyup = async (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
     queueResolution.value = '';
     const name = searchResolution.value.trim();
-    service
-      .getResolution(name)
-      .then((result) => {
-        queueResolution.value = result.resolution;
-      })
-      .catch((err) => {
-        console.log(err.text);
-        queueResolution.value = err.message;
-      });
+    try {
+      const { resolution } = await service.getResolution(name);
+      if (resolution) {
+        queueResolution.value = resolution;
+      }
+    } catch (err) {
+      console.log(err.text);
+      queueResolution.value = err.message;
+    }
   }
-});
+};
