@@ -13,6 +13,10 @@ app.set('views', './public');
 app.use(express.static('public'));
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.render('index', { title: 'Clinic' });
+});
+
 app.use(queueRouter);
 app.use(resolutionRouter);
 app.use((req, res, next) => {
