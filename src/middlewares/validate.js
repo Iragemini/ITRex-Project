@@ -1,4 +1,4 @@
-import ApiError from '../Errors/ApiError.js';
+import ApiError from '../errors/ApiError.js';
 
 export const validator = (schema, property) => {
   return (req, res, next) => {
