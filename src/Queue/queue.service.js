@@ -17,7 +17,7 @@ export const nextPatient = async (name) => {
   }
   await queue.remove(index);
 
-  if (storage.length && storage.length > index) {
+  if (storage.length > index) {
     nextInQueue = await queue.getNameByIndex(index);
   }
   if (nextInQueue === null) {
