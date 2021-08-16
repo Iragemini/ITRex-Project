@@ -2,12 +2,12 @@ import { getReasonPhrase } from 'http-status-codes';
 
 export default class ApiError extends Error {
   /**
-   * @param {string} code - error code
+   * @param {number} code - error code
    * @param {string} message - error message
    */
-  constructor(code, message = '') {
+  constructor(code, message = null) {
     super(code);
     this.statusCode = code;
-    this.message = message ? message : getReasonPhrase(code);
+    this.message = message ?? getReasonPhrase(code);
   }
 }

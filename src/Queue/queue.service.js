@@ -14,7 +14,7 @@ export const nextPatient = async (name) => {
   let nextInQueue = null;
   const index = await queue.find(name.trim());
   if (index === null) {
-    throw new ApiError('404', 'patient not found');
+    throw new ApiError(404, 'patient not found');
   }
   await queue.remove(index);
 
@@ -22,7 +22,7 @@ export const nextPatient = async (name) => {
     nextInQueue = await queue.getNameByIndex(index);
   }
   if (nextInQueue === null) {
-    throw new ApiError('400', 'no patients in the queue');
+    throw new ApiError(400, 'no patients in the queue');
   }
   return nextInQueue;
 };
@@ -30,7 +30,7 @@ export const nextPatient = async (name) => {
 export const getCurrentPatient = async () => {
   let current = null;
   if (!lengthValidate(storage)) {
-    throw new ApiError('400', 'no patients in the queue');
+    throw new ApiError(400, 'no patients in the queue');
   }
   current = await queue.getCurrentKey();
   return current;

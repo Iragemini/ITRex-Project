@@ -22,7 +22,7 @@ export const checkTTL = (req, res, next) => {
   }
   const valid = ttl > 0;
   if (!valid) {
-    return next(new ApiError('400', 'TTL value must be positive numbers only'));
+    return next(new ApiError(400, 'TTL value must be positive numbers only'));
   }
   return next();
 };

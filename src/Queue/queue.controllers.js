@@ -17,7 +17,7 @@ export const getCurrent = async (req, res, next) => {
 export const add = async (req, res, next) => {
   const patient = req.body.patient;
   if (!patient) {
-    return next(new ApiError('400', 'empty parameters'));
+    return next(new ApiError(400, 'empty parameters'));
   }
   try {
     const name = await addPatientToQueue(patient);

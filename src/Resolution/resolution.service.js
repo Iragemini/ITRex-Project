@@ -36,7 +36,7 @@ export const addResolution = async (name, resolution, ttl = '') => {
 export const deleteResolution = async (name) => {
   const index = await patients.find(name);
   if (index === null) {
-    throw new ApiError('404', 'resolution not found');
+    throw new ApiError(404, 'resolution not found');
   }
   await patients.removeValue(name, index);
 };
@@ -45,7 +45,7 @@ export const findResolution = async (name) => {
   const message = 'No resolutions';
   const index = await patients.find(name);
   if (index === null) {
-    throw new ApiError('404', 'patient not found');
+    throw new ApiError(404, 'patient not found');
   }
   const { resolution, expire } = await patients.getResolution(index, name);
 

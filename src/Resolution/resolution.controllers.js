@@ -10,7 +10,7 @@ export const add = async (req, res, next) => {
   const resolution = req.body.resolution;
   const ttl = req.body.ttl;
   if (!resolution) {
-    const err = new ApiError('400', 'empty parameters');
+    const err = new ApiError(400, 'empty parameters');
     next(err);
   }
   try {
