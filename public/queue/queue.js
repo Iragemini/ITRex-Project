@@ -1,30 +1,41 @@
-import {
-  addPatientToQueue,
-  findResolution,
-  setCurrentPatient,
-} from '../src/handlers.js';
+import queueService from '../http/queue.service.js';
+import resolutionService from '../http/resolution.service.js';
+import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 
 const addPatient = document.getElementById('addPatient');
+const newPatient = document.getElementById('newPatient');
 const searchResolution = document.getElementById('searchResolution');
 const queueResolution = document.getElementById('queueResolution');
-const newPatient = document.getElementById('newPatient');
 
-addPatient.onclick = () => {
+addPatient.onclick = async () => {
   if (newPatient.value.trim() === '') {
     newPatient.classList.add('is-invalid');
     return;
   }
   newPatient.classList.remove('is-invalid');
-  const name = addPatientToQueue(newPatient.value.trim());
-  setCurrentPatient(name, 'queue');
-  newPatient.value = '';
+  const data = { patient: newPatient.value.trim() };
+  try {
+    const { name } = await queueService.postPatientInQueue(data);
+    setCurrentPatient(name, 'queue');
+    newPatient.value = '';
+  } catch (e) {
+    console.log(e.text);
+  }
 };
 
-searchResolution.addEventListener('keyup', (e) => {
+searchResolution.onkeyup = async (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
+    queueResolution.value = '';
     const name = searchResolution.value.trim();
-    const resolution = findResolution(name);
-    queueResolution.value = resolution;
+    try {
+      const { resolution } = await resolutionService.getResolution(name);
+      if (resolution) {
+        queueResolution.value = resolution;
+      }
+    } catch (err) {
+      console.log(err.text);
+      queueResolution.value = err.message;
+    }
   }
-});
+};
