@@ -17,8 +17,8 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'Clinic' });
 });
 
-app.use(queueRouter);
-app.use(resolutionRouter);
+app.use('/api', queueRouter);
+app.use('/api', resolutionRouter);
 app.use((req, res, next) => {
   res.status(404);
   if (req.accepts('json')) {

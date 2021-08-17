@@ -8,7 +8,7 @@ import {
 import { validator, checkTTL } from '../middlewares/validate.js';
 
 const resolutionRouter = Router();
-const prefix = '/api/resolution/:name';
+const prefix = '/resolution/:name';
 
 resolutionRouter
   .route(prefix)

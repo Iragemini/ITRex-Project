@@ -4,7 +4,7 @@ import { validator } from '../middlewares/validate.js';
 import { nameSchema, bodySchema } from '../schemas/schemas.js';
 
 const queueRouter = Router();
-const prefix = '/api/queue';
+const prefix = '/queue';
 
 queueRouter
   .route(prefix)
