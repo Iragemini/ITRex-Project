@@ -1,5 +1,7 @@
 import { isResolutionExpired } from '../utils/resolution.js';
 import ApiError from '../errors/ApiError.js';
+import config from '../../config/config.js';
+const configTTL = config.ttl;
 
 export class ResolutionService {
   constructor(storage) {
@@ -7,6 +9,9 @@ export class ResolutionService {
   }
 
   addResolution = async (name, resolution, ttl = '') => {
+    if (!ttl) {
+      ttl = configTTL;
+    }
     const length = await this.storage.storageLength();
     if (!length) {
       await this.storage.add(name, { resolution, ttl });
