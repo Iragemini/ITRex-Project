@@ -7,7 +7,7 @@ export class Storage {
     return this.storage;
   }
 
-  reset() {
+  async reset() {
     this.storage.length = 0;
   }
 
@@ -28,5 +28,9 @@ export class Storage {
 
   async remove(index) {
     this.storage.splice(index, 1);
+  }
+
+  async storageLength() {
+    return this.storage.length;
   }
 }

@@ -1,56 +1,49 @@
-import { patients } from '../storage/index.js';
 import { isResolutionExpired } from '../utils/resolution.js';
-import { getExpiration } from '../utils/getExpiration.js';
 import ApiError from '../errors/ApiError.js';
 
-const storage = await patients.get();
+export class ResolutionService {
+  constructor(storage) {
+    this.storage = storage;
+  }
 
-const updateResolution = async (index, name, resolution, expire) => {
-  let currentResolution = '';
-  await patients.getResolution(index, name).then((result) => {
-    currentResolution = result.resolution;
-  });
-  const newValue = {
-    resolution: `${currentResolution} ${resolution}`,
-    expire,
+  addResolution = async (name, resolution, ttl = '') => {
+    const length = await this.storage.storageLength();
+    if (!length) {
+      await this.storage.add(name, { resolution, ttl });
+      return;
+    }
+    const index = await this.storage.find(name);
+    if (index !== null) {
+      await this.storage.update(index, name, resolution, ttl);
+      return;
+    }
+
+    await this.storage.add(name, { resolution, ttl });
   };
-  await patients.update(index, name, newValue);
-};
 
-export const addResolution = async (name, resolution, ttl = '') => {
-  const expire = getExpiration(ttl);
-  if (!storage.length) {
-    await patients.add(name, { resolution, expire });
-    return;
-  }
-  const index = await patients.find(name);
-  if (index !== null) {
-    await updateResolution(index, name, resolution, expire);
-    return;
-  }
+  deleteResolution = async (name) => {
+    const index = await this.storage.find(name);
+    if (index === null) {
+      throw new ApiError(404, 'resolution not found');
+    }
+    await this.storage.removeValue(name, index);
+  };
 
-  await patients.add(name, { resolution, expire });
-};
+  findResolution = async (name) => {
+    const message = 'No resolutions';
+    const index = await this.storage.find(name);
+    if (index === null) {
+      throw new ApiError(404, 'patient not found');
+    }
+    const { resolution, expire } = await this.storage.getResolution(
+      index,
+      name
+    );
 
-export const deleteResolution = async (name) => {
-  const index = await patients.find(name);
-  if (index === null) {
-    throw new ApiError(404, 'resolution not found');
-  }
-  await patients.removeValue(name, index);
-};
-
-export const findResolution = async (name) => {
-  const message = 'No resolutions';
-  const index = await patients.find(name);
-  if (index === null) {
-    throw new ApiError(404, 'patient not found');
-  }
-  const { resolution, expire } = await patients.getResolution(index, name);
-
-  if (!isResolutionExpired(expire)) {
-    return resolution || message;
-  }
-  await patients.remove(index);
-  return message;
-};
+    if (!isResolutionExpired(expire)) {
+      return resolution || message;
+    }
+    await this.storage.remove(index);
+    return message;
+  };
+}

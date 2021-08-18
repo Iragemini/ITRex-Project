@@ -1,9 +1,7 @@
-import {
-  addResolution,
-  findResolution,
-  deleteResolution,
-} from './resolution.service.js';
 import ApiError from '../errors/ApiError.js';
+import { Service } from '../service/Service.js';
+const serviceInstance = new Service('resolution');
+const service = serviceInstance.createService();
 
 export const add = async (req, res, next) => {
   const name = req.params.name;
@@ -14,7 +12,7 @@ export const add = async (req, res, next) => {
     next(err);
   }
   try {
-    await addResolution(name, resolution, ttl);
+    await service.addResolution(name, resolution, ttl);
     res.sendStatus(201);
   } catch (err) {
     next(err);
@@ -24,7 +22,7 @@ export const add = async (req, res, next) => {
 export const find = async (req, res, next) => {
   let resolution = '';
   try {
-    resolution = await findResolution(req.params.name);
+    resolution = await service.findResolution(req.params.name);
     res.status(200).json({ resolution });
   } catch (err) {
     next(err);
@@ -33,7 +31,7 @@ export const find = async (req, res, next) => {
 
 export const remove = async (req, res, next) => {
   try {
-    await deleteResolution(req.params.name);
+    await service.deleteResolution(req.params.name);
     res.sendStatus(200);
   } catch (err) {
     next(err);
