@@ -1,12 +1,12 @@
 import redis from 'redis';
 import { promisify } from 'util';
 import config from '../../../config/storage.js';
-const redisDB = config.redis;
+const redisDB = config.redis.client;
 
 const client = redis.createClient({ host: redisDB.host, port: redisDB.port });
 
 client.on('error', (err) => {
-  console.log('Error ' + err);
+  console.log('Error ', err);
 });
 
 client.on('connect', (err) => {
