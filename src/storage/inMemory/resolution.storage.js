@@ -1,7 +1,7 @@
 import { Storage } from './Storage.js';
 import { getExpiration } from '../../utils/getExpiration.js';
 
-export class Patients extends Storage {
+export class Resolution extends Storage {
   changeValue(value) {
     const { resolution, ttl } = value;
     const expire = getExpiration(ttl);
@@ -10,11 +10,7 @@ export class Patients extends Storage {
 
   async createNewValue(index, name, resolution, ttl) {
     try {
-      let currentResolution = '';
-      await this.getResolution(index, name).then((result) => {
-        currentResolution = result.resolution;
-      });
-      console.log('currentResolution', currentResolution);
+      const { resolution: currentResolution } = await this.getResolution( index, name );
       const newValue = {
         resolution: `${currentResolution} ${resolution}`,
         ttl,
@@ -31,7 +27,7 @@ export class Patients extends Storage {
   }
 
   async removeValue(key, index) {
-    this.storage[index][key] = { resolution: '', expire: '' };
+    this.storage[index][key] = { resolution: '', expire: null };
   }
 
   async update(index, key, value, ttl) {

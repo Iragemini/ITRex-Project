@@ -1,26 +1,19 @@
 import { QueueService } from '../queue/queue.service.js';
 import { ResolutionService } from '../resolution/resolution.service.js';
-import { StorageManager } from '../storage/StorageManager.js';
+import { factory } from '../storage/StorageManager.js';
 import config from '../../config/config.js';
-const storageType = config.storage.type;
+const { type } = config;
 
-export class Service {
-  constructor(table) {
-    this.storageType = storageType;
-    this.table = table;
-    this.service = QueueService;
+export const service = (table) => {
+  const storage = factory.createStorage(type, table);
+  let ServiceInstance = QueueService;
+  switch (table) {
+    case 'queue':
+      ServiceInstance = QueueService;
+      break;
+    case 'resolution':
+      ServiceInstance = ResolutionService;
+      break;
   }
-
-  createService() {
-    const storage = new StorageManager(this.storageType, this.table);
-    switch (this.table) {
-      case 'queue':
-        this.service = QueueService;
-        break;
-      case 'resolution':
-        this.service = ResolutionService;
-        break;
-    }
-    return new this.service(storage.createStorage());
-  }
-}
+  return new ServiceInstance(storage);
+};

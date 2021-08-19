@@ -15,8 +15,8 @@ export class Storage {
     this.storage.push({ [key]: value });
   }
 
-  async find(key) {
-    let index = null;
+  async findIndex(key) {
+    let index = -1;
     for (let i = 0; i < this.storage.length; i += 1) {
       if (key in this.storage[i]) {
         index = i;
@@ -30,7 +30,7 @@ export class Storage {
     this.storage.splice(index, 1);
   }
 
-  async storageLength() {
+  async isEmpty() {
     return this.storage.length;
   }
 }

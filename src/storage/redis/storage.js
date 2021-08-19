@@ -1,9 +1,15 @@
 import redis from 'redis';
 import { promisify } from 'util';
-import config from '../../../config/storage.js';
-const redisDB = config.redis.client;
+import config from '../../../config/config.js';
+const {
+  storage: {
+    redisDB: {
+      client: { host, port },
+    },
+  },
+} = config;
 
-const client = redis.createClient({ host: redisDB.host, port: redisDB.port });
+const client = redis.createClient({ host, port });
 
 client.on('error', (err) => {
   console.log('Error ', err);
@@ -26,4 +32,3 @@ export const appendValue = promisify(client.APPEND).bind(client);
 export const valueLength = promisify(client.STRLEN).bind(client);
 export const getKeys = promisify(client.KEYS).bind(client);
 export const setExpiration = promisify(client.EXPIRE).bind(client);
-

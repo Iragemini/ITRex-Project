@@ -14,7 +14,7 @@ export class Queue {
     }
   }
 
-  async getCurrentKey() {
+  async getFirstKey() {
     try {
       const keys = await this.get();
       return keys[0].split(':')[0];
@@ -41,7 +41,7 @@ export class Queue {
     }
   }
 
-  async storageLength() {
+  async isEmpty() {
     try {
       return await client.getLength(this.queueName);
     } catch (e) {
@@ -49,9 +49,9 @@ export class Queue {
     }
   }
 
-  async find(key) {
+  async findIndex(key) {
     try {
-      let index = null;
+      let index = -1;
       const storage = await this.get();
       for (let i = 0; i < storage.length; i += 1) {
         const [name, reason] = storage[i].split(':');

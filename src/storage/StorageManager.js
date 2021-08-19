@@ -1,25 +1,25 @@
-import { MemoryStorage } from './inMemory/MemoryStorage.js';
-import { RedisStorage } from './redis/RedisStorage.js';
+import { Queue as MemoryQueue } from './inMemory/queue.storage.js';
+import { Resolution as MemoryResolution } from './inMemory/resolution.storage.js';
+import { Queue as RedisQueue } from './redis/queue.storage.js';
+import { Resolution as RedisResolution } from './redis/resolution.storage.js';
 
-export class StorageManager {
-  /**
-   * @param {string} type - storage type (see ./config/storage.js)
-   */
-  constructor(type, table) {
-    this.type = type;
-    this.table = table;
-    this.storageClass = MemoryStorage;
-  }
+class StorageManager {
+  static list = {
+    memory: {
+      queue: MemoryQueue,
+      resolution: MemoryResolution,
+    },
+    redis: {
+      queue: RedisQueue,
+      resolution: RedisResolution,
+    },
+  };
 
-  createStorage() {
-    switch (this.type) {
-      case 0:
-        this.storageClass = MemoryStorage;
-        break;
-      case 1:
-        this.storageClass = RedisStorage;
-        break;
-    }
-    return new this.storageClass(this.table).createStorage();
+  createStorage(type = 'memory', table = 'queue') {
+    const StorageType = StorageManager.list[type][table];
+    const storage = new StorageType();
+    return storage;
   }
 }
+
+export const factory = new StorageManager();

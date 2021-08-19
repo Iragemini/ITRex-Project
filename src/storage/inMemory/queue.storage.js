@@ -1,7 +1,7 @@
 import { Storage } from './Storage.js';
 
 export class Queue extends Storage {
-    async getCurrentKey() {
+    async getFirstKey() {
         return Object.keys(this.storage[0])[0];
     }
 

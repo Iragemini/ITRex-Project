@@ -1,6 +1,6 @@
 import * as client from './storage.js';
 
-export class Patients {
+export class Resolution {
   constructor() {
     this.queueName = 'resolution';
     this.id = 0;
@@ -28,9 +28,9 @@ export class Patients {
     }
   }
 
-  async find(key) {
+  async findIndex(key) {
     try {
-      let index = null;
+      let index = -1;
       const storage = await this.get();
       for (let i = 0; i < storage.length; i += 1) {
         const [table, id, name] = storage[i].split(':');
@@ -70,7 +70,7 @@ export class Patients {
     }
   }
 
-  async storageLength() {
+  async isEmpty() {
     try {
       const keys = await this.get();
       return keys.length;

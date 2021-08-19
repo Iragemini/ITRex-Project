@@ -1,24 +1,21 @@
 import { isResolutionExpired } from '../utils/resolution.js';
 import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
-const configTTL = config.ttl;
+const defaultTTL = config.ttl;
 
 export class ResolutionService {
   constructor(storage) {
     this.storage = storage;
   }
 
-  addResolution = async (name, resolution, ttl = '') => {
-    if (!ttl) {
-      ttl = configTTL;
-    }
-    const length = await this.storage.storageLength();
+  addResolution = async (name, resolution, ttl = defaultTTL) => {
+    const length = await this.storage.isEmpty();
     if (!length) {
       await this.storage.add(name, { resolution, ttl });
       return;
     }
-    const index = await this.storage.find(name);
-    if (index !== null) {
+    const index = await this.storage.findIndex(name);
+    if (index >= 0) {
       await this.storage.update(index, name, resolution, ttl);
       return;
     }
@@ -27,18 +24,17 @@ export class ResolutionService {
   };
 
   deleteResolution = async (name) => {
-    const index = await this.storage.find(name);
-    if (index === null) {
-      throw new ApiError(404, 'resolution not found');
+    const index = await this.storage.findIndex(name);
+    if (index < 0) {
+      throw new ApiError(404, `Resolution for ${name} not found`);
     }
     await this.storage.removeValue(name, index);
   };
 
   findResolution = async (name) => {
-    const message = 'No resolutions';
-    const index = await this.storage.find(name);
-    if (index === null) {
-      throw new ApiError(404, 'patient not found');
+    const index = await this.storage.findIndex(name);
+    if (index < 0) {
+      throw new ApiError(404, `Patient ${name} not found`);
     }
     const { resolution, expire } = await this.storage.getResolution(
       index,
@@ -46,9 +42,9 @@ export class ResolutionService {
     );
 
     if (!isResolutionExpired(expire)) {
-      return resolution || message;
+      return resolution || null;
     }
     await this.storage.remove(index);
-    return message;
+    return null;
   };
 }
