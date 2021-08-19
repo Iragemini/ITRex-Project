@@ -1,14 +1,19 @@
-const config = {};
-
-config.server = {
-  port: process.env.PORT || 3000,
+export default {
+  server: {
+    port: process.env.PORT || 3000,
+  },
+  type: 'memory',
+  ttl: '-1',
+  storage: {
+    memory: {
+      type: 'memory',
+    },
+    redisDB: {
+      type: 'redis',
+      client: {
+        port: 6379,
+        host: process.env.REDIS_HOST || '127.0.0.1',
+      },
+    },
+  },
 };
-
-/* type - parameter, described in ./storage.js */
-config.storage = {
-  type: 1,
-};
-
-config.ttl = '';
-
-export default config;
