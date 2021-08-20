@@ -9,8 +9,8 @@ export class ResolutionService {
   }
 
   addResolution = async (name, resolution, ttl = defaultTTL) => {
-    const length = await this.storage.isEmpty();
-    if (!length) {
+    const isStorageEmpty = await this.storage.isEmpty();
+    if (isStorageEmpty) {
       await this.storage.add(name, { resolution, ttl });
       return;
     }

@@ -27,6 +27,7 @@ export const getList = promisify(client.LRANGE).bind(client);
 export const getByIndex = promisify(client.LINDEX).bind(client);
 
 export const setValue = promisify(client.SET).bind(client);
+export const setexValue = promisify(client.SETEX).bind(client);
 export const getValue = promisify(client.GET).bind(client);
 export const appendValue = promisify(client.APPEND).bind(client);
 export const valueLength = promisify(client.STRLEN).bind(client);

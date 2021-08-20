@@ -3,7 +3,7 @@ export default {
     port: process.env.PORT || 3000,
   },
   type: 'memory',
-  ttl: '-1',
+  ttl: -1,
   storage: {
     memory: {
       type: 'memory',

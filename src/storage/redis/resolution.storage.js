@@ -18,9 +18,10 @@ export class Resolution {
   async add(key, value) {
     try {
       const { resolution, ttl } = value;
-      await client.setValue(`${this.queueName}:${this.id}:${key}`, resolution);
-      if (ttl) {
-        await client.setExpiration(`${this.queueName}:${this.id}:${key}`, +ttl);
+      if(ttl > 0) {
+        await client.setexValue(`${this.queueName}:${this.id}:${key}`, +ttl, resolution);
+      }else{
+        await client.setValue(`${this.queueName}:${this.id}:${key}`, resolution);
       }
       this.id += 1;
     } catch (e) {
@@ -58,10 +59,7 @@ export class Resolution {
 
   async update(index, key, value, ttl) {
     try {
-      await client.appendValue(
-        `${this.queueName}:${index}:${key}`,
-        ` ${value}`
-      );
+      await client.appendValue(`${this.queueName}:${index}:${key}`, ` ${value}`);
       if (ttl) {
         await client.setExpiration(`${this.queueName}:${index}:${key}`, +ttl);
       }
@@ -73,7 +71,7 @@ export class Resolution {
   async isEmpty() {
     try {
       const keys = await this.get();
-      return keys.length;
+      return keys.length < 1;
     } catch (e) {
       throw e;
     }

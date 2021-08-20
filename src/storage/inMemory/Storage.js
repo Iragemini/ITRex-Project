@@ -31,6 +31,6 @@ export class Storage {
   }
 
   async isEmpty() {
-    return this.storage.length;
+    return this.storage.length < 1;
   }
 }

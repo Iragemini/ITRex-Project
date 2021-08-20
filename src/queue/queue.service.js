@@ -19,8 +19,8 @@ export class QueueService {
     }
     await this.storage.remove(index);
 
-    const length = await this.storage.isEmpty();
-    if (length > index) {
+    const isStorageEmpty = await this.storage.isEmpty();
+    if (!isStorageEmpty && this.storage.length > index) {
       nextInQueue = await this.storage.getNameByIndex(index);
     }
     if (nextInQueue === null) {
@@ -31,9 +31,9 @@ export class QueueService {
 
   getCurrentPatient = async () => {
     let current = null;
-    const length = await this.storage.isEmpty();
-    if (!length) {
-      throw new ApiError(400, 'no patients in the queue');
+    const isStorageEmpty = await this.storage.isEmpty();
+    if (isStorageEmpty) {
+      throw new ApiError(400, 'No patients in the queue');
     }
     current = await this.storage.getFirstKey();
     return current;

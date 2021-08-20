@@ -43,7 +43,7 @@ export class Queue {
 
   async isEmpty() {
     try {
-      return await client.getLength(this.queueName);
+      return await client.getLength(this.queueName) < 1;
     } catch (e) {
       throw e;
     }
