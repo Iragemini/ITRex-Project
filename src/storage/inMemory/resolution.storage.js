@@ -18,14 +18,14 @@ export default class MemoryResolution extends Storage {
         resolution: `${currentResolution} ${resolution}`,
         ttl,
       };
-      return this.changeValue(newValue);
+      return MemoryResolution.changeValue(newValue);
     } catch (e) {
       console.log(e);
     }
   }
 
   async add(key, value) {
-    const changedValue = this.changeValue(value);
+    const changedValue = MemoryResolution.changeValue(value);
     this.storage.push({ [key]: changedValue });
   }
 
