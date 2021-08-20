@@ -1,9 +1,10 @@
-import { isResolutionExpired } from '../utils/resolution.js';
+import isResolutionExpired from '../utils/resolution.js';
 import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
+
 const defaultTTL = config.ttl;
 
-export class ResolutionService {
+export default class ResolutionService {
   constructor(storage) {
     this.storage = storage;
   }
@@ -38,7 +39,7 @@ export class ResolutionService {
     }
     const { resolution, expire } = await this.storage.getResolution(
       index,
-      name
+      name,
     );
 
     if (!isResolutionExpired(expire)) {

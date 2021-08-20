@@ -1,6 +1,7 @@
 import redis from 'redis';
 import { promisify } from 'util';
 import config from '../../../config/config.js';
+
 const {
   storage: {
     redisDB: {
@@ -15,7 +16,7 @@ client.on('error', (err) => {
   console.log('Error ', err);
 });
 
-client.on('connect', (err) => {
+client.on('connect', () => {
   console.log('connect');
 });
 

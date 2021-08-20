@@ -1,6 +1,6 @@
 import ApiError from '../errors/ApiError.js';
 
-export class QueueService {
+export default class QueueService {
   constructor(storage) {
     this.storage = storage;
   }
@@ -20,7 +20,7 @@ export class QueueService {
     await this.storage.remove(index);
 
     const isStorageEmpty = await this.storage.isEmpty();
-    if (!isStorageEmpty && this.storage.length > index) {
+    if (!isStorageEmpty) {
       nextInQueue = await this.storage.getNameByIndex(index);
     }
     if (nextInQueue === null) {

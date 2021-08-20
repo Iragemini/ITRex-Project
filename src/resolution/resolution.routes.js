@@ -18,12 +18,12 @@ resolutionRouter
     validator(nameSchema, 'params'),
     validator(resolutionSchema, 'body'),
     checkTTL,
-    add
+    add,
   );
 resolutionRouter.patch(
   `${prefix}/delete`,
   validator(nameSchema, 'params'),
-  remove
+  remove,
 );
 
 export default resolutionRouter;

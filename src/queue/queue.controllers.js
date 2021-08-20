@@ -1,5 +1,6 @@
 import ApiError from '../errors/ApiError.js';
-import { service } from '../service/service.js';
+import service from '../service/service.js';
+
 const QueueService = service('queue');
 
 export const getCurrent = async (req, res, next) => {

@@ -1,12 +1,13 @@
-import { QueueService } from '../queue/queue.service.js';
-import { ResolutionService } from '../resolution/resolution.service.js';
-import { factory } from '../storage/StorageManager.js';
+import QueueService from '../queue/queue.service.js';
+import ResolutionService from '../resolution/resolution.service.js';
+import factory from '../storage/StorageManager.js';
 import config from '../../config/config.js';
+
 const { type } = config;
 
-export const service = (table) => {
+const service = (table) => {
   const storage = factory.createStorage(type, table);
-  let ServiceInstance = QueueService;
+  let ServiceInstance;
   switch (table) {
     case 'queue':
       ServiceInstance = QueueService;
@@ -14,6 +15,11 @@ export const service = (table) => {
     case 'resolution':
       ServiceInstance = ResolutionService;
       break;
+    default:
+      ServiceInstance = QueueService;
+      break;
   }
   return new ServiceInstance(storage);
 };
+
+export default service;

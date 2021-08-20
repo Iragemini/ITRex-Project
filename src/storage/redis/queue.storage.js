@@ -1,76 +1,48 @@
 import * as client from './storage.js';
 
-export class Queue {
+export default class RedisQueue {
   constructor() {
     this.queueName = 'queue';
   }
 
   async get() {
-    try {
-      const data = await client.getList(this.queueName, 0, -1);
-      return data;
-    } catch (e) {
-      throw e;
-    }
+    const data = await client.getList(this.queueName, 0, -1);
+    return data;
   }
 
   async getFirstKey() {
-    try {
-      const keys = await this.get();
-      return keys[0].split(':')[0];
-    } catch (e) {
-      throw e;
-    }
+    const keys = await this.get();
+    return keys[0].split(':')[0];
   }
 
   async getNameByIndex(index) {
-    try {
-      const keys = await this.get();
-      return keys[index].split(':')[0];
-    } catch (e) {
-      throw e;
-    }
+    const keys = await this.get();
+    return keys[index].split(':')[0];
   }
 
   async add(key, value = '') {
-    try {
-      const data = `${key}:${value}`;
-      await client.addInQueue(this.queueName, data);
-    } catch (e) {
-      throw e;
-    }
+    const data = `${key}:${value}`;
+    await client.addInQueue(this.queueName, data);
   }
 
   async isEmpty() {
-    try {
-      return await client.getLength(this.queueName) < 1;
-    } catch (e) {
-      throw e;
-    }
+    return (await client.getLength(this.queueName)) < 1;
   }
 
   async findIndex(key) {
-    try {
-      let index = -1;
-      const storage = await this.get();
-      for (let i = 0; i < storage.length; i += 1) {
-        const [name, reason] = storage[i].split(':');
-        if (name === key) {
-          index = i;
-          break;
-        }
+    let index = -1;
+    const storage = await this.get();
+    for (let i = 0; i < storage.length; i += 1) {
+      const name = storage[i].split(':')[0];
+      if (name === key) {
+        index = i;
+        break;
       }
-      return index;
-    } catch (e) {
-      throw e;
     }
+    return index;
   }
 
-  async remove(key) {
-    try {
-      await client.deleteFromQueue(this.queueName);
-    } catch (e) {
-      throw e;
-    }
+  async remove() {
+    await client.deleteFromQueue(this.queueName);
   }
 }

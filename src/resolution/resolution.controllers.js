@@ -1,5 +1,6 @@
 import ApiError from '../errors/ApiError.js';
-import { service } from '../service/service.js';
+import service from '../service/service.js';
+
 const ResolutionService = service('resolution');
 
 export const add = async (req, res, next) => {
