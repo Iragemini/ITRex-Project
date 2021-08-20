@@ -45,7 +45,7 @@ deleteResolutionBtn.onclick = async () => {
 };
 
 newResolution.onclick = async () => {
-  const data = { resolution: doctorResolution.value, ttl: ttlInput.value };
+  const data = { resolution: doctorResolution.value, ttl: ttlInput.value || undefined };
   try {
     await resolutionService.patchResolution(hiddenCurrent.value, data);
     doctorResolution.value = '';
