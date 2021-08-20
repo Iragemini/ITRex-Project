@@ -48,7 +48,7 @@ export default class RedisResolution {
 
   async isEmpty() {
     const keys = await this.get();
-    return keys.length < 1;
+    return keys.length === 0;
   }
 
   async removeValue(key, index) {

@@ -31,6 +31,6 @@ export default class Storage {
   }
 
   async isEmpty() {
-    return this.storage.length < 1;
+    return this.storage.length === 0;
   }
 }

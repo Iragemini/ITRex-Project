@@ -16,12 +16,11 @@ export default class ResolutionService {
       return;
     }
     const index = await this.storage.findIndex(name);
-    if (index >= 0) {
+    if (index < 0) {
+      await this.storage.add(name, { resolution, ttl });
+    } else {
       await this.storage.update(index, name, resolution, ttl);
-      return;
     }
-
-    await this.storage.add(name, { resolution, ttl });
   };
 
   deleteResolution = async (name) => {

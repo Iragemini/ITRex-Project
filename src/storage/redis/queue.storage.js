@@ -26,7 +26,7 @@ export default class RedisQueue {
   }
 
   async isEmpty() {
-    return (await client.getLength(this.queueName)) < 1;
+    return (await client.getLength(this.queueName)) === 0;
   }
 
   async findIndex(key) {
