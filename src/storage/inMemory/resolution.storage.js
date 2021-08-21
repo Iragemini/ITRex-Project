@@ -1,5 +1,6 @@
 import Storage from './Storage.js';
 import getExpiration from '../../utils/getExpiration.js';
+import isResolutionExpired from '../../utils/resolution.js';
 
 export default class MemoryResolution extends Storage {
   static changeValue(value) {
@@ -10,10 +11,7 @@ export default class MemoryResolution extends Storage {
 
   async createNewValue(index, name, resolution, ttl) {
     try {
-      const { resolution: currentResolution } = await this.getResolution(
-        index,
-        name,
-      );
+      const { resolution: currentResolution } = await this.getResolution(index, name);
       const newValue = {
         resolution: `${currentResolution} ${resolution}`,
         ttl,
@@ -39,6 +37,11 @@ export default class MemoryResolution extends Storage {
   }
 
   async getResolution(index, key) {
-    return this.storage[index][key];
+    const { resolution, expire } = this.storage[index][key];
+    if (isResolutionExpired(expire)) {
+      await this.remove(index);
+      return { resolution: '' };
+    }
+    return { resolution };
   }
 }

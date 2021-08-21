@@ -1,4 +1,3 @@
-import isResolutionExpired from '../utils/resolution.js';
 import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
 
@@ -36,15 +35,8 @@ export default class ResolutionService {
     if (index < 0) {
       throw new ApiError(404, `Patient ${name} not found`);
     }
-    const { resolution, expire } = await this.storage.getResolution(
-      index,
-      name,
-    );
+    const { resolution } = await this.storage.getResolution(index, name);
 
-    if (!isResolutionExpired(expire)) {
-      return resolution || null;
-    }
-    await this.storage.remove(index);
-    return null;
+    return resolution || null;
   };
 }
