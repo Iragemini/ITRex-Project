@@ -1,6 +1,8 @@
-import service from '../service/service.js';
+import ResolutionService from './resolution.service.js';
+import factory from '../storage/StorageManager.js';
 
-const resolutionService = service('resolution');
+const storage = factory.createStorage('resolution');
+const resolutionService = new ResolutionService(storage);
 
 export const add = async (req, res, next) => {
   const { name } = req.params;

@@ -1,7 +1,9 @@
 import ApiError from '../errors/ApiError.js';
-import service from '../service/service.js';
+import QueueService from './queue.service.js';
+import factory from '../storage/StorageManager.js';
 
-const queueService = service('queue');
+const storage = factory.createStorage('queue');
+const queueService = new QueueService(storage);
 
 export const getCurrent = async (req, res, next) => {
   try {
