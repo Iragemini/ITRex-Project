@@ -3,7 +3,8 @@
     "browser": true,
     "commonjs": true,
     "es2021": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
   "extends": ["airbnb-base"],
   "parser": "@babel/eslint-parser",
@@ -16,5 +17,13 @@
     "curly": ["error", "all"],
     "consistent-return": "off",
     "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next" }]
-  }
+  },
+  "overrides": [
+    {
+        "files": ["*.test.js"],
+        "rules": {
+            "no-unused-expressions": "off"
+        }
+    }
+  ]
 }
