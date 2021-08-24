@@ -1,8 +1,17 @@
-import { expect } from 'chai';
-import QueueService from '../../src/queue/queue.service.js';
+import chai, { expect } from 'chai';
+import spies from 'chai-spies';
+import redisMock from 'redis-mock';
+import redis from 'redis';
 import factory from '../../src/storage/StorageManager.js';
+import QueueService from '../../src/queue/queue.service.js';
+
+chai.use(spies);
 
 describe('Queue tests', () => {
+  before(() => {
+    chai.spy.on(redis, 'createClient', () => redisMock.createClient);
+  });
+
   const storage = factory.createStorage('queue');
   const queueService = new QueueService(storage);
   const patient = 'Patient_1:reason';
@@ -75,5 +84,9 @@ describe('Queue tests', () => {
         expect(await queueService.nextPatient('Patient_1')).to.equal(nextPatient);
       });
     });
+  });
+
+  after(() => {
+    chai.spy.restore(redis, 'createClient');
   });
 });

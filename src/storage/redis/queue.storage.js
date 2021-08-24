@@ -1,12 +1,16 @@
-import * as client from './storage.js';
-
 export default class RedisQueue {
-  constructor() {
+  constructor(redisClient) {
+    this.redisClient = redisClient;
     this.queueName = 'queue';
   }
 
+  async reset() {
+    this.id = 0;
+    await this.redisClient.flushall();
+  }
+
   async get() {
-    const data = await client.getList(this.queueName, 0, -1);
+    const data = await this.redisClient.getList(this.queueName, 0, -1);
     return data;
   }
 
@@ -22,18 +26,18 @@ export default class RedisQueue {
 
   async add(key, value = '') {
     const data = `${key}:${value}`;
-    await client.addInQueue(this.queueName, data);
+    await this.redisClient.addInQueue(this.queueName, data);
   }
 
   async isEmpty() {
-    return (await client.getLength(this.queueName)) === 0;
+    return (await this.redisClient.getLength(this.queueName)) === 0;
   }
 
   async findIndex(key) {
     let index = -1;
-    const storage = await this.get();
-    for (let i = 0; i < storage.length; i += 1) {
-      const name = storage[i].split(':')[0];
+    const queueStorage = await this.get();
+    for (let i = 0; i < queueStorage.length; i += 1) {
+      const name = queueStorage[i].split(':')[0];
       if (name === key) {
         index = i;
         break;
@@ -43,6 +47,6 @@ export default class RedisQueue {
   }
 
   async remove() {
-    await client.deleteFromQueue(this.queueName);
+    await this.redisClient.deleteFromQueue(this.queueName);
   }
 }

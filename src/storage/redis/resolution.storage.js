@@ -1,31 +1,35 @@
-import * as client from './storage.js';
-
 export default class RedisResolution {
-  constructor() {
+  constructor(redisClient) {
+    this.redisClient = redisClient;
     this.queueName = 'resolution';
     this.id = 0;
   }
 
+  async reset() {
+    this.id = 0;
+    await this.redisClient.flushall();
+  }
+
   async get() {
-    const data = await client.getKeys(`${this.queueName}:*`);
+    const data = await this.redisClient.getKeys(`${this.queueName}:*`);
     return data;
   }
 
   async add(key, value) {
     const { resolution, ttl } = value;
     if (ttl > 0) {
-      await client.setexValue(`${this.queueName}:${this.id}:${key}`, +ttl, resolution);
+      await this.redisClient.setexValue(`${this.queueName}:${this.id}:${key}`, +ttl, resolution);
     } else {
-      await client.setValue(`${this.queueName}:${this.id}:${key}`, resolution);
+      await this.redisClient.setValue(`${this.queueName}:${this.id}:${key}`, resolution);
     }
     this.id += 1;
   }
 
   async findIndex(key) {
     let index = -1;
-    const storage = await this.get();
-    for (let i = 0; i < storage.length; i += 1) {
-      const [, id, name] = storage[i].split(':');
+    const resolutionsStorage = await this.get();
+    for (let i = 0; i < resolutionsStorage.length; i += 1) {
+      const [, id, name] = resolutionsStorage[i].split(':');
       if (name === key) {
         index = id;
         break;
@@ -35,14 +39,14 @@ export default class RedisResolution {
   }
 
   async getResolution(index, key) {
-    const resolution = await client.getValue(`${this.queueName}:${index}:${key}`);
+    const resolution = await this.redisClient.getValue(`${this.queueName}:${index}:${key}`);
     return { resolution };
   }
 
   async update(index, key, value, ttl) {
-    await client.appendValue(`${this.queueName}:${index}:${key}`, ` ${value}`);
+    await this.redisClient.appendValue(`${this.queueName}:${index}:${key}`, ` ${value}`);
     if (ttl > 0) {
-      await client.setExpiration(`${this.queueName}:${index}:${key}`, +ttl);
+      await this.redisClient.setExpiration(`${this.queueName}:${index}:${key}`, +ttl);
     }
   }
 
@@ -52,6 +56,6 @@ export default class RedisResolution {
   }
 
   async removeValue(key, index) {
-    await client.setValue(`${this.queueName}:${index}:${key}`, '');
+    await this.redisClient.setValue(`${this.queueName}:${index}:${key}`, '');
   }
 }
