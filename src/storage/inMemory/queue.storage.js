@@ -8,4 +8,8 @@ export default class MemoryQueue extends Storage {
   async getNameByIndex(index) {
     return Object.keys(this.storage[index])[0];
   }
+
+  async remove() {
+    this.storage.shift();
+  }
 }

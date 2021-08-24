@@ -1,29 +1,34 @@
 import ApiError from '../errors/ApiError.js';
 
 export default class QueueService {
-  constructor(storage) {
+  constructor(storage, patientService) {
     this.storage = storage;
+    this.patientService = patientService;
   }
 
   addPatientToQueue = async (patient) => {
     const [name, reason = ''] = patient.split(':');
-    await this.storage.add(name, reason);
+    const id = await this.patientService.addPatient({ name, reason });
+    console.log('addPatientToQueue id', id);
+    await this.storage.add(id, reason);
+    console.log('storage queue', this.storage.get());
     return name;
   };
 
   nextPatient = async (name) => {
     let nextInQueue = null;
-    const index = await this.storage.findIndex(name.trim());
-    if (index < 0) {
-      throw new ApiError(404, `Patient ${name} not found`);
-    }
-    await this.storage.remove(index);
+    let nextId = null;
+    const patientId = await this.patientService.getPatientId(name.trim());
+
+    await this.storage.remove(patientId);
 
     const isStorageEmpty = await this.storage.isEmpty();
+    console.log('isStorageEmpty', isStorageEmpty);
     if (!isStorageEmpty) {
-      nextInQueue = await this.storage.getNameByIndex(index);
-    }
-    if (nextInQueue === null) {
+      nextId = await this.storage.getFirstKey();
+      console.log('nextId', nextId);
+      nextInQueue = await this.patientService.getPatientName(nextId);
+    } else {
       throw new ApiError(400, 'No patients in the queue');
     }
     return nextInQueue;
@@ -31,11 +36,13 @@ export default class QueueService {
 
   getCurrentPatient = async () => {
     let current = null;
+    let currentId = null;
     const isStorageEmpty = await this.storage.isEmpty();
     if (isStorageEmpty) {
       throw new ApiError(400, 'No patients in the queue');
     }
-    current = await this.storage.getFirstKey();
+    currentId = await this.storage.getFirstKey();
+    current = await this.patientService.getPatientName(currentId);
     return current;
   };
 }

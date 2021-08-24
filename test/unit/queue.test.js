@@ -4,6 +4,7 @@ import redisMock from 'redis-mock';
 import redis from 'redis';
 import factory from '../../src/storage/StorageManager.js';
 import QueueService from '../../src/queue/queue.service.js';
+import PatientService from '../../src/patient/patient.service.js';
 
 chai.use(spies);
 
@@ -14,7 +15,8 @@ describe('Queue tests', () => {
   const patientName = patient.split(':')[0];
 
   beforeEach(async () => {
-    await storage.reset();
+    await queueStorage.reset();
+    await patientStorage.reset();
   });
 
   beforeEach(() => {
