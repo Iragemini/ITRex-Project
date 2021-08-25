@@ -4,7 +4,7 @@ import config from '../../../config/config.js';
 
 const {
   storage: {
-    redisDB: {
+    redis: {
       client: { host, port },
     },
   },

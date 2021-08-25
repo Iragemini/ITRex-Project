@@ -12,9 +12,8 @@ export const add = async (req, res, next) => {
 };
 
 export const find = async (req, res, next) => {
-  let resolution = '';
   const { name } = req.params;
-  resolution = await resolutionService.findResolution(name);
+  let resolution = await resolutionService.findResolution(name);
   if (!resolution) {
     resolution = `Resolution for ${name} not found`;
   }

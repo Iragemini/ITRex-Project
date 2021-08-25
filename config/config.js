@@ -5,7 +5,7 @@ export default {
   type: 'memory',
   ttl: -1,
   storage: {
-    redisDB: {
+    redis: {
       client: {
         port: process.env.REDIS_PORT || 6379,
         host: process.env.REDIS_HOST || '127.0.0.1',
