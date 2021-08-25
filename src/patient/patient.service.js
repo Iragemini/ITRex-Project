@@ -7,7 +7,6 @@ export default class PatientService {
 
   addPatient = async (patientData) => {
     const id = await this.storage.createPatient(patientData);
-    console.log('storage patient', this.storage.get());
     return id;
   };
 
@@ -20,7 +19,6 @@ export default class PatientService {
   };
 
   getPatientName = async (id) => {
-    console.log('getPatientName id', id);
     const patientName = await this.storage.getPatientById(id);
     if (!patientName) {
       throw new ApiError(404, 'Patient not found');

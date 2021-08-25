@@ -10,7 +10,6 @@ export default class RedisQueue {
 
   async get() {
     const data = await this.redisClient.getList(this.queueName, 0, -1);
-    console.log('queue get data', data);
     return data;
   }
 

@@ -4,6 +4,7 @@ import redisMock from 'redis-mock';
 import redis from 'redis';
 import factory from '../../src/storage/StorageManager.js';
 import ResolutionService from '../../src/resolution/resolution.service.js';
+import PatientService from '../../src/patient/patient.service.js';
 // import config from '../../config/config.js';
 
 // const { type } = config;
@@ -13,8 +14,10 @@ chai.use(spies);
 const sandbox = chai.spy.sandbox();
 
 describe('Resolution tests', () => {
+  const patientStorage = factory.createStorage('patient');
   const storage = factory.createStorage('resolution');
-  const resolutionService = new ResolutionService(storage);
+  const patientService = new PatientService(patientStorage);
+  const resolutionService = new ResolutionService(storage, patientService);
   const patient = 'Patient_1';
   const resolution = 'resolution';
   let ttl;

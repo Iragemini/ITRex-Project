@@ -4,33 +4,33 @@ import config from '../../config/config.js';
 const defaultTTL = config.ttl;
 
 export default class ResolutionService {
-  constructor(storage) {
+  constructor(storage, patientService) {
     this.storage = storage;
+    this.patientService = patientService;
   }
 
   addResolution = async (name, resolution, ttl = defaultTTL) => {
-    const index = await this.storage.findIndex(name);
-    if (index < 0) {
-      await this.storage.add(name, { resolution, ttl });
+    const patientId = await this.patientService.getPatientId(name);
+    const isExists = await this.storage.isResolutionExists(patientId);
+    if (isExists) {
+      await this.storage.update(patientId, resolution, ttl);
     } else {
-      await this.storage.update(index, name, resolution, ttl);
+      await this.storage.add(patientId, { resolution, ttl });
     }
   };
 
   deleteResolution = async (name) => {
-    const index = await this.storage.findIndex(name);
-    if (index < 0) {
+    const patientId = await this.patientService.getPatientId(name);
+    const isExists = await this.storage.isResolutionExists(patientId);
+    if (!isExists) {
       throw new ApiError(404, `Resolution for ${name} not found`);
     }
-    await this.storage.removeValue(name, index);
+    await this.storage.removeValue(patientId);
   };
 
   findResolution = async (name) => {
-    const index = await this.storage.findIndex(name);
-    if (index < 0) {
-      throw new ApiError(404, `Patient ${name} not found`);
-    }
-    const { resolution } = await this.storage.getResolution(index, name);
+    const patientId = await this.patientService.getPatientId(name);
+    const { resolution } = await this.storage.getResolution(patientId);
 
     return resolution || null;
   };

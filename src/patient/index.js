@@ -1,0 +1,7 @@
+import factory from '../storage/StorageManager.js';
+import PatientService from './patient.service.js';
+
+const patientStorage = factory.createStorage('patient');
+const patientService = new PatientService(patientStorage);
+
+export default patientService;

@@ -9,8 +9,10 @@ import PatientService from '../../src/patient/patient.service.js';
 chai.use(spies);
 
 describe('Queue tests', () => {
-  const storage = factory.createStorage('queue');
-  const queueService = new QueueService(storage);
+  const patientStorage = factory.createStorage('patient');
+  const queueStorage = factory.createStorage('queue');
+  const patientService = new PatientService(patientStorage);
+  const queueService = new QueueService(queueStorage, patientService);
   const patient = 'Patient_1:reason';
   const patientName = patient.split(':')[0];
 

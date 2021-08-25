@@ -11,10 +11,7 @@ export default class MemoryPatient extends Storage {
     }
     if (!(await this.isEmpty())) {
       const patientStorage = await this.get();
-      const idArray = patientStorage.map((item) => {
-        console.log('keys', Object.keys(item));
-        return Object.keys(item)[0];
-      });
+      const idArray = patientStorage.map((item) => Object.keys(item)[0]);
       id = generateID(idArray);
     }
     await this.add(id, name);

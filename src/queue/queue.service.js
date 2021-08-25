@@ -9,9 +9,7 @@ export default class QueueService {
   addPatientToQueue = async (patient) => {
     const [name, reason = ''] = patient.split(':');
     const id = await this.patientService.addPatient({ name, reason });
-    console.log('addPatientToQueue id', id);
     await this.storage.add(id, reason);
-    console.log('storage queue', this.storage.get());
     return name;
   };
 
@@ -23,10 +21,8 @@ export default class QueueService {
     await this.storage.remove(patientId);
 
     const isStorageEmpty = await this.storage.isEmpty();
-    console.log('isStorageEmpty', isStorageEmpty);
     if (!isStorageEmpty) {
       nextId = await this.storage.getFirstKey();
-      console.log('nextId', nextId);
       nextInQueue = await this.patientService.getPatientName(nextId);
     } else {
       throw new ApiError(400, 'No patients in the queue');

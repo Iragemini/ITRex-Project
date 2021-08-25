@@ -12,7 +12,6 @@ export default class RedisPatient {
 
   async get() {
     const data = await this.redisClient.getKeys(`${this.queueName}:*`);
-    console.log('get data', data);
     return data;
   }
 
@@ -23,7 +22,6 @@ export default class RedisPatient {
 
   async add(id, patientData) {
     const { name } = patientData;
-    console.log('add id', id);
     await this.redisClient.setValue(`${this.queueName}:${id}:${name}`, '');
   }
 
@@ -54,27 +52,18 @@ export default class RedisPatient {
   }
 
   async createPatient(patientData) {
-    console.log('createPatient data', patientData);
     let id = 0;
     const { name } = patientData;
     const patientId = await this.getIdByName(name);
-    console.log('createPatient patientId', patientId);
     if (patientId) {
       return patientId;
     }
-    console.log('createPatient isEmpty', !(await this.isEmpty()));
     if (!(await this.isEmpty())) {
       const patientStorage = await this.get();
       const idArray = patientStorage.map((item) => item.split(':')[1]);
-      console.log('createPatient idArray', idArray);
       id = generateID(idArray);
     }
     await this.add(id, patientData);
     return id;
-  }
-
-  async deletePatient(id) {
-    console.log('storage', this.get());
-    console.log('id', id);
   }
 }
