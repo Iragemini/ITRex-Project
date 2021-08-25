@@ -1,6 +1,6 @@
-const generateID = (idArray) => {
+const generateID = (arrayOfID) => {
   let max = 0;
-  max = Math.max(...idArray);
+  max = Math.max(...arrayOfID);
   return max + 1;
 };
 

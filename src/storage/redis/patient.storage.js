@@ -60,8 +60,8 @@ export default class RedisPatient {
     }
     if (!(await this.isEmpty())) {
       const patientStorage = await this.get();
-      const idArray = patientStorage.map((item) => item.split(':')[1]);
-      id = generateID(idArray);
+      const arrayOfID = patientStorage.map((item) => item.split(':')[1]);
+      id = generateID(arrayOfID);
     }
     await this.add(id, patientData);
     return id;
