@@ -1,5 +1,5 @@
 import QueueService from './queue.service.js';
-import factory from '../storage/StorageManager.js';
+import factory from '../storage/factory.js';
 import patientService from '../patient/index.js';
 
 const queueStorage = factory.createStorage('queue');

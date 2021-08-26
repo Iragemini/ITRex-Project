@@ -5,20 +5,20 @@ export default class RedisResolution {
   }
 
   async reset() {
-    await this.redisClient.flushall();
+    await this.redisClient.FLUSHALL();
   }
 
   async get() {
-    const data = await this.redisClient.getKeys(`${this.queueName}:*`);
+    const data = await this.redisClient.KEYS(`${this.queueName}:*`);
     return data;
   }
 
   async add(patientId, value) {
     const { resolution, ttl } = value;
     if (ttl > 0) {
-      await this.redisClient.setexValue(`${this.queueName}:${patientId}`, +ttl, resolution);
+      await this.redisClient.SETEX(`${this.queueName}:${patientId}`, +ttl, resolution);
     } else {
-      await this.redisClient.setValue(`${this.queueName}:${patientId}`, resolution);
+      await this.redisClient.SET(`${this.queueName}:${patientId}`, resolution);
     }
   }
 
@@ -49,14 +49,14 @@ export default class RedisResolution {
   }
 
   async getResolution(patientId) {
-    const resolution = await this.redisClient.getValue(`${this.queueName}:${patientId}`);
+    const resolution = await this.redisClient.GET(`${this.queueName}:${patientId}`);
     return { resolution };
   }
 
   async update(patientId, value, ttl) {
-    await this.redisClient.appendValue(`${this.queueName}:${patientId}`, ` ${value}`);
+    await this.redisClient.APPEND(`${this.queueName}:${patientId}`, ` ${value}`);
     if (ttl > 0) {
-      await this.redisClient.setExpiration(`${this.queueName}:${patientId}`, +ttl);
+      await this.redisClient.EXPIRE(`${this.queueName}:${patientId}`, +ttl);
     }
   }
 
@@ -66,6 +66,6 @@ export default class RedisResolution {
   }
 
   async removeValue(patientId) {
-    await this.redisClient.setValue(`${this.queueName}:${patientId}`, '');
+    await this.redisClient.SET(`${this.queueName}:${patientId}`, '');
   }
 }

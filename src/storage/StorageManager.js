@@ -5,12 +5,14 @@ import RedisQueue from './redis/queue.storage.js';
 import RedisResolution from './redis/resolution.storage.js';
 import RedisPatient from './redis/patient.storage.js';
 import config from '../../config/config.js';
-import redisClient from './redis/client.js';
+import promisifyRedis from '../utils/promisifyRedis.js';
 
 const { type } = config;
 
-class StorageManager {
-  constructor() {
+export default class StorageManager {
+  constructor(options) {
+    this.options = options;
+    this.redisClient = options.redisClient;
     this.type = type;
     this.list = {
       memory: {
@@ -18,23 +20,30 @@ class StorageManager {
         resolution: MemoryResolution,
         patient: MemoryPatient,
         storage: [],
+        connect: () => {},
       },
       redis: {
         queue: RedisQueue,
         resolution: RedisResolution,
         patient: RedisPatient,
-        storage: redisClient,
+        storage: promisifyRedis(this.redisClient),
+        connect: () => {
+          this.redisClient.on('error', (err) => {
+            console.log('Error ', err);
+          });
+          this.redisClient.on('connect', () => {
+            console.log('connect');
+          });
+        },
       },
     };
   }
 
   createStorage(table) {
-    const StorageType = this.list[this.type][table];
-    const storage = new StorageType(this.list[this.type].storage);
+    const storageType = this.list[this.type];
+    const StorageType = storageType[table];
+    const storage = new StorageType(storageType.storage);
+    storageType.connect();
     return storage;
   }
 }
-
-const factory = new StorageManager();
-
-export default factory;

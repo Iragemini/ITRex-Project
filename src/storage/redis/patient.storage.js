@@ -7,11 +7,12 @@ export default class RedisPatient {
   }
 
   async reset() {
-    await this.redisClient.flushall();
+    await this.redisClient.FLUSHALL();
   }
 
   async get() {
-    const data = await this.redisClient.getKeys(`${this.queueName}:*`);
+    console.log('redisClient', this.redisClient);
+    const data = await this.redisClient.KEYS(`${this.queueName}:*`);
     return data;
   }
 
@@ -22,7 +23,7 @@ export default class RedisPatient {
 
   async add(id, patientData) {
     const { name } = patientData;
-    await this.redisClient.setValue(`${this.queueName}:${id}:${name}`, '');
+    await this.redisClient.SET(`${this.queueName}:${id}:${name}`, '');
   }
 
   async getIdByName(patientName) {

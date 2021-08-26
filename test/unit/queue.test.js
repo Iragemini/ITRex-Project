@@ -1,12 +1,12 @@
 import chai, { expect } from 'chai';
 import spies from 'chai-spies';
-import redisMock from 'redis-mock';
-import redis from 'redis';
-import factory from '../../src/storage/StorageManager.js';
+import factory from './factory.mock.js';
 import QueueService from '../../src/queue/queue.service.js';
 import PatientService from '../../src/patient/patient.service.js';
 
 chai.use(spies);
+
+console.log('queue tests');
 
 describe('Queue tests', () => {
   const patientStorage = factory.createStorage('patient');
@@ -21,13 +21,13 @@ describe('Queue tests', () => {
     await patientStorage.reset();
   });
 
-  beforeEach(() => {
-    chai.spy.on(redis, 'createClient', () => redisMock.createClient);
-  });
+  // beforeEach(() => {
+  //   chai.spy.on(redis, 'createClient', () => redisMock.createClient);
+  // });
 
-  afterEach(() => {
-    chai.spy.restore(redis, 'createClient');
-  });
+  // afterEach(() => {
+  //   chai.spy.restore(redis, 'createClient');
+  // });
 
   describe('Add new patient to the queue', () => {
     it('should return patient name', async () => {

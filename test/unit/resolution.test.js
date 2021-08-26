@@ -1,8 +1,6 @@
 import chai, { expect } from 'chai';
 import spies from 'chai-spies';
-import redisMock from 'redis-mock';
-import redis from 'redis';
-import factory from '../../src/storage/StorageManager.js';
+import factory from './factory.mock.js';
 import ResolutionService from '../../src/resolution/resolution.service.js';
 import PatientService from '../../src/patient/patient.service.js';
 // import config from '../../config/config.js';
@@ -10,6 +8,8 @@ import PatientService from '../../src/patient/patient.service.js';
 // const { type } = config;
 
 chai.use(spies);
+
+console.log('resolution tests');
 
 const sandbox = chai.spy.sandbox();
 
@@ -26,13 +26,13 @@ describe('Resolution tests', () => {
     await storage.reset();
   });
 
-  beforeEach(() => {
-    sandbox.on(redis, 'createClient', () => redisMock.createClient);
-  });
+  // beforeEach(() => {
+  //   sandbox.on(redis, 'createClient', () => redisMock.createClient);
+  // });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+  // afterEach(() => {
+  //   sandbox.restore();
+  // });
 
   describe('Add resolution', () => {
     it('should add resolution to storage for new patient', async () => {

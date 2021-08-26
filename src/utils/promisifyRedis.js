@@ -1,21 +1,26 @@
 import { promisify } from 'util';
+import redis from 'redis';
 
 const promisifyRedis = (redisClient) => {
+  console.log('promisify', redisClient instanceof redis.RedisClient);
+  if (!(redisClient instanceof redis.RedisClient)) {
+    return redisClient;
+  }
   const client = {};
-  client.addInQueue = promisify(redisClient.RPUSH).bind(redisClient);
-  client.deleteFromQueue = promisify(redisClient.LPOP).bind(redisClient);
-  client.exists = promisify(redisClient.EXISTS).bind(redisClient);
-  client.getLength = promisify(redisClient.LLEN).bind(redisClient);
-  client.getList = promisify(redisClient.LRANGE).bind(redisClient);
-  client.getByIndex = promisify(redisClient.LINDEX).bind(redisClient);
-  client.setValue = promisify(redisClient.SET).bind(redisClient);
-  client.setexValue = promisify(redisClient.SETEX).bind(redisClient);
-  client.getValue = promisify(redisClient.GET).bind(redisClient);
-  client.appendValue = promisify(redisClient.APPEND).bind(redisClient);
-  client.valueLength = promisify(redisClient.STRLEN).bind(redisClient);
-  client.getKeys = promisify(redisClient.KEYS).bind(redisClient);
-  client.setExpiration = promisify(redisClient.EXPIRE).bind(redisClient);
-  client.flushall = promisify(redisClient.FLUSHALL).bind(redisClient);
+  client.RPUSH = promisify(redisClient.RPUSH).bind(redisClient);
+  client.LPOP = promisify(redisClient.LPOP).bind(redisClient);
+  client.EXISTS = promisify(redisClient.EXISTS).bind(redisClient);
+  client.LLEN = promisify(redisClient.LLEN).bind(redisClient);
+  client.LRANGE = promisify(redisClient.LRANGE).bind(redisClient);
+  client.LINDEX = promisify(redisClient.LINDEX).bind(redisClient);
+  client.SET = promisify(redisClient.SET).bind(redisClient);
+  client.SETEX = promisify(redisClient.SETEX).bind(redisClient);
+  client.GET = promisify(redisClient.GET).bind(redisClient);
+  client.APPEND = promisify(redisClient.APPEND).bind(redisClient);
+  client.STRLEN = promisify(redisClient.STRLEN).bind(redisClient);
+  client.KEYS = promisify(redisClient.KEYS).bind(redisClient);
+  client.EXPIRE = promisify(redisClient.EXPIRE).bind(redisClient);
+  client.FLUSHALL = promisify(redisClient.FLUSHALL).bind(redisClient);
 
   return client;
 };

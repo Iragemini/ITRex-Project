@@ -5,11 +5,11 @@ export default class RedisQueue {
   }
 
   async reset() {
-    await this.redisClient.flushall();
+    await this.redisClient.FLUSHALL();
   }
 
   async get() {
-    const data = await this.redisClient.getList(this.queueName, 0, -1);
+    const data = await this.redisClient.LRANGE(this.queueName, 0, -1);
     return data;
   }
 
@@ -24,14 +24,14 @@ export default class RedisQueue {
   }
 
   async add(id, reason = '') {
-    await this.redisClient.addInQueue(this.queueName, `${id}:${reason}`);
+    await this.redisClient.RPUSH(this.queueName, `${id}:${reason}`);
   }
 
   async isEmpty() {
-    return (await this.redisClient.getLength(this.queueName)) === 0;
+    return (await this.redisClient.LLEN(this.queueName)) === 0;
   }
 
   async remove() {
-    await this.redisClient.deleteFromQueue(this.queueName);
+    await this.redisClient.LPOP(this.queueName);
   }
 }

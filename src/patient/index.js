@@ -1,4 +1,4 @@
-import factory from '../storage/StorageManager.js';
+import factory from '../storage/factory.js';
 import PatientService from './patient.service.js';
 
 const patientStorage = factory.createStorage('patient');
