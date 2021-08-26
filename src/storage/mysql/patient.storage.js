@@ -1,14 +1,13 @@
-import db from '../../models/index.js';
-
 export default class MySQLPatient {
-  constructor() {
+  constructor(db) {
     this.db = db;
-    this.Patient = db.patient;
+    this.Patient = this.db.patient;
   }
 
-  createPatient = async (name) => {
-    const patient = await this.Patient.findOrCreate({ name });
-    console.log('createPatient patient', patient);
+  createPatient = async (data) => {
+    const { name } = data;
+    const patient = await this.Patient.create({ name });
+    return patient.dataValues.id;
   };
 
   getIdByName = async (name) => {
@@ -18,11 +17,18 @@ export default class MySQLPatient {
     const patient = await this.Patient.findAll({
       where: whereStatement,
     });
-    console.log('getIdByName patient', patient);
+    if (patient.length === 0) {
+      return null;
+    }
+    return patient[0].dataValues.id;
   };
 
   getPatientById = async (id) => {
-    const patient = await this.Patient.findByPk(id, { include: ['resolution'] });
-    console.log('getPatientById patient', patient);
+    const patient = await this.Patient.findByPk(id);
+    const result = patient.dataValues;
+    if (!result.name) {
+      return null;
+    }
+    return result.name;
   };
 }

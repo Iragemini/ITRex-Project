@@ -25,7 +25,7 @@ export default class ResolutionService {
     if (!isExists) {
       throw new ApiError(404, `Resolution for ${name} not found`);
     }
-    await this.storage.removeValue(patientId);
+    await this.storage.removeResolution(patientId);
   };
 
   findResolution = async (name) => {

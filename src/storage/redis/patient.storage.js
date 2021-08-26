@@ -11,7 +11,6 @@ export default class RedisPatient {
   }
 
   async get() {
-    console.log('redisClient', this.redisClient);
     const data = await this.redisClient.KEYS(`${this.queueName}:*`);
     return data;
   }

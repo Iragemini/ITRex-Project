@@ -3,19 +3,14 @@ import getExpiration from '../../utils/getExpiration.js';
 import isResolutionExpired from '../../utils/resolution.js';
 
 export default class MemoryResolution extends Storage {
-  static changeValue(value) {
-    const { resolution, ttl } = value;
-    const expire = getExpiration(ttl);
-    return { resolution, expire };
-  }
-
   async createNewValue(patientId, resolution, ttl) {
     const { resolution: currentResolution } = await this.getResolution(patientId);
+    const expire = getExpiration(ttl);
     const newValue = {
       resolution: `${currentResolution} ${resolution}`,
-      ttl,
+      expire,
     };
-    return MemoryResolution.changeValue(newValue);
+    return newValue;
   }
 
   async add(patientId, value) {
@@ -23,7 +18,7 @@ export default class MemoryResolution extends Storage {
     this.storage.push({ [patientId]: changedValue });
   }
 
-  async removeValue(patientId) {
+  async removeResolution(patientId) {
     const index = await this.findIndex(patientId);
     this.storage[index][patientId] = { resolution: '', expire: null };
   }

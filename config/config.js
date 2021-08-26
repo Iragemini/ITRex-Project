@@ -2,8 +2,7 @@ export default {
   server: {
     port: process.env.PORT || 3000,
   },
-  type: 'redis',
-  db: 'mysql',
+  type: 'db', /* memory, redis, db */
   ttl: -1,
   storage: {
     redis: {

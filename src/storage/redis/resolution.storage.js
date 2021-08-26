@@ -65,7 +65,7 @@ export default class RedisResolution {
     return keys.length === 0;
   }
 
-  async removeValue(patientId) {
+  async removeResolution(patientId) {
     await this.redisClient.SET(`${this.queueName}:${patientId}`, '');
   }
 }

@@ -3,8 +3,8 @@ export default (sequelize, Sequelize) => {
     resolution: {
       type: Sequelize.STRING,
     },
-    ttl: {
-      type: Sequelize.TIME,
+    expire: {
+      type: Sequelize.DATE,
       allowNull: true,
     },
   });
