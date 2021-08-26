@@ -15,10 +15,12 @@ export default class MemoryPatient extends Storage {
       id = generateID(arrayOfID);
     }
     await this.add(id, name);
+    console.log('id', id);
     return id;
   };
 
   getIdByName = async (name) => {
+    console.log('await this.isEmpty()', await this.isEmpty());
     if (await this.isEmpty()) {
       return null;
     }

@@ -1,8 +1,13 @@
 import chai, { expect } from 'chai';
 import spies from 'chai-spies';
-import factory from './factory.mock.js';
-import ResolutionService from '../../src/resolution/resolution.service.js';
-import PatientService from '../../src/patient/patient.service.js';
+import {
+  storage,
+  resolutionService,
+  queueStorage,
+  patientStorage,
+  queueService,
+} from './services.js';
+
 // import config from '../../config/config.js';
 
 // const { type } = config;
@@ -14,16 +19,14 @@ console.log('resolution tests');
 const sandbox = chai.spy.sandbox();
 
 describe('Resolution tests', () => {
-  const patientStorage = factory.createStorage('patient');
-  const storage = factory.createStorage('resolution');
-  const patientService = new PatientService(patientStorage);
-  const resolutionService = new ResolutionService(storage, patientService);
   const patient = 'Patient_1';
   const resolution = 'resolution';
   let ttl;
 
   beforeEach(async () => {
     await storage.reset();
+    await queueStorage.reset();
+    await patientStorage.reset();
   });
 
   // beforeEach(() => {
@@ -36,6 +39,7 @@ describe('Resolution tests', () => {
 
   describe('Add resolution', () => {
     it('should add resolution to storage for new patient', async () => {
+      await queueService.addPatientToQueue(patient);
       await resolutionService.addResolution(patient, resolution, ttl);
       expect(await storage.get())
         .to.be.an('array')
@@ -43,6 +47,7 @@ describe('Resolution tests', () => {
     });
 
     it('should add new text to existed resolution for existed patient', async () => {
+      await queueService.addPatientToQueue(patient);
       await resolutionService.addResolution(patient, resolution, ttl);
       await resolutionService.addResolution(patient, resolution, ttl);
       expect(await storage.get())
@@ -68,6 +73,7 @@ describe('Resolution tests', () => {
 
     it('should return resolution when TTL is not set', async () => {
       ttl = -1;
+      await queueService.addPatientToQueue(patient);
       await resolutionService.addResolution(patient, resolution, ttl);
       expect(await resolutionService.findResolution(patient)).to.equal(resolution);
     });
@@ -84,6 +90,7 @@ describe('Resolution tests', () => {
       beforeEach(async () => {
         ttl = 5; /* 5 seconds */
         /* если помещу  addResolution() в it то дата будет уже изменная и тест не отрабатывает */
+        await queueService.addPatientToQueue(patient);
         await resolutionService.addResolution(patient, resolution, ttl);
         sandbox.on(global.Date, 'now', () => date + (ttl + 5) * 1000);
       });
@@ -104,6 +111,7 @@ describe('Resolution tests', () => {
         sandbox.restore();
       });
       it('should return resolution', async () => {
+        await queueService.addPatientToQueue(patient);
         await resolutionService.addResolution(patient, resolution, ttl);
         expect(await resolutionService.findResolution(patient)).to.equal(resolution);
       });
@@ -114,6 +122,7 @@ describe('Resolution tests', () => {
     const wrongName = 'Patient_999';
     it('should throw an error when there is no such patient', async () => {
       try {
+        await queueService.addPatientToQueue(wrongName);
         await resolutionService.deleteResolution(wrongName);
       } catch (err) {
         expect(err.message).to.equal(`Resolution for ${wrongName} not found`);
@@ -122,6 +131,7 @@ describe('Resolution tests', () => {
 
     it('should return null when patient is exists', async () => {
       ttl = -1;
+      await queueService.addPatientToQueue(patient);
       await resolutionService.addResolution(patient, resolution, ttl);
       await resolutionService.deleteResolution(patient);
       expect(await resolutionService.findResolution(patient)).to.be.null;

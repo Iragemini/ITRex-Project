@@ -3,6 +3,12 @@ import getExpiration from '../../utils/getExpiration.js';
 import isResolutionExpired from '../../utils/resolution.js';
 
 export default class MemoryResolution extends Storage {
+  static changeValue(value) {
+    const { resolution, ttl } = value;
+    const expire = getExpiration(ttl);
+    return { resolution, expire };
+  }
+
   async createNewValue(patientId, resolution, ttl) {
     const { resolution: currentResolution } = await this.getResolution(patientId);
     const expire = getExpiration(ttl);

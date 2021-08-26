@@ -1,18 +1,12 @@
 import chai, { expect } from 'chai';
 import spies from 'chai-spies';
-import factory from './factory.mock.js';
-import QueueService from '../../src/queue/queue.service.js';
-import PatientService from '../../src/patient/patient.service.js';
+import { queueService, queueStorage, patientStorage } from './services.js';
 
 chai.use(spies);
 
 console.log('queue tests');
 
 describe('Queue tests', () => {
-  const patientStorage = factory.createStorage('patient');
-  const queueStorage = factory.createStorage('queue');
-  const patientService = new PatientService(patientStorage);
-  const queueService = new QueueService(queueStorage, patientService);
   const patient = 'Patient_1:reason';
   const patientName = patient.split(':')[0];
 
