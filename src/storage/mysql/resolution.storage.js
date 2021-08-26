@@ -23,7 +23,11 @@ export default class MySQLResolution {
 
   async update(patientId, newResolution, ttl) {
     const whereStatement = {};
-    const expire = new Date(getExpiration(ttl));
+    let expire = null;
+    if (ttl > 0) {
+      const expirems = getExpiration(ttl);
+      expire = new Date(expirems);
+    }
     const resolutions = await this.getAllResolutions(patientId);
     const { id, resolution } = resolutions[0].dataValues;
     whereStatement.id = id;
