@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import asyncHandler from 'express-async-handler';
 import { find, add, remove } from './resolution.controllers.js';
 import {
   nameSchema,
@@ -12,18 +13,18 @@ const prefix = '/resolution/:name';
 
 resolutionRouter
   .route(prefix)
-  .get(validator(nameSchema, 'params'), find)
+  .get(validator(nameSchema, 'params'), asyncHandler(find))
   .patch(
     validator(bodySchema, 'body'),
     validator(nameSchema, 'params'),
     validator(resolutionSchema, 'body'),
     checkTTL,
-    add
+    asyncHandler(add),
   );
 resolutionRouter.patch(
   `${prefix}/delete`,
   validator(nameSchema, 'params'),
-  remove
+  asyncHandler(remove),
 );
 
 export default resolutionRouter;

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  redis-server:
+    image: 'redis'
+    expose: 
+      - '6379'
+  itrex-project:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - REDIS_HOST=redis-server
+      - REDIS_PORT=6379

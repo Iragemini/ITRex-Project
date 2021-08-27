@@ -1,36 +1,41 @@
-import { queue } from '../storage/index.js';
 import ApiError from '../errors/ApiError.js';
 
-const storage = await queue.get();
-
-export const addPatientToQueue = async (patient) => {
-  const [name, reason = ''] = patient.split(':');
-  await queue.add(name, reason);
-  return name;
-};
-
-export const nextPatient = async (name) => {
-  let nextInQueue = null;
-  const index = await queue.find(name.trim());
-  if (index === null) {
-    throw new ApiError(404, 'patient not found');
+export default class QueueService {
+  constructor(storage) {
+    this.storage = storage;
   }
-  await queue.remove(index);
 
-  if (storage.length > index) {
-    nextInQueue = await queue.getNameByIndex(index);
-  }
-  if (nextInQueue === null) {
-    throw new ApiError(400, 'no patients in the queue');
-  }
-  return nextInQueue;
-};
+  addPatientToQueue = async (patient) => {
+    const [name, reason = ''] = patient.split(':');
+    await this.storage.add(name, reason);
+    return name;
+  };
 
-export const getCurrentPatient = async () => {
-  let current = null;
-  if (!storage.length) {
-    throw new ApiError(400, 'no patients in the queue');
-  }
-  current = await queue.getCurrentKey();
-  return current;
-};
+  nextPatient = async (name) => {
+    let nextInQueue = null;
+    const index = await this.storage.findIndex(name.trim());
+    if (index < 0) {
+      throw new ApiError(404, `Patient ${name} not found`);
+    }
+    await this.storage.remove(index);
+
+    const isStorageEmpty = await this.storage.isEmpty();
+    if (!isStorageEmpty) {
+      nextInQueue = await this.storage.getNameByIndex(index);
+    }
+    if (nextInQueue === null) {
+      throw new ApiError(400, 'No patients in the queue');
+    }
+    return nextInQueue;
+  };
+
+  getCurrentPatient = async () => {
+    let current = null;
+    const isStorageEmpty = await this.storage.isEmpty();
+    if (isStorageEmpty) {
+      throw new ApiError(400, 'No patients in the queue');
+    }
+    current = await this.storage.getFirstKey();
+    return current;
+  };
+}

@@ -2,7 +2,7 @@ import express from 'express';
 import config from './config/config.js';
 import queueRouter from './src/queue/queue.routes.js';
 import resolutionRouter from './src/resolution/resolution.routes.js';
-import { handle as errorHandler } from './src/middlewares/errorHandler.js';
+import errorHandler from './src/middlewares/errorHandler.js';
 
 const PORT = config.server.port;
 const app = express();
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', queueRouter);
 app.use('/api', resolutionRouter);
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404);
   if (req.accepts('json')) {
     res.json({ message: 'Route not found' });

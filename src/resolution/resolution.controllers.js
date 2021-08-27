@@ -1,41 +1,27 @@
-import {
-  addResolution,
-  findResolution,
-  deleteResolution,
-} from './resolution.service.js';
-import ApiError from '../errors/ApiError.js';
+import ResolutionService from './resolution.service.js';
+import factory from '../storage/StorageManager.js';
+
+const storage = factory.createStorage('resolution');
+const resolutionService = new ResolutionService(storage);
 
 export const add = async (req, res, next) => {
-  const name = req.params.name;
-  const resolution = req.body.resolution;
-  const ttl = req.body.ttl;
-  if (!resolution) {
-    const err = new ApiError(400, 'empty parameters');
-    next(err);
-  }
-  try {
-    await addResolution(name, resolution, ttl);
-    res.sendStatus(201);
-  } catch (err) {
-    next(err);
-  }
+  const { name } = req.params;
+  const { resolution, ttl } = req.body;
+  await resolutionService.addResolution(name, resolution, ttl);
+  res.sendStatus(201);
 };
 
 export const find = async (req, res, next) => {
-  let resolution = '';
-  try {
-    resolution = await findResolution(req.params.name);
-    res.status(200).json({ resolution });
-  } catch (err) {
-    next(err);
+  const { name } = req.params;
+  let resolution = await resolutionService.findResolution(name);
+  if (!resolution) {
+    resolution = `Resolution for ${name} not found`;
   }
+  res.status(200).json({ resolution });
 };
 
 export const remove = async (req, res, next) => {
-  try {
-    await deleteResolution(req.params.name);
-    res.sendStatus(200);
-  } catch (err) {
-    next(err);
-  }
+  const { name } = req.params;
+  await resolutionService.deleteResolution(name);
+  res.sendStatus(200);
 };
