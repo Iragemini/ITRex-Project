@@ -4,7 +4,7 @@ import Patient from './patient.model.js';
 import Resolution from './resolution.model.js';
 
 const {
-  storage: { mysql },
+  db: { mysql },
 } = config;
 
 const sequelize = new Sequelize(mysql.db, mysql.user, mysql.password, {
