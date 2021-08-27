@@ -1,7 +1,10 @@
-import StorageManager from './StorageManager.js';
-import redisClient from './redis/client.js';
-import db from '../models/index.js';
+import QueueFactory from './QueueFactory.js';
+import config from '../../config/config.js';
 
-const factory = new StorageManager({ redisClient, db });
+const {
+  storage: { queueType },
+} = config;
+
+const factory = new QueueFactory(queueType);
 
 export default factory;
