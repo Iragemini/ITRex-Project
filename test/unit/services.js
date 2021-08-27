@@ -1,4 +1,4 @@
-import factory from './factory.mock.js';
+import factory from '../../src/storage/factory.js';
 import QueueService from '../../src/queue/queue.service.js';
 import PatientService from '../../src/patient/patient.service.js';
 import ResolutionService from '../../src/resolution/resolution.service.js';

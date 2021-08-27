@@ -14,10 +14,10 @@ export default class QueueFactory {
     };
   }
 
-  createStorage() {
+  createStorage(client) {
     const storageType = this.list[this.type];
     const StorageType = storageType.queue;
-    const storage = new StorageType();
+    const storage = new StorageType(client);
     return storage;
   }
 }

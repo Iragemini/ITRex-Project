@@ -1,9 +1,4 @@
-import QueueService from './queue.service.js';
-import factory from '../storage/factory.js';
-import patientService from '../patient/index.js';
-
-const queueStorage = factory.createStorage('queue');
-const queueService = new QueueService(queueStorage, patientService);
+import queueService from './index.js';
 
 export const getCurrent = async (req, res, next) => {
   const current = await queueService.getCurrentPatient();

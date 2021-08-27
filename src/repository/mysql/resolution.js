@@ -68,7 +68,7 @@ export default class MySQLResolution {
     return resolutions;
   }
 
-  async removeResolution(resolutionId) {
-    await this.Resolution.destroy({ where: { id: resolutionId } });
+  async removeResolution(patientId) {
+    await this.Resolution.destroy({ where: { patient_id: patientId } });
   }
 }

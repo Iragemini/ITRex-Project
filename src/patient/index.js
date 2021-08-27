@@ -1,7 +1,6 @@
-import factory from '../storage/factory.js';
 import PatientService from './patient.service.js';
+import { mysqlPatient } from '../repository/mysql/index.js';
 
-const patientStorage = factory.createStorage('patient');
-const patientService = new PatientService(patientStorage);
+const patientService = new PatientService(mysqlPatient);
 
 export default patientService;

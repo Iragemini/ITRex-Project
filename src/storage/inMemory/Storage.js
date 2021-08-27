@@ -1,6 +1,6 @@
 export default class Storage {
-  constructor() {
-    this.storage = [];
+  constructor(storage) {
+    this.storage = storage;
   }
 
   async get() {
