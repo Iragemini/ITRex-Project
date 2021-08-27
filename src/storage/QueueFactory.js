@@ -5,18 +5,13 @@ export default class QueueFactory {
   constructor(type) {
     this.type = type;
     this.list = {
-      memory: {
-        queue: MemoryQueue,
-      },
-      redis: {
-        queue: RedisQueue,
-      },
+      memory: MemoryQueue,
+      redis: RedisQueue,
     };
   }
 
   createStorage(client) {
-    const storageType = this.list[this.type];
-    const StorageType = storageType.queue;
+    const StorageType = this.list[this.type];
     const storage = new StorageType(client);
     return storage;
   }
