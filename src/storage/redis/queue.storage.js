@@ -1,17 +1,7 @@
-import promisifyRedis from '../../utils/promisifyRedis.js';
-
 export default class RedisQueue {
-  constructor(redisClient) {
-    this.redisClient = redisClient;
+  constructor(createClient) {
     this.queueName = 'queue';
-
-    this.redisClient.on('error', (err) => {
-      console.log('Error ', err);
-    });
-    this.redisClient.on('connect', () => {
-      console.log('connect');
-    });
-    this.redisClient = promisifyRedis(redisClient);
+    this.redisClient = createClient();
   }
 
   async reset() {

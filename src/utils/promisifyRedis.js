@@ -1,11 +1,6 @@
 import { promisify } from 'util';
-import redis from 'redis';
 
 const promisifyRedis = (redisClient) => {
-  console.log('promisify', redisClient instanceof redis.RedisClient);
-  if (!(redisClient instanceof redis.RedisClient)) {
-    return redisClient;
-  }
   const client = {};
   client.RPUSH = promisify(redisClient.RPUSH).bind(redisClient);
   client.LPOP = promisify(redisClient.LPOP).bind(redisClient);
