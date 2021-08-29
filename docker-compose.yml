@@ -11,16 +11,16 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
       - MYSQL_DATABASE=$MYSQLDB_DATABASE
+    healthcheck:
+      test: "mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD"
     expose:
       - '3306'
   itrex-project:
     build: .
     depends_on:
-      - 'mysqldb'
-      - 'redis-server'
-    command: >
-      /bin/bash -c "sleep 10;"
-    restart: unless-stopped
+      mysqldb :
+          condition: service_healthy
+    restart: always
     env_file: ./.env
     ports:
       - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
