@@ -15,12 +15,10 @@ export default class RedisQueue {
 
   async getFirstKey() {
     const keys = await this.get();
+    if (!keys) {
+      return null;
+    }
     return keys[0].split(':')[0];
-  }
-
-  async getNameByIndex(index) {
-    const keys = await this.get();
-    return keys[index].split(':')[0];
   }
 
   async add(id, reason = '') {

@@ -1,13 +1,22 @@
-import factory from '../../src/storage/factory.js';
+import createClient from './redisClient.js';
 import QueueService from '../../src/queue/queue.service.js';
-import PatientService from '../../src/patient/patient.service.js';
 import ResolutionService from '../../src/resolution/resolution.service.js';
+import MySQLResolution from '../../src/repository/mysql/resolution.js';
+import patientService from '../../src/patient/index.js';
+import config from '../../config/config.js';
+import factory from '../../src/storage/factory.js';
+import db from './db.js';
 
-export const patientStorage = factory.createStorage('patient');
-export const patientService = new PatientService(patientStorage);
+const {
+  storage: { queueType },
+} = config;
 
-export const queueStorage = factory.createStorage('queue');
+const client = queueType === 'redis' ? createClient : [];
+
+export const queueStorage = factory.createStorage(client);
 export const queueService = new QueueService(queueStorage, patientService);
 
-export const storage = factory.createStorage('resolution');
-export const resolutionService = new ResolutionService(storage, patientService);
+export const mysqlResolution = new MySQLResolution(db);
+export const resolutionService = new ResolutionService(mysqlResolution, patientService);
+
+export default patientService;

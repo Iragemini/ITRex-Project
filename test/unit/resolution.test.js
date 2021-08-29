@@ -1,98 +1,103 @@
 import chai, { expect } from 'chai';
 import spies from 'chai-spies';
-import {
-  storage,
-  resolutionService,
-  queueStorage,
-  patientStorage,
-  queueService,
-} from './services.js';
-
-// import config from '../../config/config.js';
-
-// const { type } = config;
+import patientService, { mysqlResolution, resolutionService } from './services.js';
 
 chai.use(spies);
-
-console.log('resolution tests');
 
 const sandbox = chai.spy.sandbox();
 
 describe('Resolution tests', () => {
   const patient = 'Patient_1';
   const resolution = 'resolution';
+  const currentId = 1;
   let ttl;
 
-  beforeEach(async () => {
-    await storage.reset();
-    await queueStorage.reset();
-    await patientStorage.reset();
-  });
-
-  // beforeEach(() => {
-  //   sandbox.on(redis, 'createClient', () => redisMock.createClient);
-  // });
-
-  // afterEach(() => {
-  //   sandbox.restore();
-  // });
-
   describe('Add resolution', () => {
-    it('should add resolution to storage for new patient', async () => {
-      await queueService.addPatientToQueue(patient);
-      await resolutionService.addResolution(patient, resolution, ttl);
-      expect(await storage.get())
-        .to.be.an('array')
-        .to.have.lengthOf(1);
+    beforeEach(() => {
+      sandbox.on(patientService, 'getPatientId', () => currentId);
+    });
+    afterEach(() => {
+      sandbox.restore();
+    });
+    describe('', () => {
+      beforeEach(() => {
+        sandbox.on(mysqlResolution, 'isResolutionExists', () => false);
+      });
+      afterEach(() => {
+        sandbox.restore();
+      });
+      it('should add resolution to storage for new patient', async () => {
+        await resolutionService.addResolution(patient, resolution, ttl);
+        expect(await patientService.getPatientId).to.be.ok;
+        expect(await mysqlResolution.isResolutionExists).to.be.ok;
+      });
     });
 
-    it('should add new text to existed resolution for existed patient', async () => {
-      await queueService.addPatientToQueue(patient);
-      await resolutionService.addResolution(patient, resolution, ttl);
-      await resolutionService.addResolution(patient, resolution, ttl);
-      expect(await storage.get())
-        .to.be.an('array')
-        .to.have.lengthOf(1);
+    describe('', () => {
+      beforeEach(() => {
+        sandbox.on(mysqlResolution, 'isResolutionExists', () => true);
+        sandbox.on(mysqlResolution, 'getAllResolutions', () => [{ dataValues: { id: currentId, resolution } }]);
+      });
+      afterEach(() => {
+        sandbox.restore();
+      });
+      it('should add new text to existed resolution for existed patient', async () => {
+        await resolutionService.addResolution(patient, resolution, ttl);
+        expect(await mysqlResolution.getAllResolutions).to.be.ok;
+      });
     });
   });
 
   describe('Find resolution', () => {
     const wrongName = 'Patient_999';
 
-    afterEach(() => {
-      ttl = undefined;
+    describe('', () => {
+      beforeEach(() => {
+        sandbox.on(patientService, 'getPatientId', () => {
+          throw new Error(`Patient ${wrongName} not found`);
+        });
+      });
+      afterEach(() => {
+        sandbox.restore();
+      });
+      it('should throw an error when there is no such patient', async () => {
+        try {
+          await resolutionService.findResolution(wrongName);
+        } catch (err) {
+          expect(err.message).to.equal(`Patient ${wrongName} not found`);
+        }
+      });
     });
 
-    it('should throw an error when there is no such patient', async () => {
-      try {
-        await resolutionService.findResolution(wrongName);
-      } catch (err) {
-        expect(err.message).to.equal(`Patient ${wrongName} not found`);
-      }
-    });
-
-    it('should return resolution when TTL is not set', async () => {
-      ttl = -1;
-      await queueService.addPatientToQueue(patient);
-      await resolutionService.addResolution(patient, resolution, ttl);
-      expect(await resolutionService.findResolution(patient)).to.equal(resolution);
+    describe('', () => {
+      beforeEach(() => {
+        sandbox.on(patientService, 'getPatientId', () => currentId);
+        sandbox.on(mysqlResolution, 'getAllResolutions', () => []);
+      });
+      afterEach(() => {
+        sandbox.restore();
+      });
+      it('should return null when there is no such resolution', async () => {
+        await resolutionService.addResolution(patient, resolution, ttl);
+        expect(await resolutionService.findResolution(patient)).to.be.null;
+      });
     });
   });
 
   describe('TTL tests', () => {
-    const date = Date.now(0);
+    const date = Date.now();
 
-    /**
-     * хотела для типа redis сделать this.skip в before,
-     * но не работает, поэтому пока весь тест skip
-     */
-    describe.skip('when resolution is expired', () => {
+    beforeEach(() => {
+      sandbox.on(patientService, 'getPatientId', () => currentId);
+      sandbox.on(mysqlResolution, 'getAllResolutions', () => [{ id: currentId, resolution, expire: new Date(date) }]);
+    });
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    describe('when resolution is expired', () => {
       beforeEach(async () => {
-        ttl = 5; /* 5 seconds */
-        /* если помещу  addResolution() в it то дата будет уже изменная и тест не отрабатывает */
-        await queueService.addPatientToQueue(patient);
-        await resolutionService.addResolution(patient, resolution, ttl);
-        sandbox.on(global.Date, 'now', () => date + (ttl + 5) * 1000);
+        sandbox.on(global.Date, 'now', () => date + 5000);
       });
       afterEach(() => {
         sandbox.restore();
@@ -104,15 +109,12 @@ describe('Resolution tests', () => {
 
     describe('when resolution is not expired', () => {
       beforeEach(() => {
-        ttl = 5; /* 5 seconds */
         sandbox.on(global.Date, 'now', () => date);
       });
       afterEach(() => {
         sandbox.restore();
       });
       it('should return resolution', async () => {
-        await queueService.addPatientToQueue(patient);
-        await resolutionService.addResolution(patient, resolution, ttl);
         expect(await resolutionService.findResolution(patient)).to.equal(resolution);
       });
     });
@@ -120,24 +122,37 @@ describe('Resolution tests', () => {
 
   describe('Delete resolution', () => {
     const wrongName = 'Patient_999';
-    it('should throw an error when there is no such patient', async () => {
-      try {
-        await queueService.addPatientToQueue(wrongName);
-        await resolutionService.deleteResolution(wrongName);
-      } catch (err) {
-        expect(err.message).to.equal(`Resolution for ${wrongName} not found`);
-      }
+
+    describe('', () => {
+      beforeEach(() => {
+        sandbox.on(patientService, 'getPatientId', () => {
+          throw new Error(`Resolution for ${wrongName} not found`);
+        });
+      });
+      afterEach(() => {
+        sandbox.restore();
+      });
+      it('should throw an error when there is no such patient', async () => {
+        try {
+          await resolutionService.deleteResolution(wrongName);
+        } catch (err) {
+          expect(err.message).to.equal(`Resolution for ${wrongName} not found`);
+        }
+      });
     });
 
-    it('should return null when patient is exists', async () => {
-      ttl = -1;
-      await queueService.addPatientToQueue(patient);
-      await resolutionService.addResolution(patient, resolution, ttl);
-      await resolutionService.deleteResolution(patient);
-      expect(await resolutionService.findResolution(patient)).to.be.null;
-    });
-    afterEach(() => {
-      ttl = undefined;
+    describe('', () => {
+      beforeEach(() => {
+        sandbox.on(patientService, 'getPatientId', () => currentId);
+        sandbox.on(mysqlResolution, 'isResolutionExists', () => true);
+      });
+      afterEach(() => {
+        sandbox.restore();
+      });
+      it('should return null when patient is exists', async () => {
+        await resolutionService.deleteResolution(patient);
+        expect(await mysqlResolution.removeResolution).to.be.ok;
+      });
     });
   });
 });
