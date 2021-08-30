@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import patientService, { mysqlResolution, resolutionService } from './services.js';
+import patientService from '../../src/patient/index.js';
+import db from './mocks/db.mock.js';
+import MySQLResolution from '../../src/repository/mysql/resolution.js';
+import ResolutionService from '../../src/resolution/resolution.service.js';
+
+const mysqlResolution = new MySQLResolution(db);
+const resolutionService = new ResolutionService(mysqlResolution, patientService);
 
 const sandbox = sinon.createSandbox();
 
@@ -17,68 +23,52 @@ describe('Resolution tests', () => {
     afterEach(() => {
       sandbox.restore();
     });
-    describe('', () => {
-      beforeEach(() => {
-        sandbox.replace(resolutionService, 'findResolutionById', () => null);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should add resolution to storage for new patient', async () => {
-        await resolutionService.addResolution(patient, resolution, ttl);
-        expect(await patientService.getPatientId).to.be.ok;
-        expect(await mysqlResolution.isResolutionExists).to.be.ok;
-      });
+    it('should add resolution to storage for new patient', async () => {
+      sandbox.replace(resolutionService, 'findResolutionById', () => null);
+
+      await resolutionService.addResolution(patient, resolution, ttl);
+      expect(await patientService.getPatientId).to.be.ok;
+      expect(await mysqlResolution.isResolutionExists).to.be.ok;
+
+      sandbox.restore();
     });
 
-    describe('', () => {
-      beforeEach(() => {
-        sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
-        sandbox.replace(mysqlResolution, 'getAllResolutions', () => [{ dataValues: { id: currentId, resolution } }]);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should add new text to existed resolution for existed patient', async () => {
-        await resolutionService.addResolution(patient, resolution, ttl);
-        expect(await mysqlResolution.getAllResolutions).to.be.ok;
-      });
+    it('should add new text to existed resolution for existed patient', async () => {
+      sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
+      sandbox.replace(mysqlResolution, 'getAllResolutions', () => [{ dataValues: { id: currentId, resolution } }]);
+
+      await resolutionService.addResolution(patient, resolution, ttl);
+      expect(await mysqlResolution.getAllResolutions).to.be.ok;
+
+      sandbox.restore();
     });
   });
 
   describe('Find resolution', () => {
     const wrongName = 'Patient_999';
 
-    describe('', () => {
-      beforeEach(() => {
-        sandbox.replace(patientService, 'getPatientId', () => {
-          throw new Error(`Patient ${wrongName} not found`);
-        });
+    it('should throw an error when there is no such patient', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => {
+        throw new Error(`Patient ${wrongName} not found`);
       });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should throw an error when there is no such patient', async () => {
-        try {
-          await resolutionService.findResolution(wrongName);
-        } catch (err) {
-          expect(err.message).to.equal(`Patient ${wrongName} not found`);
-        }
-      });
+
+      try {
+        await resolutionService.findResolution(wrongName);
+      } catch (err) {
+        expect(err.message).to.equal(`Patient ${wrongName} not found`);
+      }
+
+      sandbox.restore();
     });
 
-    describe('', () => {
-      beforeEach(() => {
-        sandbox.replace(patientService, 'getPatientId', () => currentId);
-        sandbox.replace(mysqlResolution, 'getAllResolutions', () => []);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should return null when there is no such resolution', async () => {
-        await resolutionService.addResolution(patient, resolution, ttl);
-        expect(await resolutionService.findResolution(patient)).to.be.null;
-      });
+    it('should return null when there is no such resolution', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(mysqlResolution, 'getAllResolutions', () => []);
+
+      await resolutionService.addResolution(patient, resolution, ttl);
+      expect(await resolutionService.findResolution(patient)).to.be.null;
+
+      sandbox.restore();
     });
   });
 
@@ -93,64 +83,48 @@ describe('Resolution tests', () => {
       sandbox.restore();
     });
 
-    describe('when resolution is expired', () => {
-      beforeEach(async () => {
-        sandbox.replace(global.Date, 'now', () => date + 5000);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should return null', async () => {
-        expect(await resolutionService.findResolution(patient)).to.be.null;
-      });
+    it('should return null when resolution is expired', async () => {
+      sandbox.replace(global.Date, 'now', () => date + 5000);
+
+      expect(await resolutionService.findResolution(patient)).to.be.null;
+
+      sandbox.restore();
     });
 
-    describe('when resolution is not expired', () => {
-      beforeEach(() => {
-        sandbox.replace(global.Date, 'now', () => date);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should return resolution', async () => {
-        expect(await resolutionService.findResolution(patient)).to.equal(resolution);
-      });
+    it('should return resolution when resolution is not expired', async () => {
+      sandbox.replace(global.Date, 'now', () => date);
+
+      expect(await resolutionService.findResolution(patient)).to.equal(resolution);
+
+      sandbox.restore();
     });
   });
 
   describe('Delete resolution', () => {
     const wrongName = 'Patient_999';
 
-    describe('', () => {
-      beforeEach(() => {
-        sandbox.replace(patientService, 'getPatientId', () => {
-          throw new Error(`Resolution for ${wrongName} not found`);
-        });
+    it('should throw an error when there is no such patient', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => {
+        throw new Error(`Resolution for ${wrongName} not found`);
       });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should throw an error when there is no such patient', async () => {
-        try {
-          await resolutionService.deleteResolution(wrongName);
-        } catch (err) {
-          expect(err.message).to.equal(`Resolution for ${wrongName} not found`);
-        }
-      });
+
+      try {
+        await resolutionService.deleteResolution(wrongName);
+      } catch (err) {
+        expect(err.message).to.equal(`Resolution for ${wrongName} not found`);
+      }
+
+      sandbox.restore();
     });
 
-    describe('', () => {
-      beforeEach(() => {
-        sandbox.replace(patientService, 'getPatientId', () => currentId);
-        sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should return null when patient is exists', async () => {
-        await resolutionService.deleteResolution(patient);
-        expect(await mysqlResolution.removeResolution).to.be.ok;
-      });
+    it('should return null when patient is exists', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
+
+      await resolutionService.deleteResolution(patient);
+      expect(await mysqlResolution.removeResolution).to.be.ok;
+
+      sandbox.restore();
     });
   });
 });
