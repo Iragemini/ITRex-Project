@@ -11,8 +11,7 @@ export default class MySQLResolution {
     const { resolution, ttl } = data;
     let expire = null;
     if (ttl > 0) {
-      const expirems = getExpiration(ttl);
-      expire = new Date(expirems);
+      expire = new Date(getExpiration(ttl));
     }
     await this.Resolution.create({ patient_id: patientId, resolution, expire });
   }
@@ -25,8 +24,7 @@ export default class MySQLResolution {
     const whereStatement = {};
     let expire = null;
     if (ttl > 0) {
-      const expirems = getExpiration(ttl);
-      expire = new Date(expirems);
+      expire = new Date(getExpiration(ttl));
     }
     const resolutions = await this.getAllResolutions(patientId);
     const { id, resolution } = resolutions[0].dataValues;

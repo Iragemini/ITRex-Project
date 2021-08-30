@@ -6,21 +6,21 @@ export default class MySQLPatient {
 
   createPatient = async (data) => {
     const { name } = data;
-    const patient = await this.Patient.create({ name });
-    return patient.dataValues.id;
+    const patient = await this.Patient.findOrCreate({ name, where: { name } });
+    return patient[0].dataValues.id;
   };
 
   getIdByName = async (name) => {
     const whereStatement = {};
     whereStatement.name = name;
 
-    const patient = await this.Patient.findAll({
+    const patient = await this.Patient.findOne({
       where: whereStatement,
     });
     if (patient.length === 0) {
       return null;
     }
-    return patient[0].dataValues.id;
+    return patient.dataValues.id;
   };
 
   getPatientById = async (id) => {
