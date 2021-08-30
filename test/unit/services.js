@@ -1,11 +1,11 @@
-import createClient from './redisClient.js';
+import createClient from './mocks/redis.mock.js';
 import QueueService from '../../src/queue/queue.service.js';
 import ResolutionService from '../../src/resolution/resolution.service.js';
 import MySQLResolution from '../../src/repository/mysql/resolution.js';
 import patientService from '../../src/patient/index.js';
 import config from '../../config/config.js';
 import factory from '../../src/storage/factory.js';
-import db from './db.js';
+import db from './mocks/db.mock.js';
 
 const {
   storage: { queueType },

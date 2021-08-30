@@ -1,9 +1,8 @@
-import chai, { expect } from 'chai';
-import spies from 'chai-spies';
+import { expect } from 'chai';
+import sinon from 'sinon';
 import patientService, { queueStorage, queueService } from './services.js';
 
-chai.use(spies);
-const sandbox = chai.spy.sandbox();
+const sandbox = sinon.createSandbox();
 
 describe('Queue tests', () => {
   const patient = 'Patient_1:reason';
@@ -16,7 +15,7 @@ describe('Queue tests', () => {
   describe('Add patient to the queue', () => {
     const id = 1;
     beforeEach(() => {
-      sandbox.on(patientService, 'addPatient', () => id);
+      sandbox.replace(patientService, 'addPatient', () => id);
     });
     afterEach(() => {
       sandbox.restore();
@@ -32,7 +31,7 @@ describe('Queue tests', () => {
   describe('Get current patient', () => {
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(queueStorage, 'isEmpty', () => true);
+        sandbox.replace(queueStorage, 'isEmpty', () => true);
       });
       afterEach(() => {
         sandbox.restore();
@@ -48,9 +47,9 @@ describe('Queue tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(queueStorage, 'isEmpty', () => false);
-        sandbox.on(queueStorage, 'getFirstKey', () => currentId);
-        sandbox.on(patientService, 'getPatientName', () => patientName);
+        sandbox.replace(queueStorage, 'isEmpty', () => false);
+        sandbox.replace(queueStorage, 'getFirstKey', () => currentId);
+        sandbox.replace(patientService, 'getPatientName', () => patientName);
       });
       afterEach(() => {
         sandbox.restore();
@@ -64,8 +63,8 @@ describe('Queue tests', () => {
   describe('Get next patient', () => {
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(queueStorage, 'getFirstKey', () => null);
-        sandbox.on(patientService, 'getPatientId', () => {
+        sandbox.replace(queueStorage, 'getFirstKey', () => null);
+        sandbox.replace(patientService, 'getPatientId', () => {
           throw new Error(`Patient ${wrongName} not found`);
         });
       });
@@ -83,8 +82,8 @@ describe('Queue tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(patientService, 'getPatientId', () => currentId);
-        sandbox.on(queueStorage, 'isEmpty', () => true);
+        sandbox.replace(patientService, 'getPatientId', () => currentId);
+        sandbox.replace(queueStorage, 'isEmpty', () => true);
       });
       afterEach(() => {
         sandbox.restore();
@@ -100,10 +99,10 @@ describe('Queue tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(patientService, 'getPatientId', () => currentId);
-        sandbox.on(queueStorage, 'isEmpty', () => false);
-        sandbox.on(queueStorage, 'getFirstKey', () => nextId);
-        sandbox.on(patientService, 'getPatientName', () => nextPatient);
+        sandbox.replace(patientService, 'getPatientId', () => currentId);
+        sandbox.replace(queueStorage, 'isEmpty', () => false);
+        sandbox.replace(queueStorage, 'getFirstKey', () => nextId);
+        sandbox.replace(patientService, 'getPatientName', () => nextPatient);
       });
       afterEach(() => {
         sandbox.restore();

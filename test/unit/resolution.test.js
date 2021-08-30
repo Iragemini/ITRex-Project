@@ -1,10 +1,8 @@
-import chai, { expect } from 'chai';
-import spies from 'chai-spies';
+import { expect } from 'chai';
+import sinon from 'sinon';
 import patientService, { mysqlResolution, resolutionService } from './services.js';
 
-chai.use(spies);
-
-const sandbox = chai.spy.sandbox();
+const sandbox = sinon.createSandbox();
 
 describe('Resolution tests', () => {
   const patient = 'Patient_1';
@@ -14,14 +12,14 @@ describe('Resolution tests', () => {
 
   describe('Add resolution', () => {
     beforeEach(() => {
-      sandbox.on(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
     });
     afterEach(() => {
       sandbox.restore();
     });
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(mysqlResolution, 'isResolutionExists', () => false);
+        sandbox.replace(resolutionService, 'findResolutionById', () => null);
       });
       afterEach(() => {
         sandbox.restore();
@@ -35,8 +33,8 @@ describe('Resolution tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(mysqlResolution, 'isResolutionExists', () => true);
-        sandbox.on(mysqlResolution, 'getAllResolutions', () => [{ dataValues: { id: currentId, resolution } }]);
+        sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
+        sandbox.replace(mysqlResolution, 'getAllResolutions', () => [{ dataValues: { id: currentId, resolution } }]);
       });
       afterEach(() => {
         sandbox.restore();
@@ -53,7 +51,7 @@ describe('Resolution tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(patientService, 'getPatientId', () => {
+        sandbox.replace(patientService, 'getPatientId', () => {
           throw new Error(`Patient ${wrongName} not found`);
         });
       });
@@ -71,8 +69,8 @@ describe('Resolution tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(patientService, 'getPatientId', () => currentId);
-        sandbox.on(mysqlResolution, 'getAllResolutions', () => []);
+        sandbox.replace(patientService, 'getPatientId', () => currentId);
+        sandbox.replace(mysqlResolution, 'getAllResolutions', () => []);
       });
       afterEach(() => {
         sandbox.restore();
@@ -88,8 +86,8 @@ describe('Resolution tests', () => {
     const date = Date.now();
 
     beforeEach(() => {
-      sandbox.on(patientService, 'getPatientId', () => currentId);
-      sandbox.on(mysqlResolution, 'getAllResolutions', () => [{ id: currentId, resolution, expire: new Date(date) }]);
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(mysqlResolution, 'getAllResolutions', () => [{ id: currentId, resolution, expire: new Date(date) }]);
     });
     afterEach(() => {
       sandbox.restore();
@@ -97,7 +95,7 @@ describe('Resolution tests', () => {
 
     describe('when resolution is expired', () => {
       beforeEach(async () => {
-        sandbox.on(global.Date, 'now', () => date + 5000);
+        sandbox.replace(global.Date, 'now', () => date + 5000);
       });
       afterEach(() => {
         sandbox.restore();
@@ -109,7 +107,7 @@ describe('Resolution tests', () => {
 
     describe('when resolution is not expired', () => {
       beforeEach(() => {
-        sandbox.on(global.Date, 'now', () => date);
+        sandbox.replace(global.Date, 'now', () => date);
       });
       afterEach(() => {
         sandbox.restore();
@@ -125,7 +123,7 @@ describe('Resolution tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(patientService, 'getPatientId', () => {
+        sandbox.replace(patientService, 'getPatientId', () => {
           throw new Error(`Resolution for ${wrongName} not found`);
         });
       });
@@ -143,8 +141,8 @@ describe('Resolution tests', () => {
 
     describe('', () => {
       beforeEach(() => {
-        sandbox.on(patientService, 'getPatientId', () => currentId);
-        sandbox.on(mysqlResolution, 'isResolutionExists', () => true);
+        sandbox.replace(patientService, 'getPatientId', () => currentId);
+        sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
       });
       afterEach(() => {
         sandbox.restore();

@@ -5,6 +5,8 @@ const db = {
     create: () => {},
     update: () => {},
     findAll: () => {},
+    findOne: () => {},
+    findOrCreate: () => {},
     destroy: () => {},
   }),
 };
