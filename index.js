@@ -30,10 +30,13 @@ app.use((req, res) => {
 });
 app.use(errorHandler);
 
-// db.sequelize.sync();
-db.sequelize.sync({ force: true }).then(() => {
-  console.log('Drop and re-sync db.');
-});
+if (process.env.NODE_ENV === 'production') {
+  db.sequelize.sync();
+} else {
+  db.sequelize.sync({ force: true }).then(() => {
+    console.log('Drop and re-sync db.');
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server has been started on port ${PORT}...`);
