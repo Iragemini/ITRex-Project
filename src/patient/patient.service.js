@@ -26,6 +26,7 @@ export default class PatientService {
     return patientName;
   };
 
+  /* not used */
   deletePatient = async (id) => {
     const deleted = this.storage.deletePatient(id);
     if (!deleted) {
