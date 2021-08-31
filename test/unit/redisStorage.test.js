@@ -1,8 +1,8 @@
 import { expect } from 'chai';
+import RedisQueue from '../../src/storage/redis/queue.storage.js';
 import createClient from './mocks/redis.mock.js';
-import factory from '../../src/storage/factory.js';
 
-const redisStorage = factory.createStorage(createClient);
+const redisStorage = new RedisQueue(createClient);
 const redisClient = createClient();
 
 describe('Redis storage tests', () => {
@@ -18,7 +18,7 @@ describe('Redis storage tests', () => {
   });
 
   describe('[METHOD] get', () => {
-    it('should add new text to resolution field', async () => {
+    it('should return all values for the key', async () => {
       redisClient.LRANGE.withArgs('queue', 0, -1).resolves(data);
       expect(await redisStorage.get()).to.be.equal(data);
     });
