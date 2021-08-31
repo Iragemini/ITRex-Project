@@ -9,6 +9,12 @@ const db = {
     findOrCreate: () => {},
     destroy: () => {},
   }),
+  patient: sinon.stub({
+    findOne: () => {},
+    findOrCreate: () => {},
+    findByPk: () => {},
+    destroy: () => {},
+  }),
 };
 
 export default db;
