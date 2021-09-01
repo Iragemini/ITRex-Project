@@ -16,27 +16,21 @@ export default class MySQLResolution {
     await this.Resolution.create({ patient_id: patientId, resolution, expire });
   }
 
-  async removeValue(patientId) {
-    await this.update(patientId, '', null);
-  }
-
   async update(patientId, newResolution, ttl) {
-    const whereStatement = {};
     let expire = null;
     if (ttl > 0) {
       expire = new Date(getExpiration(ttl));
     }
-    const resolutions = await this.getAllResolutions(patientId);
-    const { id, resolution } = resolutions[0].dataValues;
-    whereStatement.id = id;
+    const result = await this.getOneResolution(patientId);
+    const { id, resolution } = result;
     const data = { resolution: `${resolution} ${newResolution}`, expire };
-    await this.Resolution.update(data, { where: whereStatement });
+    await this.Resolution.update(data, { where: { id } });
   }
 
   async isResolutionExists(patientId) {
     let isExist = false;
-    const resolutions = await this.getAllResolutions(patientId);
-    if (resolutions.length > 0) {
+    const resolution = await this.getOneResolution(patientId);
+    if (resolution) {
       isExist = true;
     }
     return isExist;
@@ -44,26 +38,24 @@ export default class MySQLResolution {
 
   async getResolution(patientId) {
     let expireTime = null;
-    const resolutions = await this.getAllResolutions(patientId);
-    if (resolutions.length === 0) {
+    const result = await this.getOneResolution(patientId);
+    if (!result) {
       return { resolution: '' };
     }
-    const { id, resolution, expire } = resolutions[0];
+    const { resolution, expire } = result;
     if (expire) {
       expireTime = expire.getTime();
     }
     if (isResolutionExpired(expireTime)) {
-      await this.removeResolution(id);
+      await this.removeResolution(result.patient_id);
       return { resolution: '' };
     }
     return { resolution };
   }
 
-  async getAllResolutions(patientId) {
-    const whereStatement = {};
-    whereStatement.patient_id = patientId;
-    const resolutions = await this.Resolution.findAll({ where: whereStatement });
-    return resolutions;
+  async getOneResolution(patientId) {
+    const resolution = await this.Resolution.findOne({ where: { patient_id: patientId } });
+    return resolution;
   }
 
   async removeResolution(patientId) {

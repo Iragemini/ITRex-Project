@@ -14,6 +14,7 @@ describe('Redis storage tests', () => {
     it('should add id and reason', async () => {
       redisClient.RPUSH.withArgs('queue', `${id}:${reason}`).resolves(undefined);
       expect(await redisStorage.add(id, reason)).to.be.undefined;
+      expect(redisClient.RPUSH.calledWith('queue', `${id}:${reason}`)).to.be.true;
     });
   });
 
@@ -21,6 +22,7 @@ describe('Redis storage tests', () => {
     it('should return all values for the key', async () => {
       redisClient.LRANGE.withArgs('queue', 0, -1).resolves(data);
       expect(await redisStorage.get()).to.be.equal(data);
+      expect(redisClient.LRANGE.calledWith('queue', 0, -1)).to.be.true;
     });
   });
 
@@ -28,6 +30,7 @@ describe('Redis storage tests', () => {
     it('should delete first element from queue', async () => {
       redisClient.LPOP.withArgs('queue').resolves(data);
       expect(await redisStorage.remove()).to.be.undefined;
+      expect(redisClient.LPOP.calledWith('queue')).to.be.true;
     });
   });
 
@@ -35,6 +38,7 @@ describe('Redis storage tests', () => {
     it('should delete all keys', async () => {
       redisClient.FLUSHALL.resolves(undefined);
       expect(await redisStorage.reset()).to.be.undefined;
+      expect(redisClient.FLUSHALL.calledWith()).to.be.true;
     });
   });
 
@@ -49,6 +53,7 @@ describe('Redis storage tests', () => {
     it('should return false when queue is not empty', async () => {
       redisClient.LLEN.withArgs('queue').resolves(1);
       expect(await redisStorage.isEmpty()).to.be.false;
+      expect(redisClient.LLEN.calledWith('queue')).to.be.true;
     });
   });
 });

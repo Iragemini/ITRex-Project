@@ -14,13 +14,18 @@ describe('Patients tests', () => {
   const patient = { name };
   const id = 1;
 
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   describe('Add patient', () => {
     it('should return patient id', async () => {
       sandbox.replace(mysqlPatient, 'createPatient', () => id);
+      const spyCreatePatient = sandbox.spy(mysqlPatient, 'createPatient');
 
       expect(await patientService.addPatient(patient)).to.equal(id);
-
-      sandbox.restore();
+      expect(spyCreatePatient.calledOnce).to.be.true;
+      expect(spyCreatePatient.calledWith(patient)).to.be.true;
     });
   });
 
@@ -33,16 +38,15 @@ describe('Patients tests', () => {
       } catch (err) {
         expect(err.message).to.equal(`Patient ${name} not found`);
       }
-
-      sandbox.restore();
     });
 
     it('should return patient id', async () => {
       sandbox.replace(mysqlPatient, 'getIdByName', () => id);
+      const spyGetIdByName = sandbox.spy(mysqlPatient, 'getIdByName');
 
       expect(await patientService.getPatientId(name)).to.equal(id);
-
-      sandbox.restore();
+      expect(spyGetIdByName.calledOnce).to.be.true;
+      expect(spyGetIdByName.calledWith(name)).to.be.true;
     });
   });
 
@@ -55,16 +59,15 @@ describe('Patients tests', () => {
       } catch (err) {
         expect(err.message).to.equal('Patient not found');
       }
-
-      sandbox.restore();
     });
 
     it('should return patient name', async () => {
       sandbox.replace(mysqlPatient, 'getPatientById', () => name);
+      const spyGetPatientById = sandbox.spy(mysqlPatient, 'getPatientById');
 
       expect(await patientService.getPatientName(id)).to.equal(name);
-
-      sandbox.restore();
+      expect(spyGetPatientById.calledOnce).to.be.true;
+      expect(spyGetPatientById.calledWith(id)).to.be.true;
     });
   });
 });

@@ -6,8 +6,8 @@ export default class MySQLPatient {
 
   createPatient = async (data) => {
     const { name } = data;
-    const patient = await this.Patient.findOrCreate({ name, where: { name } });
-    return patient[0].dataValues.id;
+    const [patient] = await this.Patient.findOrCreate({ name, where: { name } });
+    return patient.id;
   };
 
   getIdByName = async (name) => {
@@ -17,18 +17,18 @@ export default class MySQLPatient {
     const patient = await this.Patient.findOne({
       where: whereStatement,
     });
-    if (patient.length === 0) {
+    if (!patient) {
       return null;
     }
-    return patient.dataValues.id;
+    return patient.id;
   };
 
+  /* not used */
   getPatientById = async (id) => {
     const patient = await this.Patient.findByPk(id);
-    const result = patient.dataValues;
-    if (!result.name) {
+    if (!patient) {
       return null;
     }
-    return result.name;
+    return patient.name;
   };
 }

@@ -31,6 +31,9 @@ export default class MemoryQueue {
   }
 
   async getFirstKey() {
+    if (await this.isEmpty()) {
+      return null;
+    }
     return Object.keys(this.storage[0])[0];
   }
 

@@ -11,23 +11,28 @@ describe('Resolution repository tests', () => {
   const resolution = 'resolution';
   const ttl = -1;
   const expire = null;
-  const dataValues = { dataValues: { id, resolution } };
+  const dataValues = { id, resolution, expire };
   const data = { resolution: `${resolution} ${resolution}`, expire };
 
   describe('Add resolution', () => {
     it('should add resolution to database', async () => {
-      db.resolution.create.withArgs({ patient_id: id, resolution, expire: null })
+      db.resolution
+        .create
+        .withArgs({ patient_id: id, resolution, expire: null })
         .resolves(undefined);
       expect(await mysqlResolution.add(id, { resolution, ttl })).to.be.undefined;
+      expect(db.resolution.create.calledWith({ patient_id: id, resolution, expire: null }))
+        .to.be.true;
     });
   });
 
   describe('Update resolution', () => {
     it('should add new text to resolution field', async () => {
-      sandbox.replace(mysqlResolution, 'getAllResolutions', () => [dataValues]);
+      db.resolution.findOne.withArgs({ where: { patient_id: id } }).resolves(dataValues);
       db.resolution.update.withArgs(data, { where: { id } }).resolves(undefined);
 
       expect(await mysqlResolution.update(id, resolution, ttl)).to.be.undefined;
+      expect(db.resolution.update.calledWith(data, { where: { id } })).to.be.true;
 
       sandbox.restore();
     });
@@ -35,12 +40,12 @@ describe('Resolution repository tests', () => {
 
   describe('Get resolution', () => {
     it('should return resolution object', async () => {
-      db.resolution.findAll.withArgs({ where: { patient_id: id } })
-        .resolves([{ id, resolution, expire }]);
+      db.resolution.findOne.withArgs({ where: { patient_id: id } }).resolves(dataValues);
       expect(await mysqlResolution.getResolution(id))
         .to.be.an('object')
         .with.property('resolution')
         .that.to.equal(resolution);
+      expect(db.resolution.findOne.calledWith({ where: { patient_id: id } })).to.be.true;
     });
   });
 
@@ -48,20 +53,15 @@ describe('Resolution repository tests', () => {
     it('should delete field in resolutions table by patient id', async () => {
       db.resolution.destroy.withArgs({ where: { patient_id: id } }).resolves(undefined);
       expect(await mysqlResolution.removeResolution(id)).to.be.undefined;
-    });
-
-    it('should remove value in resolution field', async () => {
-      sandbox.replace(mysqlResolution, 'getAllResolutions', () => [dataValues]);
-      db.resolution.update.withArgs(data, { where: { id } }).resolves(undefined);
-      expect(await mysqlResolution.removeValue(id)).to.be.undefined;
-      sandbox.restore();
+      expect(db.resolution.destroy.calledWith({ where: { patient_id: id } })).to.be.true;
     });
   });
 
-  describe('Get all resolution', () => {
-    it('should return all resolutions for patient', async () => {
-      db.resolution.findAll.withArgs({ where: { patient_id: id } }).resolves(resolution);
-      expect(await mysqlResolution.getAllResolutions(id)).to.be.equal(resolution);
+  describe('Get one resolution', () => {
+    it('should return patient resolution', async () => {
+      db.resolution.findOne.withArgs({ where: { patient_id: id } }).resolves(dataValues);
+      expect(await mysqlResolution.getOneResolution(id)).to.deep.include(dataValues);
+      expect(db.resolution.findOne.calledWith({ where: { patient_id: id } })).to.be.true;
     });
   });
 });

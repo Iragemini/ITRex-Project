@@ -29,13 +29,12 @@ app.use((req, res) => {
   }
 });
 app.use(errorHandler);
-
-if (process.env.NODE_ENV === 'production') {
-  db.sequelize.sync();
-} else {
+if (process.env.NODE_ENV === 'local') {
   db.sequelize.sync({ force: true }).then(() => {
     console.log('Drop and re-sync db.');
   });
+} else {
+  db.sequelize.sync();
 }
 
 app.listen(PORT, () => {
