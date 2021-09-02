@@ -1,6 +1,6 @@
 import redis from 'redis';
-import promisifyRedis from '../../utils/promisifyRedis.js';
 import config from '../../../config/config.js';
+import promisifyRedis from '../../utils/promisifyRedis.js';
 
 const {
   storage: {
@@ -10,14 +10,18 @@ const {
   },
 } = config;
 
-const redisClient = redis.createClient({ host, port });
+const createClient = () => {
+  const redisClient = redis.createClient({ host, port });
 
-redisClient.on('error', (err) => {
-  console.log('Error ', err);
-});
+  redisClient.on('error', (err) => {
+    console.log('Error ', err);
+  });
 
-redisClient.on('connect', () => {
-  console.log('connect');
-});
+  redisClient.on('connect', () => {
+    console.log('connect');
+  });
 
-export default promisifyRedis(redisClient);
+  return promisifyRedis(redisClient);
+};
+
+export default createClient;

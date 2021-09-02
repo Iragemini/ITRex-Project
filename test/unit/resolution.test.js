@@ -1,50 +1,51 @@
-import chai, { expect } from 'chai';
-import spies from 'chai-spies';
-import redisMock from 'redis-mock';
-import redis from 'redis';
-import factory from '../../src/storage/StorageManager.js';
+import { expect } from 'chai';
+import sinon from 'sinon';
+import patientService from './mocks/patientService.mock.js';
+import db from './mocks/db.mock.js';
+import MySQLResolution from '../../src/repository/mysql/resolution.js';
 import ResolutionService from '../../src/resolution/resolution.service.js';
-// import config from '../../config/config.js';
 
-// const { type } = config;
+const mysqlResolution = new MySQLResolution(db);
+const resolutionService = new ResolutionService(mysqlResolution, patientService);
 
-chai.use(spies);
-
-const sandbox = chai.spy.sandbox();
+const sandbox = sinon.createSandbox();
 
 describe('Resolution tests', () => {
-  const storage = factory.createStorage('resolution');
-  const resolutionService = new ResolutionService(storage);
   const patient = 'Patient_1';
   const resolution = 'resolution';
+  const currentId = 1;
   let ttl;
 
-  beforeEach(async () => {
-    await storage.reset();
-  });
-
-  beforeEach(() => {
-    sandbox.on(redis, 'createClient', () => redisMock.createClient);
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   describe('Add resolution', () => {
-    it('should add resolution to storage for new patient', async () => {
-      await resolutionService.addResolution(patient, resolution, ttl);
-      expect(await storage.get())
-        .to.be.an('array')
-        .to.have.lengthOf(1);
+    beforeEach(() => {
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+    });
+    afterEach(() => {
+      sandbox.restore();
     });
 
-    it('should add new text to existed resolution for existed patient', async () => {
+    it('should add resolution when is not exists', async () => {
+      sandbox.replace(resolutionService, 'findResolutionById', () => null);
+      const spyAdd = sandbox.spy(mysqlResolution, 'add');
+      const spyFindResolutionById = sandbox.spy(resolutionService, 'findResolutionById');
+
       await resolutionService.addResolution(patient, resolution, ttl);
+      expect(spyAdd.withArgs(currentId, { resolution, ttl: -1 }).calledOnce).to.be.true;
+      expect(spyFindResolutionById.returned(null)).to.be.true;
+    });
+
+    it('should add new text to existed resolution', async () => {
+      sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
+      sandbox.replace(mysqlResolution, 'getOneResolution', () => ({ id: currentId, resolution }));
+
+      const spyUpdate = sandbox.spy(mysqlResolution, 'update');
+      const spyFindResolutionById = sandbox.spy(resolutionService, 'findResolutionById');
+      const spyGetPatientId = sandbox.spy(patientService, 'getPatientId');
+
       await resolutionService.addResolution(patient, resolution, ttl);
-      expect(await storage.get())
-        .to.be.an('array')
-        .to.have.lengthOf(1);
+      expect(spyUpdate.withArgs(currentId, resolution, -1).calledOnce).to.be.true;
+      expect(spyFindResolutionById.returned(resolution)).to.be.true;
+      expect(spyGetPatientId.calledBefore(spyFindResolutionById)).to.be.true;
     });
   });
 
@@ -52,10 +53,14 @@ describe('Resolution tests', () => {
     const wrongName = 'Patient_999';
 
     afterEach(() => {
-      ttl = undefined;
+      sandbox.restore();
     });
 
     it('should throw an error when there is no such patient', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => {
+        throw new Error(`Patient ${wrongName} not found`);
+      });
+
       try {
         await resolutionService.findResolution(wrongName);
       } catch (err) {
@@ -63,53 +68,59 @@ describe('Resolution tests', () => {
       }
     });
 
-    it('should return resolution when TTL is not set', async () => {
-      ttl = -1;
-      await resolutionService.addResolution(patient, resolution, ttl);
-      expect(await resolutionService.findResolution(patient)).to.equal(resolution);
+    it('should return null when there is no such resolution', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(mysqlResolution, 'getOneResolution', () => null);
+
+      const spyGetResolution = sandbox.spy(mysqlResolution, 'getResolution');
+      const spyGetOneResolution = sandbox.spy(mysqlResolution, 'getOneResolution');
+      const spyGetPatientId = sandbox.spy(patientService, 'getPatientId');
+
+      expect(await resolutionService.findResolution(patient)).to.be.null;
+      expect(spyGetResolution.withArgs(currentId).calledOnce).to.be.true;
+      expect(spyGetOneResolution.withArgs(currentId).calledOnce).to.be.true;
+      expect(spyGetPatientId.returned(currentId)).to.be.true;
+      expect(spyGetPatientId.calledBefore(spyGetResolution)).to.be.true;
+      expect(spyGetOneResolution.returned(null)).to.be.true;
     });
   });
 
   describe('TTL tests', () => {
-    const date = Date.now(0);
+    const date = Date.now();
 
-    /**
-     * хотела для типа redis сделать this.skip в before,
-     * но не работает, поэтому пока весь тест skip
-     */
-    describe.skip('when resolution is expired', () => {
-      beforeEach(async () => {
-        ttl = 5; /* 5 seconds */
-        /* если помещу  addResolution() в it то дата будет уже изменная и тест не отрабатывает */
-        await resolutionService.addResolution(patient, resolution, ttl);
-        sandbox.on(global.Date, 'now', () => date + (ttl + 5) * 1000);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should return null', async () => {
-        expect(await resolutionService.findResolution(patient)).to.be.null;
-      });
+    beforeEach(() => {
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(mysqlResolution, 'getOneResolution', () => ({ id: currentId, resolution, expire: new Date(date) }));
+    });
+    afterEach(() => {
+      sandbox.restore();
     });
 
-    describe('when resolution is not expired', () => {
-      beforeEach(() => {
-        ttl = 5; /* 5 seconds */
-        sandbox.on(global.Date, 'now', () => date);
-      });
-      afterEach(() => {
-        sandbox.restore();
-      });
-      it('should return resolution', async () => {
-        await resolutionService.addResolution(patient, resolution, ttl);
-        expect(await resolutionService.findResolution(patient)).to.equal(resolution);
-      });
+    it('should return null when resolution is expired', async () => {
+      sandbox.replace(global.Date, 'now', () => date + 5000);
+
+      expect(await resolutionService.findResolution(patient)).to.be.null;
+    });
+
+    it('should return resolution when resolution is not expired', async () => {
+      sandbox.replace(global.Date, 'now', () => date);
+
+      expect(await resolutionService.findResolution(patient)).to.equal(resolution);
     });
   });
 
   describe('Delete resolution', () => {
     const wrongName = 'Patient_999';
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
     it('should throw an error when there is no such patient', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => {
+        throw new Error(`Resolution for ${wrongName} not found`);
+      });
+
       try {
         await resolutionService.deleteResolution(wrongName);
       } catch (err) {
@@ -117,14 +128,19 @@ describe('Resolution tests', () => {
       }
     });
 
-    it('should return null when patient is exists', async () => {
-      ttl = -1;
-      await resolutionService.addResolution(patient, resolution, ttl);
+    it('should delete resolution', async () => {
+      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(resolutionService, 'findResolutionById', () => resolution);
+
+      const spyRemoveResolution = sandbox.spy(mysqlResolution, 'removeResolution');
+      const spyGetPatientId = sandbox.spy(patientService, 'getPatientId');
+      const spyFindResolutionById = sandbox.spy(resolutionService, 'findResolutionById');
+
       await resolutionService.deleteResolution(patient);
-      expect(await resolutionService.findResolution(patient)).to.be.null;
-    });
-    afterEach(() => {
-      ttl = undefined;
+      expect(spyRemoveResolution.withArgs(currentId).calledOnce).to.be.true;
+      expect(spyGetPatientId.calledBefore(spyFindResolutionById)).to.be.true;
+      expect(spyGetPatientId.returned(currentId)).to.be.true;
+      expect(spyFindResolutionById.returned(resolution)).to.be.true;
     });
   });
 });

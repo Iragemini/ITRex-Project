@@ -2,13 +2,34 @@ version: '3'
 services:
   redis-server:
     image: 'redis'
-    expose: 
+    expose:
       - '6379'
+  mysqldb:
+    image: mysql
+    restart: always
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+    healthcheck:
+      test: "mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD"
+    expose:
+      - '3306'
   itrex-project:
     build: .
+    depends_on:
+      mysqldb :
+          condition: service_healthy
+    restart: always
+    env_file: ./.env
     ports:
-      - '3000:3000'
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     environment:
       - PORT=3000
       - REDIS_HOST=redis-server
       - REDIS_PORT=6379
+      - DB_HOST=mysqldb
+      - DB_USER=$MYSQLDB_USER
+      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - DB_NAME=$MYSQLDB_DATABASE
+      - DB_PORT=$MYSQLDB_DOCKER_PORT

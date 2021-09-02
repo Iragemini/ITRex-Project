@@ -3,6 +3,7 @@ import config from './config/config.js';
 import queueRouter from './src/queue/queue.routes.js';
 import resolutionRouter from './src/resolution/resolution.routes.js';
 import errorHandler from './src/middlewares/errorHandler.js';
+import db from './src/models/index.js';
 
 const PORT = config.server.port;
 const app = express();
@@ -28,6 +29,13 @@ app.use((req, res) => {
   }
 });
 app.use(errorHandler);
+if (process.env.NODE_ENV === 'local') {
+  db.sequelize.sync({ force: true }).then(() => {
+    console.log('Drop and re-sync db.');
+  });
+} else {
+  db.sequelize.sync();
+}
 
 app.listen(PORT, () => {
   console.log(`Server has been started on port ${PORT}...`);
