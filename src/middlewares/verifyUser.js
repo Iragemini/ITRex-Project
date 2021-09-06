@@ -3,7 +3,7 @@ import ApiError from '../errors/ApiError.js';
 
 const User = db.user;
 
-const verifyUser = async (req, res, next) => {
+export const verifyUserId = async (req, res, next) => {
   const user = await User.findOne({
     where: {
       id: req.params.id,
@@ -15,4 +15,14 @@ const verifyUser = async (req, res, next) => {
   return next();
 };
 
-export default verifyUser;
+export const verifyUserEmail = async (req, res, next) => {
+  const user = await User.findOne({
+    where: {
+      email: req.body.email,
+    },
+  });
+  if (!user) {
+    throw new ApiError(404, 'User not exists');
+  }
+  return next();
+};

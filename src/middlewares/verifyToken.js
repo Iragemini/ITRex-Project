@@ -1,24 +1,21 @@
 import jwt from 'jsonwebtoken';
 import config from '../../config/config.js';
+import ApiError from '../errors/ApiError.js';
 
 const {
   auth: { SECRET },
 } = config;
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers['x-access-token'];
+  const token = req.headers.authorization;
 
   if (!token) {
-    return res.status(403).send({
-      message: 'No token provided!',
-    });
+    throw new ApiError(403, 'No token provided!');
   }
 
   jwt.verify(token, SECRET, (err, decoded) => {
     if (err) {
-      return res.status(401).send({
-        message: 'Unauthorized!',
-      });
+      throw new ApiError(401, 'Unauthorized!');
     }
     req.userId = decoded.id;
     return next();
