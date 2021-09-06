@@ -18,6 +18,14 @@ export default class PatientService {
     return patientId;
   };
 
+  getPatientIdByUserId = async (userId) => {
+    const patientId = await this.repository.getIdByUserId(userId);
+    if (!patientId) {
+      throw new ApiError(404, 'Patient not found');
+    }
+    return patientId;
+  };
+
   getPatientName = async (id) => {
     const patientName = await this.repository.getPatientById(id);
     if (!patientName) {
