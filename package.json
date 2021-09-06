@@ -8,7 +8,7 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=local nodemon index.js",
     "test": "nyc --reporter=text mocha test/unit",
-    "lint": "eslint public --ext .js .",
+    "lint": "eslint --ext .js .",
     "prepare": "husky install"
   },
   "keywords": [],
