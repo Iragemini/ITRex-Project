@@ -8,28 +8,44 @@ const {
 } = config;
 
 export default class UserService {
-  constructor(repository) {
+  constructor(repository, patientService) {
     this.repository = repository;
+    this.patientService = patientService;
   }
 
   authenticate = async (user) => {
     const userEntity = await this.getUserByEmail(user.email);
-
+    const userData = {
+      name: userEntity.name,
+      email: userEntity.email,
+      gender: userEntity.gender,
+      birthDate: userEntity.birth_date,
+    };
     const isValidPassword = bcrypt.compareSync(user.password, userEntity.password);
+
     if (!isValidPassword) {
       throw new ApiError(401, 'Invalid password');
     }
 
-    const token = jwt.sign({ id: userEntity.id }, SECRET, {
+    const token = jwt.sign({ id: userEntity.user_id }, SECRET, {
       expiresIn: JWT_EXPIRE_TIME,
     });
-    return { accessToken: token, name: user.name };
+    return { accessToken: token, ...userData };
   };
 
   createUser = async (data) => {
-    const hashData = Object.create(data);
-    hashData.password = bcrypt.hashSync(hashData.password, 8);
-    await this.repository.createUser(hashData);
+    const userData = { email: data.email, password: bcrypt.hashSync(data.password, 8) };
+    const patientData = {
+      name: data.name,
+      gender: data.gender,
+      birthDate: data.birthDate,
+      email: data.email,
+    };
+
+    const userId = await this.repository.createUser(userData);
+    patientData.userId = userId;
+
+    await this.patientService.addPatient(patientData);
   };
 
   getUserByEmail = async (email) => {

@@ -8,18 +8,23 @@ import {
 } from './user.controllers.js';
 import { validator } from '../middlewares/validate.js';
 import verifyEmail from '../middlewares/verifyEmail.js';
-import verifyUser from '../middlewares/verifyUser.js';
+import { verifyUserId } from '../middlewares/verifyUser.js';
 import { userSchema } from '../schemas/schemas.js';
 
 const userRouter = Router();
 
-userRouter.post('/', verifyEmail, validator(userSchema, 'body'), asyncHandler(create));
-
-userRouter.get('/', asyncHandler(get));
+userRouter
+  .route('/')
+  .post(
+    validator(userSchema, 'body'),
+    asyncHandler(verifyEmail),
+    asyncHandler(create),
+  )
+  .get(asyncHandler(get));
 
 userRouter
   .route('/:id')
-  .put(verifyUser, asyncHandler(update))
-  .delete(verifyUser, asyncHandler(remove));
+  .put(asyncHandler(verifyUserId), asyncHandler(update))
+  .delete(asyncHandler(verifyUserId), asyncHandler(remove));
 
 export default userRouter;

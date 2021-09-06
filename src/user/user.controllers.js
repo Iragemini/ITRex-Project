@@ -1,13 +1,16 @@
 import userService from './index.js';
 
 export const authenticate = async (req, res, next) => {
-  await userService.authenticate(req.body);
-  res.sendStatus(200);
+  const user = await userService.authenticate(req.body);
+  res.status(200).json({
+    message: 'Authenticated',
+    ...user,
+  });
 };
 
 export const create = async (req, res, next) => {
-  const user = await userService.createUser(req.body);
-  res.status(201).json(user);
+  await userService.createUser(req.body);
+  res.sendStatus(201);
 };
 
 export const get = async (req, res, next) => {
