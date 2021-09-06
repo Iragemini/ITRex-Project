@@ -1,8 +1,26 @@
+import store from '../redux/store.js';
+
+const getToken = () => {
+  const state = store.getState();
+  const { user } = state.userReducer;
+  if (!user) {
+    return '';
+  }
+  return user.accessToken ? user.accessToken : '';
+};
 export default class Service {
   constructor() {
     this.base = 'http://localhost:3000/api';
-    this.headers = { 'Content-Type': 'application/json' };
+    this.headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    };
   }
+
+  headersWithToken = () => {
+    this.headers.Authorization = getToken();
+    return this.headers;
+  };
 
   errorHandler = (url, err) => {
     const error = new Error();
@@ -36,7 +54,8 @@ export default class Service {
   getResource = async (url) => {
     const options = {
       method: 'GET',
-      headers: this.headers,
+      withCredentials: true,
+      headers: this.headersWithToken(),
     };
     const result = await this.makeRequest(url, options);
     return result;
@@ -46,7 +65,8 @@ export default class Service {
   postResource = async (url, data = {}) => {
     const options = {
       method: 'POST',
-      headers: this.headers,
+      withCredentials: true,
+      headers: this.headersWithToken(),
       body: JSON.stringify(data),
     };
     const result = await this.makeRequest(url, options);
@@ -57,7 +77,8 @@ export default class Service {
   patchResource = async (url, data = {}) => {
     const options = {
       method: 'PATCH',
-      headers: this.headers,
+      withCredentials: true,
+      headers: this.headersWithToken(),
       body: JSON.stringify(data),
     };
     const result = await this.makeRequest(url, options);
@@ -68,7 +89,8 @@ export default class Service {
   deleteResource = async (url, data = {}) => {
     const options = {
       method: 'DELETE',
-      headers: this.headers,
+      withCredentials: true,
+      headers: this.headersWithToken(),
       body: JSON.stringify(data),
     };
     const result = await this.makeRequest(url, options);

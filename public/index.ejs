@@ -1,28 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
-        integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
-        crossorigin="anonymous" />
-    <link rel="stylesheet" href="/assets/styles/bootstrap.min.css">
-    <link href="/assets/styles/style.css" rel="stylesheet">
-    <title>
-        <%=title%>
-    </title>
-</head>
 
-<body>
-    <div class="container">
-        <%- include('./queue/queue.ejs'); %>
-        <%- include('./resolution/resolution.ejs'); %>
-        <input type="hidden" id="hiddenCurrent" value=""/>
-    </div>  
-    <script type="module" src="/src/index.js"></script>
-    <script type="module" src="/resolution/resolution.js"></script>
-    <script type="module" src="/queue/queue.js"></script>
-</body>
+<%- include('./components/head/head.ejs') %>
+
+    <body>
+        <%- include ('./components/error/error.ejs') %>
+        <%- include('./components/main/main.ejs') %>
+        <div id="scripts"></div>
+        <script type="module" src="/src/index.js"></script>
+        <!-- <script type="module" src="/components/queue/queue.js"></script> -->
+    </body>
 
 </html>

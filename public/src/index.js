@@ -1,11 +1,16 @@
-import queueService from '../http/queue.service.js';
-import setCurrentPatient from './utils/setCurrentPatient.js';
+import { render } from './utils/render.js';
+import store from '../redux/store.js';
+import { clearErrors } from '../redux/actions.js';
+import initMenu from './utils/initMenu.js';
 
-window.onload = async () => {
-  try {
-    const { current } = await queueService.getCurrentInQueue();
-    setCurrentPatient(current, '');
-  } catch (err) {
-    console.log(err.text);
-  }
+const clearError = document.getElementById('clearError');
+
+clearError.onclick = () => {
+  store.dispatch(clearErrors());
+};
+
+window.onload = () => {
+  const state = store.getState();
+  render(state);
+  initMenu();
 };
