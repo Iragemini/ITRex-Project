@@ -85,6 +85,62 @@ describe('Resolution tests', () => {
     });
   });
 
+  describe('Find resolution by patient id', () => {
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should return resolution', async () => {
+      sandbox.replace(mysqlResolution, 'getResolution', () => ({ resolution }));
+      const spyGetResolution = sandbox.spy(mysqlResolution, 'getResolution');
+
+      expect(await resolutionService.findResolutionById(currentId)).to.be.equal(resolution);
+      expect(spyGetResolution.withArgs(currentId).calledOnce).to.be.true;
+    });
+
+    it('should return null', async () => {
+      sandbox.replace(mysqlResolution, 'getResolution', () => ({ resolution: '' }));
+      const spyGetResolution = sandbox.spy(mysqlResolution, 'getResolution');
+
+      expect(await resolutionService.findResolutionById(currentId)).to.be.null;
+      expect(spyGetResolution.withArgs(currentId).calledOnce).to.be.true;
+    });
+  });
+
+  describe('Find resolution by user id', () => {
+    const userId = 777;
+
+    beforeEach(() => {
+      sandbox.replace(patientService, 'getPatientIdByUserId', () => currentId);
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should return resolution', async () => {
+      sandbox.replace(mysqlResolution, 'getResolution', () => ({ resolution }));
+      const spyGetResolution = sandbox.spy(mysqlResolution, 'getResolution');
+      const spyGetPatientIdByUserId = sandbox.spy(patientService, 'getPatientIdByUserId');
+
+      expect(await resolutionService.findResolutionByUserId(userId)).to.be.equal(resolution);
+      expect(spyGetPatientIdByUserId.withArgs(userId).calledOnce).to.be.true;
+      expect(spyGetResolution.withArgs(currentId).calledOnce).to.be.true;
+      expect(spyGetPatientIdByUserId.calledBefore(spyGetResolution)).to.be.true;
+    });
+
+    it('should return null', async () => {
+      sandbox.replace(mysqlResolution, 'getResolution', () => ({ resolution: '' }));
+      const spyGetResolution = sandbox.spy(mysqlResolution, 'getResolution');
+      const spyGetPatientIdByUserId = sandbox.spy(patientService, 'getPatientIdByUserId');
+
+      expect(await resolutionService.findResolutionByUserId(userId)).to.be.null;
+      expect(spyGetPatientIdByUserId.withArgs(userId).calledOnce).to.be.true;
+      expect(spyGetResolution.withArgs(currentId).calledOnce).to.be.true;
+      expect(spyGetPatientIdByUserId.calledBefore(spyGetResolution)).to.be.true;
+    });
+  });
+
   describe('TTL tests', () => {
     const date = Date.now();
 
