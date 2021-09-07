@@ -29,4 +29,14 @@ export const userSchema = Joi.object()
     confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
   });
 
+export const userLogInSchema = Joi.object()
+  .options({ abortEarly: false, allowUnknown: true })
+  .keys({
+    email: Joi.string().required().email(),
+    password: Joi.string()
+      .required()
+      .min(MIN_PASSWORD_LENGTH)
+      .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+  });
+
 export const bodySchema = Joi.object().min(1);
