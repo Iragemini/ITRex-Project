@@ -8,10 +8,10 @@ import store from '../../redux/store.js';
 import setCurrentPatient from './setCurrentPatient.js';
 
 const initMenu = () => {
-  const state = store.getState();
-  const { isLoggedIn } = state.userReducer;
-  const menu = document.querySelector('#menu');
   menu.addEventListener('click', (e) => {
+    const state = store.getState();
+    const { isLoggedIn } = state.userReducer;
+    const menu = document.querySelector('#menu');
     const elem = e.target;
     if (elem.type !== 'button') {
       return;
@@ -29,7 +29,7 @@ const initMenu = () => {
         if (isLoggedIn) {
           renderMain(accountForm(state.userReducer.user));
         } else {
-          renderMain(loginForm());
+          renderMain(loginForm(state.userReducer.user));
         }
         break;
       case 'doctor-tab':
