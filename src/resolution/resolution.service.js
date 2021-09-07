@@ -37,4 +37,10 @@ export default class ResolutionService {
     const { resolution } = await this.repository.getResolution(patientId);
     return resolution || null;
   };
+
+  findResolutionByUserId = async (userId) => {
+    const patientId = await this.patientService.getPatientIdByUserId(userId);
+    const resolution = await this.findResolutionById(patientId);
+    return resolution;
+  };
 }
