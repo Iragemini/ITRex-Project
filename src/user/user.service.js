@@ -64,10 +64,12 @@ export default class UserService {
     return user;
   };
 
+  /* not used */
   updateUser = async (id, data) => {
     await this.repository.updateUser(id, data);
   };
 
+  /* not used */
   deleteUser = async (userId) => {
     await this.repository.deleteUser(userId);
   };
