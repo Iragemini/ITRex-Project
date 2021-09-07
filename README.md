@@ -5,18 +5,24 @@
 - Queue: _`/api/queue`_
   - **GET:** _`/api/queue`_ - return current patient in queue
   - **POST:** _`/api/queue`_ - add new patient to queue
-  - **DELETE:** _`/api/queue/:name`_ - delete current patient from the queue and return next
+  - **DELETE:** _`/api/queue`_ - delete current patient from the queue and return next
 - Resolution _`/api/resolution`_
-  - **GET** _`/api/resolution/:name`_ - return resolution by key
-  - **PATCH:** _`/api/resolution/:name`_ - add new resolution to patient
-  - **PATCH:** _`/api/resolution/:name/delete`_ - delete resolution
+  - **GET** _`/api/resolution/doctor/:name`_ - return resolution by name
+  - **GET** _`/api/resolution/patient`_ - return resolution for authorized user
+  - **PATCH:** _`/api/resolution/doctor/:name`_ - add new resolution to patient
+  - **PATCH:** _`/api/resolution/doctor/:name/delete`_ - delete resolution
+- User
+  - **POST** _`/api/user`_ - user registration
+- Log in
+  - **POST** _`/api/login`_ - user authorization
 
 #
 
 # How to use application:
 
 ### **Before start**:
-- Application supports two types of storage for queue: ***im memory*** and ***redis***. You might switch this option in ```config.js``` file : ```config.js -> storage -> queueType: 'redis' /* choose 'redis' or 'memory' */```
+
+- Application supports two types of storage for queue: **_im memory_** and **_redis_**. You might switch this option in `config.js` file : `config.js -> storage -> queueType: 'redis' /* choose 'redis' or 'memory' */`
 
 ## **Local run**
 
