@@ -21,3 +21,12 @@ export const remove = async (req, res, next) => {
   await resolutionService.deleteResolution(name);
   res.sendStatus(200);
 };
+
+export const getUserResolution = async (req, res, next) => {
+  const { userId } = req.user;
+  let resolution = await resolutionService.findResolutionByUserId(userId);
+  if (!resolution) {
+    resolution = 'Resolution not found';
+  }
+  res.status(200).json({ resolution });
+};

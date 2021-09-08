@@ -6,19 +6,17 @@ export default class QueueService {
     this.patientService = patientService;
   }
 
-  addPatientToQueue = async (patient) => {
-    const [name, reason = ''] = patient.split(':');
-    const id = await this.patientService.addPatient({ name, reason });
+  addPatientToQueue = async (data) => {
+    const { userId, reason } = data;
+    const id = await this.patientService.getPatientIdByUserId(userId);
     await this.storage.add(id, reason);
-    return name;
   };
 
-  nextPatient = async (name) => {
+  nextPatient = async () => {
     let nextInQueue = null;
     let nextId = null;
-    const patientId = await this.patientService.getPatientId(name.trim());
 
-    await this.storage.remove(patientId);
+    await this.storage.remove();
 
     const isStorageEmpty = await this.storage.isEmpty();
     if (!isStorageEmpty) {
@@ -39,6 +37,6 @@ export default class QueueService {
     }
     currentId = await this.storage.getFirstKey();
     current = await this.patientService.getPatientName(currentId);
-    return current;
+    return current.name;
   };
 }

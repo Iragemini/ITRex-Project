@@ -1,3 +1,7 @@
 .ttl__input {
-    visibility: hidden;
+  visibility: hidden;
+}
+
+.error__field {
+  visibility: hidden;
 }

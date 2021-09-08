@@ -6,13 +6,13 @@ export const getCurrent = async (req, res, next) => {
 };
 
 export const add = async (req, res, next) => {
-  const { patient } = req.body;
-  const name = await queueService.addPatientToQueue(patient);
-  res.status(201).json({ name });
+  const { reason } = req.body;
+  const { userId } = req.user;
+  await queueService.addPatientToQueue({ userId, reason });
+  res.sendStatus(201);
 };
 
 export const remove = async (req, res, next) => {
-  const { name } = req.params;
-  const nextInQueue = await queueService.nextPatient(name);
+  const nextInQueue = await queueService.nextPatient();
   res.status(200).json({ next: nextInQueue });
 };

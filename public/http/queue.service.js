@@ -11,8 +11,8 @@ class QueueService extends Service {
     return res;
   };
 
-  deletePatientFromQueue = async (name) => {
-    const res = await this.deleteResource(`/queue/${name}`);
+  deletePatientFromQueue = async () => {
+    const res = await this.deleteResource('/queue');
     return res;
   };
 }

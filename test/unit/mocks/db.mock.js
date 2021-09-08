@@ -15,6 +15,16 @@ const db = {
     findByPk: () => {},
     destroy: () => {},
   }),
+  user: sinon.stub({
+    create: () => {},
+    update: () => {},
+    findOne: () => {},
+    destroy: () => {},
+  }),
+  sequelize: sinon.stub({
+    query: () => {},
+    QueryTypes: { SELECT: 'SELECT' },
+  }),
 };
 
 export default db;

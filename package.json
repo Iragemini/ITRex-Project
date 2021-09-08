@@ -8,7 +8,7 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=local nodemon index.js",
     "test": "nyc --reporter=text mocha test/unit",
-    "lint": "eslint public --ext .js .",
+    "lint": "eslint --ext .js .",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -35,13 +35,16 @@
     }
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "http-status-codes": "^2.1.4",
     "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.0",
     "node-fetch": "^2.6.1",
     "redis": "^3.1.2",

@@ -1,19 +1,26 @@
-const currentInQueue = document.getElementById('currentInQueue');
-const current = document.getElementById('current');
-const hiddenCurrent = document.getElementById('hiddenCurrent');
-const patientName = document.getElementById('patientName');
+import queueService from '../../http/queue.service.js';
 
-export default function setCurrentPatient(name, mode) {
-  if (mode === 'queue' && hiddenCurrent.value) {
-    return;
+const getCurrent = async () => {
+  let currentPatient = '';
+  const current = await queueService.getCurrentInQueue();
+  if (current) {
+    currentPatient = current.current;
   }
-  currentInQueue.innerText = name;
-  current.innerText = name;
-  hiddenCurrent.value = name;
-  if (patientName) {
+  return currentPatient;
+};
+
+export default async function setCurrentPatient() {
+  const current = document.getElementById('current');
+  const hiddenCurrent = document.getElementById('hiddenCurrent');
+  const patientName = document.getElementById('patientName');
+  try {
+    const name = await getCurrent();
+    current.innerText = name;
+    hiddenCurrent.value = name;
     patientName.value = name;
-  }
-  if (mode === 'err') {
+  } catch (err) {
+    console.log(err.text, err.message);
+    current.innerText = err.message;
     hiddenCurrent.value = '';
     patientName.value = '';
   }

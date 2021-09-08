@@ -1,6 +1,6 @@
-import queueService from '../http/queue.service.js';
-import resolutionService from '../http/resolution.service.js';
-import setCurrentPatient from '../src/utils/setCurrentPatient.js';
+import queueService from '../../http/queue.service.js';
+import resolutionService from '../../http/resolution.service.js';
+import setCurrentPatient from '../../src/utils/setCurrentPatient.js';
 
 const addPatient = document.getElementById('addPatient');
 const newPatient = document.getElementById('newPatient');

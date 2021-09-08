@@ -30,14 +30,15 @@ describe('Queue tests', () => {
   });
 
   describe('Add patient to the queue', () => {
-    const id = 1;
+    const userId = 1;
+    const patientId = 5;
 
     it('should add id to the queue', async () => {
-      sandbox.replace(patientService, 'addPatient', () => id);
+      sandbox.replace(patientService, 'getPatientIdByUserId', () => patientId);
       const spy = sandbox.spy(queueStorage, 'add');
 
-      expect(await queueService.addPatientToQueue(patient)).to.be.equal(patientName);
-      expect(spy.withArgs(id, reason).calledOnce).to.be.true;
+      expect(await queueService.addPatientToQueue({ userId, reason })).to.be.undefined;
+      expect(spy.withArgs(patientId, reason).calledOnce).to.be.true;
       expect(spy.returned(undefined));
     });
   });
@@ -55,7 +56,7 @@ describe('Queue tests', () => {
     it('should return next patient name when queue is not empty', async () => {
       sandbox.replace(queueStorage, 'getFirstKey', () => currentId);
       sandbox.replace(queueStorage, 'isEmpty', () => false);
-      sandbox.replace(patientService, 'getPatientName', () => patientName);
+      sandbox.replace(patientService, 'getPatientName', () => ({ name: patientName }));
 
       const spyGetFirstKey = sandbox.spy(queueStorage, 'getFirstKey');
       const spyIsEmpty = sandbox.spy(queueStorage, 'isEmpty');
@@ -96,7 +97,6 @@ describe('Queue tests', () => {
     it('should return next patient name when queue is not empty', async () => {
       const spyRemove = sandbox.spy(queueStorage, 'remove');
 
-      sandbox.replace(patientService, 'getPatientId', () => currentId);
       sandbox.replace(queueStorage, 'isEmpty', () => false);
       sandbox.replace(queueStorage, 'getFirstKey', () => nextId);
       sandbox.replace(patientService, 'getPatientName', () => nextPatient);
@@ -105,7 +105,6 @@ describe('Queue tests', () => {
 
       expect(await queueService.nextPatient(patientName)).to.equal(nextPatient);
       expect(spyRemove.calledOnce).to.be.true;
-      expect(spyRemove.calledWith(currentId)).to.be.true;
       expect(spyGetFirstKey.calledOnce).to.be.true;
       expect(spyGetFirstKey.calledAfter(spyRemove));
     });

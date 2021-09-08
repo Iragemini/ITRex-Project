@@ -6,13 +6,34 @@ const mysqlPatient = new MySQLPatient(db);
 
 describe('Patient repository tests', () => {
   const name = 'Patient_1';
+  const email = 'email@email.com';
+  const gender = 'male';
+  const birthDate = new Date();
   const id = 1;
+  const userId = 777;
+  const user = {
+    name,
+    email,
+    gender,
+    birthDate,
+    userId,
+  };
 
   describe('Create patient', () => {
     it('should return id', async () => {
-      db.patient.findOrCreate.withArgs({ name, where: { name } }).resolves([{ id }]);
-      expect(await mysqlPatient.createPatient({ name })).to.equal(id);
-      expect(db.patient.findOrCreate.calledWith({ name, where: { name } })).to.be.true;
+      const options = {
+        where: { user_id: userId },
+        defaults: {
+          name,
+          email,
+          gender,
+          birth_date: birthDate,
+          user_id: userId,
+        },
+      };
+      db.patient.findOrCreate.withArgs(options).resolves([{ id }]);
+      expect(await mysqlPatient.createPatient(user)).to.equal(id);
+      expect(db.patient.findOrCreate.calledWith(options)).to.be.true;
       expect(db.patient.findOrCreate.calledOnce).to.be.true;
     });
   });
@@ -35,7 +56,7 @@ describe('Patient repository tests', () => {
   describe('Get name by id', () => {
     it('should return name', async () => {
       db.patient.findByPk.withArgs(id).resolves({ name });
-      expect(await mysqlPatient.getPatientById(id)).to.equal(name);
+      expect(await mysqlPatient.getPatientById(id)).to.deep.equal({ name });
       expect(db.patient.findByPk.calledWith(id)).to.be.true;
       expect(db.patient.findByPk.calledOnce).to.be.true;
     });

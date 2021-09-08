@@ -1,18 +1,23 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import { find, add, remove } from './resolution.controllers.js';
+import {
+  find,
+  add,
+  remove,
+  getUserResolution,
+} from './resolution.controllers.js';
 import {
   nameSchema,
   resolutionSchema,
   bodySchema,
 } from '../schemas/schemas.js';
 import { validator, checkTTL } from '../middlewares/validate.js';
+import verifyToken from '../middlewares/verifyToken.js';
 
 const resolutionRouter = Router();
-const prefix = '/resolution/:name';
 
 resolutionRouter
-  .route(prefix)
+  .route('/doctor/:name')
   .get(validator(nameSchema, 'params'), asyncHandler(find))
   .patch(
     validator(bodySchema, 'body'),
@@ -21,10 +26,8 @@ resolutionRouter
     checkTTL,
     asyncHandler(add),
   );
-resolutionRouter.patch(
-  `${prefix}/delete`,
-  validator(nameSchema, 'params'),
-  asyncHandler(remove),
-);
+resolutionRouter.patch('/doctor/:name/delete', validator(nameSchema, 'params'), asyncHandler(remove));
+
+resolutionRouter.get('/patient', verifyToken, asyncHandler(getUserResolution));
 
 export default resolutionRouter;
