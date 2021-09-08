@@ -29,7 +29,7 @@ export default {
     },
   },
   auth: {
-    SECRET: 'secret',
+    SECRET: process.env.JWT_SECRET || 'secret',
     MIN_PASSWORD_LENGTH: 4,
     JWT_EXPIRE_TIME: 86400, // 24 hours
   },
