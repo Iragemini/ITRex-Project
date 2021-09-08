@@ -13,6 +13,14 @@ export default class UserService {
     this.patientService = patientService;
   }
 
+  verifyEmail = async (email) => {
+    const user = await this.repository.getUserByEmail(email);
+    if (user) {
+      return false;
+    }
+    return true;
+  };
+
   authenticate = async (user) => {
     const userEntity = await this.getUserByEmail(user.email);
     const userData = {
@@ -35,6 +43,12 @@ export default class UserService {
 
   createUser = async (data) => {
     const userData = { email: data.email, password: bcrypt.hashSync(data.password, 8) };
+    const isValidEmail = await this.verifyEmail(data.email);
+
+    if (!isValidEmail) {
+      throw new ApiError(400, 'Email is already exists');
+    }
+
     const patientData = {
       name: data.name,
       gender: data.gender,
