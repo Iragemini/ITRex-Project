@@ -13,20 +13,14 @@ export const create = async (req, res, next) => {
   res.sendStatus(201);
 };
 
-export const get = async (req, res, next) => {
-  const { email } = req.params;
-  const user = await userService.getUserByEmail(email);
-  res.status(200).json(user);
-};
-
 export const update = async (req, res, next) => {
-  const { id } = req.params;
-  const user = await userService.updateUser(id);
+  const { userId } = req.user;
+  const user = await userService.updateUser(userId);
   res.status(200).json(user);
 };
 
 export const remove = async (req, res, next) => {
-  const { id } = req.params;
-  await userService.deleteUser(id);
+  const { userId } = req.user;
+  await userService.deleteUser(userId);
   res.sendStatus(204);
 };

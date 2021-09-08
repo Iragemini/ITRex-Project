@@ -8,6 +8,7 @@ const {
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization;
+  const user = { userId: null };
 
   if (!token) {
     throw new ApiError(403, 'No token provided!');
@@ -17,7 +18,8 @@ const verifyToken = (req, res, next) => {
     if (err) {
       throw new ApiError(401, 'Unauthorized!');
     }
-    req.userId = decoded.id;
+    user.userId = decoded.id;
+    req.user = user;
     return next();
   });
 };

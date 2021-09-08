@@ -7,7 +7,7 @@ class AuthService extends Service {
   };
 
   registerUser = async (data) => {
-    const res = await this.postResource('/user', data);
+    const res = await this.postResource('/signup', data);
     return res;
   };
 

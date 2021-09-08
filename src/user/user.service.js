@@ -30,7 +30,7 @@ export default class UserService {
     const token = jwt.sign({ id: userEntity.user_id }, SECRET, {
       expiresIn: JWT_EXPIRE_TIME,
     });
-    return { accessToken: token, ...userData };
+    return { ...userData, accessToken: token };
   };
 
   createUser = async (data) => {

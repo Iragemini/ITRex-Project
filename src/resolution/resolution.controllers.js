@@ -23,7 +23,8 @@ export const remove = async (req, res, next) => {
 };
 
 export const getUserResolution = async (req, res, next) => {
-  let resolution = await resolutionService.findResolutionByUserId(req.userId);
+  const { userId } = req.user;
+  let resolution = await resolutionService.findResolutionByUserId(userId);
   if (!resolution) {
     resolution = 'Resolution not found';
   }

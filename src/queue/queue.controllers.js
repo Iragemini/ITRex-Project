@@ -7,7 +7,8 @@ export const getCurrent = async (req, res, next) => {
 
 export const add = async (req, res, next) => {
   const { reason } = req.body;
-  await queueService.addPatientToQueue({ userId: req.userId, reason });
+  const { userId } = req.user;
+  await queueService.addPatientToQueue({ userId, reason });
   res.sendStatus(201);
 };
 

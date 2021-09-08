@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'Clinic' });
 });
 
-app.use('/api/login', authRouter);
+app.use('/api', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api', queueRouter);
 app.use('/api/resolution', resolutionRouter);
