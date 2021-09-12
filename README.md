@@ -8,12 +8,14 @@ https://documenter.getpostman.com/view/15720374/U16kqk72
 - _`/api/user`_ - Authorization
   - **POST**   _`/signup`_ - user registration
   - **POST**   _`/login`_ - user authorization
-  - **POST**   _`/doctor/login`_ - doctor authorization
-- _`/api/queue`_ - Queue
+- _`/api/queue`_ - Queue (for patients);
+  - **POST**   _`/:doctorId`_ - get into queue
   - **GET**    _`/:doctorId`_ - return current patient in the queue
-  - **POST**   _`/:doctorId`_ - add new patient to queue
-  - **DELETE** _`/:doctorId`_ - delete current patient from the queue and return next
-- _`/api/resolution`_ - Resolution
+- _`/api/queue`_ - Queue (for doctors);
+  - **GET**    _`/`_ - return current patient in doctor's own queue 
+  - **DELETE** _`/`_ - delete current patient from doctor's own queue and return next
+- _`/api/resolutions`_ - Resolution
+  - **GET**    _`/`_ - return all resolutions
   - **GET**    _`/?patientName=`_ - return resolution by patient name
   - **GET**    _`/me`_ - return resolutions for authorized user
   - **POST**   _`/`_ - add a new resolution
@@ -21,9 +23,20 @@ https://documenter.getpostman.com/view/15720374/U16kqk72
 
 # How to use application:
 
-### **Before start**:
+## **Doctor accounts that you can use:**
 
-- Application supports two types of storage for queue: **_im memory_** (deprecated) and **_redis_**. You can switch this option in `config.js` file : `config.js -> storage -> queueType: 'redis' /* choose 'redis' or 'memory' */`
+email: 'doctor1@gmail.com',
+password: '12345678',
+
+email: 'doctor2@gmail.com',
+password: '12345678',
+
+email: 'doctor3@gmail.com',
+password: '12345678',
+
+## **Before start:**
+
+You may need to create a "clinic" database via MySQL shell.
 
 ## **Local run**
 
@@ -41,7 +54,7 @@ https://documenter.getpostman.com/view/15720374/U16kqk72
 ```
 MYSQLDB_USER=root
 MYSQLDB_ROOT_PASSWORD=<your db password>
-MYSQLDB_DATABASE=itrex-mysql
+MYSQLDB_DATABASE=clinic
 MYSQLDB_LOCAL_PORT=3306
 MYSQLDB_DOCKER_PORT=3306
 
@@ -59,11 +72,11 @@ Stop application:
 docker-compose down
 ```
 
-- Application is available on **`http://localhost:3000`**
+- Application is available on **`http://127.0.0.1:3000`**
 
 ## **Tests**
 
-Tests can be run via the following command:
+Tests (deprecated) can be run via the following command:
 
 ```sh
 npm run test

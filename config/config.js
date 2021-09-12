@@ -4,7 +4,7 @@ export default {
   },
   ttl: -1,
   storage: {
-    queueType: 'redis' /* redis, memory */,
+    queueType: 'redis' /* redis */,
     redis: {
       client: {
         port: process.env.REDIS_PORT || 6379,
@@ -16,7 +16,7 @@ export default {
     mysql: {
       host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '7895leon',
+      password: process.env.DB_PASSWORD || 'root',
       db: process.env.DB_NAME || 'clinic',
       port: process.env.DB_PORT || 3306,
       dialect: 'mysql',
