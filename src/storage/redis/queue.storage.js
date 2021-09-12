@@ -1,6 +1,6 @@
 export default class RedisQueue {
   constructor(createClient) {
-    this.queueName = 'queue';
+    this.listName = 'queue';
     this.redisClient = createClient();
   }
 
@@ -8,28 +8,31 @@ export default class RedisQueue {
     await this.redisClient.FLUSHALL();
   }
 
-  async get() {
-    const data = await this.redisClient.LRANGE(this.queueName, 0, -1);
-    return data;
-  }
+  // async get(doctorId) { // not required?
+  //   const data = await this.redisClient.LRANGE(`${this.listName}:${doctorId}`, 0, -1);
 
-  async getFirstKey() {
-    const keys = await this.get();
-    if (!keys) {
+  //   return data;
+  // }
+
+  async getFirstKey(doctorId) {
+    const value = await this.redisClient.LINDEX(`${this.listName}:${doctorId}`, 0);
+
+    if (!value) {
       return null;
     }
-    return keys[0].split(':')[0];
+
+    return value;
   }
 
-  async add(id, reason = '') {
-    await this.redisClient.RPUSH(this.queueName, `${id}:${reason}`);
+  async add(patientId, doctorId) {
+    await this.redisClient.RPUSH(`${this.listName}:${doctorId}`, `${patientId}`);
   }
 
-  async isEmpty() {
-    return (await this.redisClient.LLEN(this.queueName)) === 0;
+  async isEmpty(doctorId) {
+    return (await this.redisClient.LLEN(`${this.listName}:${doctorId}`)) === 0;
   }
 
-  async remove() {
-    await this.redisClient.LPOP(this.queueName);
+  async remove(doctorId) {
+    await this.redisClient.LPOP(`${this.listName}:${doctorId}`);
   }
 }

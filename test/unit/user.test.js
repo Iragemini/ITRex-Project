@@ -34,7 +34,6 @@ describe('User tests', () => {
     birthDate,
     birth_date: birthDate,
     userId,
-    user_id: userId,
   };
 
   describe('Create user', () => {

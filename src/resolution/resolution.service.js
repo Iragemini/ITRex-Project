@@ -1,5 +1,5 @@
-import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
+import isResolutionExpired from '../utils/resolution.js';
 
 const defaultTTL = config.ttl;
 
@@ -9,38 +9,79 @@ export default class ResolutionService {
     this.patientService = patientService;
   }
 
-  addResolution = async (name, resolution, ttl = defaultTTL) => {
-    const patientId = await this.patientService.getPatientId(name);
-    if (await this.findResolutionById(patientId)) {
-      await this.repository.update(patientId, resolution, ttl);
-    } else {
-      await this.repository.add(patientId, { resolution, ttl });
+  async checkForNotExpiredOrDelete(resolution) {
+    let expireTime;
+
+    if (resolution.expire) {
+      expireTime = resolution.expire.getTime();
     }
-  };
 
-  deleteResolution = async (name) => {
-    const patientId = await this.patientService.getPatientId(name);
-    if (!(await this.findResolutionById(patientId))) {
-      throw new ApiError(404, `Resolution for ${name} not found`);
+    if (isResolutionExpired(expireTime)) {
+      await this.deleteResolutionById(resolution.id);
+
+      return false;
     }
-    await this.repository.removeResolution(patientId);
+
+    return true;
+  }
+
+  async filterResolutionsArrayByExpiry(resolutions) {
+    const data = await Promise.all(
+      resolutions.map(async (resolution) => {
+        const notExpired = await this.checkForNotExpiredOrDelete(resolution);
+
+        if (notExpired) {
+          return resolution;
+        }
+
+        return undefined;
+      }),
+    );
+
+    const filteredResolutions = data.filter(
+      (resolution) => resolution !== undefined,
+    );
+
+    return filteredResolutions;
+  }
+
+  addResolution = async (body, doctor) => {
+    const data = body;
+    data.doctorName = doctor.name;
+    data.doctorSpecialization = doctor['specializations.title'];
+
+    if (!body.ttl) { data.ttl = defaultTTL; } else {
+      data.ttl = body.ttl;
+    }
+
+    const resolution = await this.repository.add(data);
+
+    return resolution;
   };
 
-  findResolution = async (name) => {
-    const patientId = await this.patientService.getPatientId(name);
-    const { resolution } = await this.repository.getResolution(patientId);
+  getAllResolutions = async (query) => {
+    const resolutions = await this.repository.getAllResolutions(query);
 
-    return resolution || null;
+    if (resolutions.length !== 0) {
+      return this.filterResolutionsArrayByExpiry(resolutions);
+    }
+
+    return resolutions;
   };
 
-  findResolutionById = async (patientId) => {
-    const { resolution } = await this.repository.getResolution(patientId);
-    return resolution || null;
+  getResolutionsByUserId = async (userId) => {
+    const resolutions = await this.repository.getResolutionsByUserId(userId);
+
+    if (resolutions.length !== 0) {
+      return this.filterResolutionsArrayByExpiry(resolutions);
+    }
+
+    return resolutions;
   };
 
-  findResolutionByUserId = async (userId) => {
-    const patientId = await this.patientService.getPatientIdByUserId(userId);
-    const resolution = await this.findResolutionById(patientId);
+  deleteResolutionById = async (id) => {
+    const resolution = await this.repository.removeResolution(id);
+
     return resolution;
   };
 }

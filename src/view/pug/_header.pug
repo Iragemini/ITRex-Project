@@ -1,0 +1,35 @@
+header.header
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-success
+    .container-fluid
+      a.navbar-brand.mx-2.m-1(href='http://127.0.0.1:3000/') Clinic
+      span.navbar-text.mx-2
+      ul.navbar-nav.me-auto.mb-2.mb-lg-0
+        li.nav-item
+          a.nav-link(href='/') Home
+        if user
+          -if (user['roles.title'] === 'patient')
+            li.nav-item
+              a.nav-link(href='/personal-resolutions') Personal Resolutions
+          -if (user['roles.title'] === 'doctor')
+            li.nav-item
+              a.nav-link(href='/resolutions') Search Resolutions
+
+      if user
+        form.d-flex.justify-content-end.m-1
+          //- ul.navbar-nav.me-auto
+          //-   li.nav-item
+          //-     a.nav-link.m-1(href='#')
+          //-       span= user.name.split(' ')[0]
+          a.btn.btn-outline-light.m-1#btn-signout(href='#') Sign out
+      else
+        form.d-flex.justify-content-end.m-1
+          ul.navbar-nav.me-auto
+              li.nav-item
+                a.nav-link.m-1(href='/doctor-signin') [doctor page]
+              span.navbar-text.mx-2
+              span.navbar-text.mx-2
+          ul.navbar-nav.me-auto
+            li.nav-item
+              a.nav-link.m-1(href='/signin') Sign in
+          a.btn.btn-outline-light.m-1(href='/signup') Sign up
+

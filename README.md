@@ -1,28 +1,29 @@
 # Queue-patient-resolution application
 
+Documentation:
+https://documenter.getpostman.com/view/15720374/U16kqk72
+
 ## Endpoints
 
-- Queue: _`/api/queue`_
-  - **GET:** _`/api/queue`_ - return current patient in queue
-  - **POST:** _`/api/queue`_ - add new patient to queue
-  - **DELETE:** _`/api/queue`_ - delete current patient from the queue and return next
-- Resolution _`/api/resolution`_
-  - **GET** _`/api/resolution/doctor/:name`_ - return resolution by name
-  - **GET** _`/api/resolution/patient`_ - return resolution for authorized user
-  - **PATCH:** _`/api/resolution/doctor/:name`_ - add new resolution to patient
-  - **PATCH:** _`/api/resolution/doctor/:name/delete`_ - delete resolution
-- User
-  - **POST** _`/api/user`_ - user registration
-- Log in
-  - **POST** _`/api/login`_ - user authorization
-
-#
+- _`/api/user`_ - Authorization
+  - **POST**   _`/signup`_ - user registration
+  - **POST**   _`/login`_ - user authorization
+  - **POST**   _`/doctor/login`_ - doctor authorization
+- _`/api/queue`_ - Queue
+  - **GET**    _`/:doctorId`_ - return current patient in the queue
+  - **POST**   _`/:doctorId`_ - add new patient to queue
+  - **DELETE** _`/:doctorId`_ - delete current patient from the queue and return next
+- _`/api/resolution`_ - Resolution
+  - **GET**    _`/?patientName=`_ - return resolution by patient name
+  - **GET**    _`/me`_ - return resolutions for authorized user
+  - **POST**   _`/`_ - add a new resolution
+  - **DELETE** _`/:resolutionId`_ - delete resolution
 
 # How to use application:
 
 ### **Before start**:
 
-- Application supports two types of storage for queue: **_im memory_** and **_redis_**. You might switch this option in `config.js` file : `config.js -> storage -> queueType: 'redis' /* choose 'redis' or 'memory' */`
+- Application supports two types of storage for queue: **_im memory_** (deprecated) and **_redis_**. You can switch this option in `config.js` file : `config.js -> storage -> queueType: 'redis' /* choose 'redis' or 'memory' */`
 
 ## **Local run**
 
@@ -48,16 +49,22 @@ NODE_LOCAL_PORT=3000
 NODE_DOCKER_PORT=3000
 ```
 
-- Start application
+Start application:
+```sh
+docker-compose up -d
+```
 
-  - `docker-compose up -d`
-
-- Stop application
-
-  - `docker-compose down`
+Stop application:
+```sh
+docker-compose down
+```
 
 - Application is available on **`http://localhost:3000`**
 
 ## **Tests**
 
-- tests starts with `npm run test` command
+Tests can be run via the following command:
+
+```sh
+npm run test
+```

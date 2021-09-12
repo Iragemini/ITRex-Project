@@ -1,32 +1,46 @@
 import resolutionService from './index.js';
+import doctorService from '../doctor/index.js';
+import ApiError from '../errors/ApiError.js';
 
-export const add = async (req, res, next) => {
-  const { name } = req.params;
-  const { resolution, ttl } = req.body;
-  await resolutionService.addResolution(name, resolution, ttl);
-  res.sendStatus(201);
+export const createResolution = async (req, res, next) => {
+  const doctor = await doctorService.getDoctorByUserId(req.user.id);
+  const newResolution = await resolutionService.addResolution(req.body, doctor);
+
+  res.status(201).json({
+    data: newResolution,
+  });
 };
 
-export const find = async (req, res, next) => {
-  const { name } = req.params;
-  let resolution = await resolutionService.findResolution(name);
-  if (!resolution) {
-    resolution = `Resolution for ${name} not found`;
+export const getAllResolutions = async (req, res, next) => {
+  const resolutions = await resolutionService.getAllResolutions(req.query);
+
+  if (resolutions.length === 0) {
+    return next(new ApiError(404, 'No resolutions found'));
   }
-  res.status(200).json({ resolution });
+
+  res.status(200).json({
+    data: resolutions,
+  });
 };
 
-export const remove = async (req, res, next) => {
-  const { name } = req.params;
-  await resolutionService.deleteResolution(name);
-  res.sendStatus(200);
-};
+export const getResolutionsByUserId = async (req, res, next) => {
+  const resolutions = await resolutionService.getResolutionsByUserId(req.user.id);
 
-export const getUserResolution = async (req, res, next) => {
-  const { userId } = req.user;
-  let resolution = await resolutionService.findResolutionByUserId(userId);
-  if (!resolution) {
-    resolution = 'Resolution not found';
+  if (resolutions.length === 0) {
+    return next(new ApiError(404, 'No resolutions found'));
   }
-  res.status(200).json({ resolution });
+
+  res.status(200).json({
+    data: resolutions,
+  });
+};
+
+export const deleteResolutionById = async (req, res, next) => {
+  const resolution = await resolutionService.deleteResolutionById(req.params.resolutionId);
+
+  if (resolution === 0) { // sequelize-specific case, it returns 0 if no rows were destroyed
+    return next(new ApiError(404, 'Resolution not found'));
+  }
+
+  res.sendStatus(204);
 };

@@ -6,37 +6,44 @@ export default class QueueService {
     this.patientService = patientService;
   }
 
-  addPatientToQueue = async (data) => {
-    const { userId, reason } = data;
-    const id = await this.patientService.getPatientIdByUserId(userId);
-    await this.storage.add(id, reason);
+  addPatientToQueue = async (userId, doctorId) => {
+    const patient = await this.patientService.getPatientByUserId(userId);
+
+    await this.storage.add(patient.id, doctorId);
   };
 
-  nextPatient = async () => {
+  getCurrentPatient = async (doctorId) => {
+    let current = null;
+    let currentId = null;
+
+    // const isStorageEmpty = await this.storage.isEmpty(doctorId);
+
+    // commented out so the frontend will work ;/
+    // if (isStorageEmpty) {
+    //   throw new ApiError(404, 'No patients in the queue');
+    // }
+
+    currentId = await this.storage.getFirstKey(doctorId);
+    current = await this.patientService.getPatientById(currentId);
+
+    return current;
+  };
+
+  nextPatient = async (doctorId) => {
     let nextInQueue = null;
     let nextId = null;
 
-    await this.storage.remove();
+    await this.storage.remove(doctorId);
 
-    const isStorageEmpty = await this.storage.isEmpty();
+    const isStorageEmpty = await this.storage.isEmpty(doctorId);
+
     if (!isStorageEmpty) {
-      nextId = await this.storage.getFirstKey();
-      nextInQueue = await this.patientService.getPatientName(nextId);
+      nextId = await this.storage.getFirstKey(doctorId);
+      nextInQueue = await this.patientService.getPatientById(nextId);
     } else {
-      throw new ApiError(400, 'No patients in the queue');
+      throw new ApiError(404, 'No patients in the queue');
     }
-    return nextInQueue;
-  };
 
-  getCurrentPatient = async () => {
-    let current = null;
-    let currentId = null;
-    const isStorageEmpty = await this.storage.isEmpty();
-    if (isStorageEmpty) {
-      throw new ApiError(400, 'No patients in the queue');
-    }
-    currentId = await this.storage.getFirstKey();
-    current = await this.patientService.getPatientName(currentId);
-    return current.name;
+    return nextInQueue;
   };
 }

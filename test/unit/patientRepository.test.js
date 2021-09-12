@@ -22,13 +22,13 @@ describe('Patient repository tests', () => {
   describe('Create patient', () => {
     it('should return id', async () => {
       const options = {
-        where: { user_id: userId },
+        where: { userId },
         defaults: {
           name,
           email,
           gender,
-          birth_date: birthDate,
-          user_id: userId,
+          birthDate,
+          userId,
         },
       };
       db.patient.findOrCreate.withArgs(options).resolves([{ id }]);

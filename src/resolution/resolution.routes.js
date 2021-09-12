@@ -1,33 +1,51 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import {
-  find,
-  add,
-  remove,
-  getUserResolution,
+  createResolution,
+  getAllResolutions,
+  getResolutionsByUserId,
+  deleteResolutionById,
 } from './resolution.controllers.js';
-import {
-  nameSchema,
-  resolutionSchema,
-  bodySchema,
-} from '../schemas/schemas.js';
-import { validator, checkTTL } from '../middlewares/validate.js';
+// import {
+//   nameSchema,
+//   resolutionSchema,
+//   bodySchema,
+// } from '../schemas/schemas.js';
+// import { validator, checkTTL } from '../middlewares/validate.js';
 import verifyToken from '../middlewares/verifyToken.js';
+import restrictTo from '../middlewares/restrictRoute.js';
 
-const resolutionRouter = Router();
+const router = Router();
 
-resolutionRouter
-  .route('/doctor/:name')
-  .get(validator(nameSchema, 'params'), asyncHandler(find))
-  .patch(
-    validator(bodySchema, 'body'),
-    validator(nameSchema, 'params'),
-    validator(resolutionSchema, 'body'),
-    checkTTL,
-    asyncHandler(add),
+// no validators as of now
+
+router
+  .route('/me')
+  .get(
+    asyncHandler(verifyToken),
+    restrictTo('patient'),
+    asyncHandler(getResolutionsByUserId),
   );
-resolutionRouter.patch('/doctor/:name/delete', validator(nameSchema, 'params'), asyncHandler(remove));
 
-resolutionRouter.get('/patient', verifyToken, asyncHandler(getUserResolution));
+router
+  .route('/')
+  .post(
+    asyncHandler(verifyToken),
+    restrictTo('doctor'),
+    asyncHandler(createResolution),
+  )
+  .get(
+    asyncHandler(verifyToken),
+    restrictTo('doctor'),
+    asyncHandler(getAllResolutions),
+  );
 
-export default resolutionRouter;
+router
+  .route('/:resolutionId')
+  .delete(
+    asyncHandler(verifyToken),
+    restrictTo('doctor'),
+    asyncHandler(deleteResolutionById),
+  );
+
+export default router;
