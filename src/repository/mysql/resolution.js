@@ -7,8 +7,6 @@ export default class MySQLResolution {
     this.Resolution = this.db.resolution;
   }
 
-  // expiry is not yet re-implemented
-
   async add(data) {
     let expire = null;
 

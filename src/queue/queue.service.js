@@ -16,13 +16,6 @@ export default class QueueService {
     let current = null;
     let currentId = null;
 
-    // const isStorageEmpty = await this.storage.isEmpty(doctorId);
-
-    // commented out so the frontend will work ;/
-    // if (isStorageEmpty) {
-    //   throw new ApiError(404, 'No patients in the queue');
-    // }
-
     currentId = await this.storage.getFirstKey(doctorId);
     current = await this.patientService.getPatientById(currentId);
 

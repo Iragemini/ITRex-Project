@@ -47,27 +47,4 @@ export default class MySQLUser {
 
     return user;
   };
-
-  /* not used */
-  // updateUser = async (id, data) => {
-  //   const user = await this.User.update(data, { where: { id } });
-
-  //   return user;
-  // };
-
-  // /* not used */
-  // deleteUser = async (id) => {
-  //   await this.User.destroy({ where: { id } });
-  // };
-
-  // /* not used */
-  // isUserExists = async (id) => {
-  //   const user = await this.User.findOne({
-  //     where: { id },
-  //   });
-  //   if (!user) {
-  //     return false;
-  //   }
-  //   return true;
-  // };
 }

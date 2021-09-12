@@ -32,17 +32,4 @@ export default class MySQLPatient {
 
     return patient;
   };
-
-  // getIdByName = async (name) => {
-  //   const whereStatement = {};
-  //   whereStatement.name = name;
-
-  //   const patient = await this.Patient.findOne({
-  //     where: whereStatement,
-  //   });
-  //   if (!patient) {
-  //     return null;
-  //   }
-  //   return patient;
-  // };
 }

@@ -17,8 +17,6 @@ import restrictTo from '../middlewares/restrictRoute.js';
 
 const router = Router();
 
-// no validators as of now
-
 router
   .route('/me')
   .get(
