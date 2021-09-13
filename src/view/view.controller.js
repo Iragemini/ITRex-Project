@@ -17,7 +17,6 @@ const isLoggedIn = async (req, res, next) => {
       const decoded = await promisify(jwt.verify)(req.cookies.jwt, SECRET);
 
       const currentUser = await userService.getUserById(decoded.id);
-      console.log(currentUser);
 
       if (!currentUser) {
         return next();
@@ -51,17 +50,16 @@ const getDoctorList = async (req, res, next) => {
 };
 
 const getQueue = async (req, res, next) => {
-  const currentPatient = await queueService.getCurrentPatient(req.params.doctorId);
-
-  console.log(req.params);
-  const doctor = await doctorService.getDoctorById(req.params.doctorId);
-
-  console.log(doctor);
   const queue = {};
 
-  if (currentPatient) {
+  try {
+    const currentPatient = await queueService.getCurrentPatient({ id: req.params.doctorId });
     queue.current = currentPatient.name;
+  } catch (error) {
+    queue.current = undefined;
   }
+
+  const doctor = await doctorService.getDoctorById(req.params.doctorId);
 
   res.status(200).render('queue', {
     title: 'Queue',
@@ -72,7 +70,7 @@ const getQueue = async (req, res, next) => {
 
 const processPatient = async (req, res, next) => {
   const doctor = await doctorService.getDoctorByUserId(req.user.id);
-  const currentPatient = await queueService.getCurrentPatient(doctor.id);
+  const currentPatient = await queueService.getCurrentPatient({ id: doctor.id });
 
   const queue = {};
 
@@ -88,7 +86,13 @@ const processPatient = async (req, res, next) => {
 };
 
 const getPersonalResolutions = async (req, res, next) => {
-  const resolutions = await resolutionService.getResolutionsByUserId(req.user.id);
+  let resolutions;
+
+  try {
+    resolutions = await resolutionService.getResolutionsByUserId(req.user.id);
+  } catch (error) {
+    resolutions = undefined;
+  }
 
   res.status(200).render('personalResolutions', {
     title: 'Resolutions',
@@ -97,7 +101,13 @@ const getPersonalResolutions = async (req, res, next) => {
 };
 
 const getAllResolutionsByName = async (req, res, next) => {
-  const resolutions = await resolutionService.getAllResolutions(req.query);
+  let resolutions;
+
+  try {
+    resolutions = await resolutionService.getAllResolutions(req.query);
+  } catch (error) {
+    resolutions = undefined;
+  }
 
   res.status(200).render('resolutions', {
     title: 'Resolutions',

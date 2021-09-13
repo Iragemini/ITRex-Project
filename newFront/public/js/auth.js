@@ -12,7 +12,6 @@ const signin = async (email, password) => {
 
   const res = await axios(config)
     .then(function (response) {
-      console.log(response);
       if (response.status === 200) {
         location.assign('/');
       }
@@ -36,7 +35,6 @@ const doctorSignin = async (email, password) => {
 
   const res = await axios(config)
     .then(function (response) {
-      console.log(response);
       if (response.status === 200) {
         location.assign('/process');
       }

@@ -24,26 +24,28 @@ const verifyToken = async (req, res, next) => {
   }
 
   if (!token) {
-    throw new ApiError(403, 'No token provided!');
+    throw new ApiError(401, 'No token provided!');
   }
 
+  // checking for the wrong signature
   let decoded;
 
-  // checking for the wrong signature
   try {
     decoded = await promisify(jwt.verify)(token, SECRET);
-  } catch (error) {
-    return next(new ApiError(401, 'The token is invalid.'));
+  } catch {
+    throw new ApiError(401, 'Unauthorized!');
   }
 
   // added a check for no user
+  let user;
+
   try {
-    const user = await userService.getUserById(decoded.id);
-    req.user = user;
-  } catch (error) {
-    return next(new ApiError(401, 'The token is invalid.'));
+    user = await userService.getUserById(decoded.id);
+  } catch {
+    throw new ApiError(401, 'Unauthorized!');
   }
 
+  req.user = user;
   req.user.password = undefined;
 
   next();

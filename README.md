@@ -34,10 +34,6 @@ password: '12345678',
 email: 'doctor3@gmail.com',
 password: '12345678',
 
-## **Before start:**
-
-You may need to create a "clinic" database via MySQL shell.
-
 ## **Local run**
 
 - Git clone this repo
@@ -54,7 +50,7 @@ You may need to create a "clinic" database via MySQL shell.
 ```
 MYSQLDB_USER=root
 MYSQLDB_ROOT_PASSWORD=<your db password>
-MYSQLDB_DATABASE=clinic
+MYSQLDB_DATABASE=itrex-mysql
 MYSQLDB_LOCAL_PORT=3306
 MYSQLDB_DOCKER_PORT=3306
 

@@ -72,7 +72,6 @@ if (submitResolutionForm) {
 
     const patient = await getPatientId();
     const patientId = patient.data.current.id;
-    console.log(patientId);
     const resolution = document.getElementById('doctor-new-resolution').value;
     const ttl = document.getElementById('timeToLive').value;
 
@@ -109,13 +108,10 @@ if (deleteResolutionButtons) {
 
   const array = Array.from(deleteResolutionButtons);
 
-  console.log(array);
-
   array.forEach(element => {
     element.addEventListener('click', () => {
       const id = element.id;
       const resolutionId = id.replace('delete-button-', '');
-      console.log(resolutionId);
       deleteResolution(resolutionId);
     });
   });

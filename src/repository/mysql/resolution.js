@@ -19,7 +19,7 @@ export default class MySQLResolution {
     try {
       newResolution = await this.Resolution.create({ expire, ...data });
     } catch (error) {
-      throw new ApiError(500, `ERROR: ${error.original.sqlMessage}`);
+      throw new ApiError(500, `ERROR: ${error}`);
     }
 
     return newResolution;
@@ -33,14 +33,7 @@ export default class MySQLResolution {
     if (patientName) {
       const sequelizeQuery = `
       SELECT 
-        resolutions.id, 
-        resolutions.patientId, 
-        resolutions.resolution, 
-        resolutions.expire, 
-        resolutions.doctorName, 
-        resolutions.doctorSpecialization,
-        resolutions.createdAt, 
-        resolutions.updatedAt
+        resolutions.*
       FROM 
         resolutions 
         INNER JOIN patients ON patients.id = resolutions.patientId 
@@ -62,14 +55,7 @@ export default class MySQLResolution {
   async getResolutionsByUserId(id) {
     const query = `
     SELECT 
-      resolutions.id, 
-      resolutions.patientId, 
-      resolutions.resolution, 
-      resolutions.expire, 
-      resolutions.doctorName, 
-      resolutions.doctorSpecialization,
-      resolutions.createdAt, 
-      resolutions.updatedAt 
+      resolutions.*
     FROM 
       resolutions 
       INNER JOIN patients ON patients.id = resolutions.patientId 

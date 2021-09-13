@@ -1,12 +1,14 @@
 import config from '../../config/config.js';
 import isResolutionExpired from '../utils/resolution.js';
+import ApiError from '../errors/ApiError.js';
 
 const defaultTTL = config.ttl;
 
 export default class ResolutionService {
-  constructor(repository, patientService) {
+  constructor(repository, patientService, doctorService) {
     this.repository = repository;
     this.patientService = patientService;
+    this.doctorService = doctorService;
   }
 
   async checkForNotExpiredOrDelete(resolution) {
@@ -45,7 +47,9 @@ export default class ResolutionService {
     return filteredResolutions;
   }
 
-  addResolution = async (body, doctor) => {
+  addResolution = async (body, doctorUserId) => {
+    const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
+
     const data = body;
     data.doctorName = doctor.name;
     data.doctorSpecialization = doctor['specializations.title'];
@@ -62,25 +66,29 @@ export default class ResolutionService {
   getAllResolutions = async (query) => {
     const resolutions = await this.repository.getAllResolutions(query);
 
-    if (resolutions.length !== 0) {
-      return this.filterResolutionsArrayByExpiry(resolutions);
+    if (resolutions.length === 0) {
+      throw new ApiError(404, 'No resolutions found');
     }
 
-    return resolutions;
+    return this.filterResolutionsArrayByExpiry(resolutions);
   };
 
   getResolutionsByUserId = async (userId) => {
     const resolutions = await this.repository.getResolutionsByUserId(userId);
 
-    if (resolutions.length !== 0) {
-      return this.filterResolutionsArrayByExpiry(resolutions);
+    if (resolutions.length === 0) {
+      throw new ApiError(404, 'No resolutions found');
     }
 
-    return resolutions;
+    return this.filterResolutionsArrayByExpiry(resolutions);
   };
 
   deleteResolutionById = async (id) => {
     const resolution = await this.repository.removeResolution(id);
+
+    if (resolution === 0) { // sequelize-specific case, it returns 0 if no rows were destroyed
+      throw new ApiError(404, 'Resolution not found');
+    }
 
     return resolution;
   };

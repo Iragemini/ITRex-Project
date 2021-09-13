@@ -1,3 +1,5 @@
+import ApiError from '../../errors/ApiError.js';
+
 export default class MySQLUser {
   constructor(db) {
     this.db = db;
@@ -6,18 +8,18 @@ export default class MySQLUser {
   }
 
   createUser = async (data) => {
-    let userData;
+    let user;
 
     try {
-      userData = await this.User.create(data);
+      user = await this.User.create(data);
       if (data.role === 'patient') {
-        userData.setRoles(1);
+        user.setRoles(1);
       }
     } catch (error) {
-      console.log(error);
+      throw new ApiError(500, `ERROR: ${error}`);
     }
 
-    return userData;
+    return user;
   };
 
   getUserByEmail = async (email) => {

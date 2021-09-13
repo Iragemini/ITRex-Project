@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import {
-  createResolution,
-  getAllResolutions,
-  getResolutionsByUserId,
-  deleteResolutionById,
+  add,
+  findAll,
+  findAllByUserId,
+  remove,
 } from './resolution.controllers.js';
 // import {
 //   nameSchema,
@@ -22,7 +22,7 @@ router
   .get(
     asyncHandler(verifyToken),
     restrictTo('patient'),
-    asyncHandler(getResolutionsByUserId),
+    asyncHandler(findAllByUserId),
   );
 
 router
@@ -30,12 +30,12 @@ router
   .post(
     asyncHandler(verifyToken),
     restrictTo('doctor'),
-    asyncHandler(createResolution),
+    asyncHandler(add),
   )
   .get(
     asyncHandler(verifyToken),
     restrictTo('doctor'),
-    asyncHandler(getAllResolutions),
+    asyncHandler(findAll),
   );
 
 router
@@ -43,7 +43,7 @@ router
   .delete(
     asyncHandler(verifyToken),
     restrictTo('doctor'),
-    asyncHandler(deleteResolutionById),
+    asyncHandler(remove),
   );
 
 export default router;

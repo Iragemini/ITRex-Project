@@ -1,6 +1,4 @@
 export const deleteResolution = async (resolutionId) => {
-  console.log(resolutionId);
-
   const config = {
     method: 'DELETE',
     url: `http://127.0.0.1:3000/api/resolutions/${resolutionId}`,

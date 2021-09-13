@@ -43,25 +43,17 @@ app.use('/api/users', userRouter); // not used
 
 app.use((req, res) => {
   res.status(404);
-  if (req.originalUrl.startsWith('/api')) {
-    if (req.accepts('json')) {
-      res.json({ message: 'Route not found' });
-    } else {
-      res.send('Route not found');
-    }
+  if (req.accepts('json')) {
+    res.json({ message: 'Route not found' });
   } else {
-    res.status(500).render('error', {
-      title: 'Something went wrong!',
-      code: 500,
-      msg: 'Something went wrong!',
-    });
+    res.send('Route not found');
   }
 });
 
 app.use(errorHandler);
 
 app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}...\n`);
+  console.log(`Server has been started on port ${PORT}...`);
 
   await db.init();
 });

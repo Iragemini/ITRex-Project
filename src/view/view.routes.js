@@ -1,5 +1,5 @@
 import express from 'express';
-// import asyncHandler from 'express-async-handler';
+import asyncHandler from 'express-async-handler';
 import viewController from './view.controller.js';
 import verifyToken from '../middlewares/verifyToken.js';
 
@@ -26,13 +26,14 @@ router.get(
 router.get(
   '/personal-resolutions',
   viewController.isLoggedIn,
-  verifyToken,
+  asyncHandler(verifyToken),
   viewController.getPersonalResolutions,
 );
 
 router.get(
   '/resolutions',
   viewController.isLoggedIn,
+  asyncHandler(verifyToken),
   viewController.getAllResolutionsByName,
 );
 

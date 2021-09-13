@@ -17,7 +17,7 @@ export default {
       host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || 'root',
-      db: process.env.DB_NAME || 'clinic',
+      db: process.env.DB_NAME || 'itrex-mysql',
       port: process.env.DB_PORT || 3306,
       dialect: 'mysql',
       pool: {

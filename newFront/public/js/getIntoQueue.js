@@ -4,8 +4,7 @@ const getIntoQueue = async () => {
   const test = window.location.href;
   const array = test.split('/')
 
-  const doctorId = array[array.length - 1].replace('doctor-', '');
-
+  const doctorId = array[array.length - 1].replace('doctor-', '').replace('#', '');
 
   const config = {
     method: 'POST',
@@ -14,8 +13,9 @@ const getIntoQueue = async () => {
 
   const res = await axios(config)
     .then(function (response) {
-      if (response.status === 200) {
-        location.reload(true);
+      if (response.status === 201) {
+        console.log(response);
+        // location.reload(true);
       }
     })
     .catch(function (error) {
