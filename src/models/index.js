@@ -176,7 +176,7 @@ const initDoctors = async () => {
   });
 
   await db.doctor.findOrCreate({
-    where: { name: 'Ms. Andersen' },
+    where: { name: 'Mr. Lecter' },
     defaults: {
       userId: 3,
       name: 'Mr. Lecter',

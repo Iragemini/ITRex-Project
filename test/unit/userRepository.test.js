@@ -12,41 +12,53 @@ describe('User repository tests', () => {
   const gender = 'male';
   const birthDate = '22.01.2016';
   const password = 'password';
-  const userId = 777;
+  const id = 777;
   const user = {
+    id,
     name,
     email,
     password,
     gender,
     birthDate,
-    birth_date: birthDate,
-    userId,
   };
 
   describe('Create user', () => {
     it('should return user id', async () => {
-      db.user.create.withArgs({ email, password }).resolves({ id: userId });
-      expect(await mysqlUser.createUser({ email, password })).to.be.equal(userId);
+      db.user.create.withArgs({ email, password }).resolves(user);
+      expect(await mysqlUser.createUser({ email, password })).to.be.equal(user);
       expect(db.user.create.calledWith({ email, password })).to.be.true;
     });
   });
 
   describe('Get user by email', () => {
     it('should return user data', async () => {
-      db.sequelize.query.resolves([user]);
+      db.user.findOne.resolves(user);
 
       expect(await mysqlUser.getUserByEmail(email)).to.be.deep.equal(user);
-      expect(db.sequelize.query.calledOnce).to.be.true;
+      expect(db.user.findOne.calledWith({
+        raw: true,
+        where: { email },
+        include: [
+          db.role,
+        ],
+      })).to.be.true;
 
       sandbox.restore();
     });
   });
 
-  describe('Get user data by id', () => {
+  describe('Get user by id', () => {
     it('should return user data', async () => {
-      db.user.findOne.withArgs({ where: { id: userId } }).resolves(user);
-      expect(await mysqlUser.getUserById(userId)).to.be.deep.equal(user);
-      expect(db.user.findOne.calledWith({ where: { id: userId } })).to.be.true;
+      db.user.findOne.withArgs({ where: { id } }).resolves(user);
+
+      expect(await mysqlUser.getUserById(id)).to.be.deep.equal(user);
+      expect(db.user.findOne.calledWith({
+        raw: true,
+        where: { id },
+        include: [
+          db.role,
+        ],
+      })).to.be.true;
     });
   });
 });

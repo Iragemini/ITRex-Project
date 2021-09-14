@@ -11,63 +11,74 @@ const sandbox = sinon.createSandbox();
 
 describe('Patients tests', () => {
   const name = 'Patient_1';
-  const patient = { name };
+  const email = 'email@email.com';
+  const gender = 'male';
+  const birthDate = new Date();
   const id = 1;
+  const userId = 777;
+  const patient = {
+    id,
+    name,
+    email,
+    gender,
+    birthDate,
+    userId,
+  };
 
   afterEach(() => {
     sandbox.restore();
   });
 
   describe('Add patient', () => {
-    it('should return patient id', async () => {
-      sandbox.replace(mysqlPatient, 'createPatient', () => id);
+    it('should return patient', async () => {
+      sandbox.replace(mysqlPatient, 'createPatient', () => patient);
       const spyCreatePatient = sandbox.spy(mysqlPatient, 'createPatient');
 
-      expect(await patientService.addPatient(patient)).to.equal(id);
+      expect(await patientService.addPatient(patient)).to.deep.equal(patient);
       expect(spyCreatePatient.calledOnce).to.be.true;
       expect(spyCreatePatient.calledWith(patient)).to.be.true;
     });
   });
 
-  describe('Get patient id', () => {
+  describe('Get patient by id', () => {
     it('should throw an error when there is no such patient', async () => {
-      sandbox.replace(mysqlPatient, 'getIdByName', () => null);
-
-      try {
-        await patientService.getPatientId(name);
-      } catch (err) {
-        expect(err.message).to.equal(`Patient ${name} not found`);
-      }
-    });
-
-    it('should return patient id', async () => {
-      sandbox.replace(mysqlPatient, 'getIdByName', () => id);
-      const spyGetIdByName = sandbox.spy(mysqlPatient, 'getIdByName');
-
-      expect(await patientService.getPatientId(name)).to.equal(id);
-      expect(spyGetIdByName.calledOnce).to.be.true;
-      expect(spyGetIdByName.calledWith(name)).to.be.true;
-    });
-  });
-
-  describe('Get patient name', () => {
-    it('should throw an error when there are no patients with specified id', async () => {
       sandbox.replace(mysqlPatient, 'getPatientById', () => null);
 
       try {
-        await patientService.getPatientName(id);
+        await patientService.getPatientById(id);
       } catch (err) {
         expect(err.message).to.equal('Patient not found');
       }
     });
 
-    it('should return patient name', async () => {
-      sandbox.replace(mysqlPatient, 'getPatientById', () => name);
-      const spyGetPatientById = sandbox.spy(mysqlPatient, 'getPatientById');
+    it('should return patient', async () => {
+      sandbox.replace(mysqlPatient, 'getPatientById', () => patient);
+      const spyGetIdByName = sandbox.spy(mysqlPatient, 'getPatientById');
 
-      expect(await patientService.getPatientName(id)).to.equal(name);
+      expect(await patientService.getPatientById(id)).to.deep.equal(patient);
+      expect(spyGetIdByName.calledOnce).to.be.true;
+      expect(spyGetIdByName.calledWith(id)).to.be.true;
+    });
+  });
+
+  describe('Get patient by user id', () => {
+    it('should throw an error when there are no patients with specified id', async () => {
+      sandbox.replace(mysqlPatient, 'getPatientByUserId', () => null);
+
+      try {
+        await patientService.getPatientByUserId(userId);
+      } catch (err) {
+        expect(err.message).to.equal('Patient not found');
+      }
+    });
+
+    it('should return patient', async () => {
+      sandbox.replace(mysqlPatient, 'getPatientByUserId', () => (patient));
+      const spyGetPatientById = sandbox.spy(mysqlPatient, 'getPatientByUserId');
+
+      expect(await patientService.getPatientByUserId(userId)).to.deep.equal(patient);
       expect(spyGetPatientById.calledOnce).to.be.true;
-      expect(spyGetPatientById.calledWith(id)).to.be.true;
+      expect(spyGetPatientById.calledWith(userId)).to.be.true;
     });
   });
 });

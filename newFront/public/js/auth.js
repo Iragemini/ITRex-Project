@@ -51,9 +51,9 @@ const signup = async (
   name,
   email,
   password,
-  passwordConfirm,
+  confirmPassword,
   gender,
-  birthday,
+  birthDate,
 ) => {
   const config = {
     method: 'POST',
@@ -62,9 +62,9 @@ const signup = async (
       name,
       email,
       password,
-      passwordConfirm,
+      confirmPassword,
       gender,
-      birthday,
+      birthDate,
     },
   };
 

@@ -10,6 +10,7 @@ const db = {
     destroy: () => {},
   }),
   patient: sinon.stub({
+    create: () => {},
     findOne: () => {},
     findOrCreate: () => {},
     findByPk: () => {},

@@ -228,12 +228,10 @@ if (doctorNameDiv && currentPatientDiv) {
 
   const patient = await get.patientFromQueue(doctorId);
 
-  const currentPatient = patient.data.current;
-
-  if (!currentPatient) {
+  if (!patient) {
     currentPatientDiv.innerHTML = 'empty';
   } else {
-    currentPatientDiv.innerHTML = currentPatient.name;
+    currentPatientDiv.innerHTML = patient.data.current.name;
   }
 
   if (isSignedIn && me['roles.title'] === 'patient') {

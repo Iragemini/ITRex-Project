@@ -20,43 +20,18 @@ describe('Patient repository tests', () => {
   };
 
   describe('Create patient', () => {
-    it('should return id', async () => {
-      const options = {
-        where: { userId },
-        defaults: {
-          name,
-          email,
-          gender,
-          birthDate,
-          userId,
-        },
-      };
-      db.patient.findOrCreate.withArgs(options).resolves([{ id }]);
-      expect(await mysqlPatient.createPatient(user)).to.equal(id);
-      expect(db.patient.findOrCreate.calledWith(options)).to.be.true;
-      expect(db.patient.findOrCreate.calledOnce).to.be.true;
+    it('should return patient', async () => {
+      db.patient.create.resolves({ id, ...user });
+      expect(await mysqlPatient.createPatient(user)).to.deep.equal({ id, ...user });
+      expect(db.patient.create.calledWith(user)).to.be.true;
+      expect(db.patient.create.calledOnce).to.be.true;
     });
   });
 
-  describe('Get id by name', () => {
-    it('should return id', async () => {
-      db.patient.findOne.withArgs({ where: { name } }).resolves({ id });
-      expect(await mysqlPatient.getIdByName(name)).to.equal(id);
-      expect(db.patient.findOne.calledWith({ where: { name } })).to.be.true;
-      expect(db.patient.findOne.calledOnce).to.be.true;
-    });
-
-    it('should return null when there are not such patient', async () => {
-      db.patient.findOne.withArgs({ where: { name } }).resolves(null);
-      expect(await mysqlPatient.getIdByName(name)).to.be.null;
-      expect(db.patient.findOne.calledWith({ where: { name } })).to.be.true;
-    });
-  });
-
-  describe('Get name by id', () => {
-    it('should return name', async () => {
-      db.patient.findByPk.withArgs(id).resolves({ name });
-      expect(await mysqlPatient.getPatientById(id)).to.deep.equal({ name });
+  describe('Get patient by id', () => {
+    it('should return patient', async () => {
+      db.patient.findByPk.withArgs(id).resolves({ id, ...user });
+      expect(await mysqlPatient.getPatientById(id)).to.deep.equal({ id, ...user });
       expect(db.patient.findByPk.calledWith(id)).to.be.true;
       expect(db.patient.findByPk.calledOnce).to.be.true;
     });
@@ -65,6 +40,33 @@ describe('Patient repository tests', () => {
       db.patient.findByPk.withArgs(id).resolves(null);
       expect(await mysqlPatient.getPatientById(id)).to.be.null;
       expect(db.patient.findByPk.calledWith(id)).to.be.true;
+    });
+  });
+
+  describe('Get patient by user id', () => {
+    it('should return patient', async () => {
+      db.patient.findOne.withArgs({
+        raw: true,
+        where: { userId },
+      }).resolves({ id, ...user });
+      expect(await mysqlPatient.getPatientByUserId(userId)).to.deep.equal({ id, ...user });
+      expect(db.patient.findOne.calledWith({
+        raw: true,
+        where: { userId },
+      })).to.be.true;
+      expect(db.patient.findOne.calledOnce).to.be.true;
+    });
+
+    it('should return null when there are not such patient', async () => {
+      db.patient.findOne.withArgs({
+        raw: true,
+        where: { userId },
+      }).resolves(null);
+      expect(await mysqlPatient.getPatientByUserId(userId)).to.be.null;
+      expect(db.patient.findOne.calledWith({
+        raw: true,
+        where: { userId },
+      })).to.be.true;
     });
   });
 });

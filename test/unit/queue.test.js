@@ -5,6 +5,7 @@ import QueueService from '../../src/queue/queue.service.js';
 import config from '../../config/config.js';
 import createClient from './mocks/redis.mock.js';
 import patientService from './mocks/patientService.mock.js';
+import doctorService from './mocks/doctorService.mock.js';
 
 const {
   storage: { queueType },
@@ -13,32 +14,41 @@ const {
 const client = queueType === 'redis' ? createClient : [];
 
 const queueStorage = factory.createStorage(client);
-const queueService = new QueueService(queueStorage, patientService);
+const queueService = new QueueService(queueStorage, patientService, doctorService);
 
 const sandbox = sinon.createSandbox();
 
 describe('Queue tests', () => {
-  const patient = 'Patient_1:reason';
-  const [patientName, reason] = patient.split(':');
-  const wrongName = 'Patient_999';
-  const nextPatient = 'Patient_2';
-  const currentId = 1;
-  const nextId = 2;
+  const id = 4;
+  const name = 'Patient_1';
+  const email = 'email@email.com';
+  const gender = 'male';
+  const birthDate = new Date();
+  const userId = 4;
+  const patient = {
+    id,
+    name,
+    email,
+    gender,
+    birthDate,
+    userId,
+  };
+
+  const doctorId = 1;
 
   afterEach(() => {
     sandbox.restore();
   });
 
   describe('Add patient to the queue', () => {
-    const userId = 1;
-    const patientId = 5;
+    it('should add patientId to the queue', async () => {
+      sandbox.replace(doctorService, 'getDoctorById', () => undefined);
+      sandbox.replace(patientService, 'getPatientByUserId', () => patient);
 
-    it('should add id to the queue', async () => {
-      sandbox.replace(patientService, 'getPatientIdByUserId', () => patientId);
       const spy = sandbox.spy(queueStorage, 'add');
 
-      expect(await queueService.addPatientToQueue({ userId, reason })).to.be.undefined;
-      expect(spy.withArgs(patientId, reason).calledOnce).to.be.true;
+      expect(await queueService.addPatientToQueue(userId, doctorId)).to.be.undefined;
+      expect(spy.withArgs(patient.id, doctorId).calledOnce).to.be.true;
       expect(spy.returned(undefined));
     });
   });
@@ -53,42 +63,25 @@ describe('Queue tests', () => {
       }
     });
 
-    it('should return next patient name when queue is not empty', async () => {
-      sandbox.replace(queueStorage, 'getFirstKey', () => currentId);
-      sandbox.replace(queueStorage, 'isEmpty', () => false);
-      sandbox.replace(patientService, 'getPatientName', () => ({ name: patientName }));
+    it('should return next patient when queue is not empty', async () => {
+      sandbox.replace(queueStorage, 'getFirstKey', () => id);
+      sandbox.replace(patientService, 'getPatientById', () => patient);
 
       const spyGetFirstKey = sandbox.spy(queueStorage, 'getFirstKey');
-      const spyIsEmpty = sandbox.spy(queueStorage, 'isEmpty');
 
-      expect(await queueService.getCurrentPatient()).to.equal(patientName);
-      expect(spyIsEmpty.called).to.be.true;
+      expect(await queueService.getCurrentPatient(doctorId)).to.equal(patient);
       expect(spyGetFirstKey.calledOnce).to.be.true;
-      expect(spyGetFirstKey.returned(currentId));
-      expect(spyIsEmpty.returned(false));
+      expect(spyGetFirstKey.returned(id));
     });
   });
 
   describe('Get next patient', () => {
-    it('should throw an error when patient is not in the queue', async () => {
-      sandbox.replace(queueStorage, 'getFirstKey', () => null);
-      sandbox.replace(patientService, 'getPatientId', () => {
-        throw new Error(`Patient ${wrongName} not found`);
-      });
-
-      try {
-        await queueService.nextPatient(wrongName);
-      } catch (err) {
-        expect(err.message).to.equal(`Patient ${wrongName} not found`);
-      }
-    });
-
     it('should throw an error when queue is empty', async () => {
-      sandbox.replace(patientService, 'getPatientId', () => currentId);
+      sandbox.replace(queueStorage, 'remove', () => undefined);
       sandbox.replace(queueStorage, 'isEmpty', () => true);
 
       try {
-        await queueService.nextPatient(patientName);
+        await queueService.nextPatient(doctorId);
       } catch (err) {
         expect(err.message).to.equal('No patients in the queue');
       }
@@ -98,12 +91,12 @@ describe('Queue tests', () => {
       const spyRemove = sandbox.spy(queueStorage, 'remove');
 
       sandbox.replace(queueStorage, 'isEmpty', () => false);
-      sandbox.replace(queueStorage, 'getFirstKey', () => nextId);
-      sandbox.replace(patientService, 'getPatientName', () => nextPatient);
+      sandbox.replace(queueStorage, 'getFirstKey', () => id);
+      sandbox.replace(patientService, 'getPatientById', () => patient);
 
       const spyGetFirstKey = sandbox.spy(queueStorage, 'getFirstKey');
 
-      expect(await queueService.nextPatient(patientName)).to.equal(nextPatient);
+      expect(await queueService.nextPatient(doctorId)).to.equal(patient);
       expect(spyRemove.calledOnce).to.be.true;
       expect(spyGetFirstKey.calledOnce).to.be.true;
       expect(spyGetFirstKey.calledAfter(spyRemove));

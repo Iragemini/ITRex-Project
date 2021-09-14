@@ -4,6 +4,7 @@ export default class MySQLResolution {
   constructor(db) {
     this.db = db;
     this.Resolution = this.db.resolution;
+    this.sequelize = db.sequelize;
   }
 
   async add(data) {
@@ -38,7 +39,7 @@ export default class MySQLResolution {
 
       resolutions = await this.db.sequelize.query(sequelizeQuery, {
         raw: true,
-        type: this.db.Sequelize.QueryTypes.SELECT,
+        type: this.sequelize.QueryTypes.SELECT,
       });
     } else {
       resolutions = await this.Resolution.findAll({ raw: true });
@@ -64,7 +65,7 @@ export default class MySQLResolution {
 
     const resolutions = await this.db.sequelize.query(query, {
       raw: true,
-      type: this.db.Sequelize.QueryTypes.SELECT,
+      type: this.sequelize.QueryTypes.SELECT,
     });
 
     return resolutions;

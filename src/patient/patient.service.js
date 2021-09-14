@@ -10,6 +10,16 @@ export default class PatientService {
     return id;
   };
 
+  getPatientById = async (id) => {
+    const patient = await this.repository.getPatientById(id);
+
+    if (!patient) {
+      throw new ApiError(404, 'Patient not found');
+    }
+
+    return patient;
+  }
+
   getPatientByUserId = async (userId) => {
     const patient = await this.repository.getPatientByUserId(userId);
 
@@ -19,15 +29,4 @@ export default class PatientService {
 
     return patient;
   };
-
-  getPatientById = async (id) => {
-    const patient = await this.repository.getPatientById(id);
-
-    // commented out so the frontend will work ;/
-    // if (!patient) {
-    //   throw new ApiError(404, 'Patient not found');
-    // }
-
-    return patient;
-  }
 }
