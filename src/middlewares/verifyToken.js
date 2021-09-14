@@ -8,7 +8,6 @@ const {
   auth: { SECRET },
 } = config;
 
-// should be in the auth controller?
 const verifyToken = async (req, res, next) => {
   let token;
 

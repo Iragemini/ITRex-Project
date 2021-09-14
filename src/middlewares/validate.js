@@ -3,7 +3,6 @@ import ApiError from '../errors/ApiError.js';
 export const validator = (schema, property) => (req, res, next) => {
   const { error } = schema.validate(req[property]);
   if (error) {
-    console.log(error);
     throw new ApiError(400, 'invalid parameters');
   } else {
     return next();
