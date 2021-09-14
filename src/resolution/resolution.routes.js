@@ -6,12 +6,11 @@ import {
   findAllByUserId,
   remove,
 } from './resolution.controllers.js';
-// import {
-//   nameSchema,
-//   resolutionSchema,
-//   bodySchema,
-// } from '../schemas/schemas.js';
-// import { validator, checkTTL } from '../middlewares/validate.js';
+import {
+  resolutionSchema,
+  bodySchema,
+} from '../schemas/schemas.js';
+import { validator, checkTTL } from '../middlewares/validate.js';
 import verifyToken from '../middlewares/verifyToken.js';
 import restrictTo from '../middlewares/restrictRoute.js';
 
@@ -30,6 +29,9 @@ router
   .post(
     asyncHandler(verifyToken),
     restrictTo('doctor'),
+    validator(bodySchema, 'body'),
+    validator(resolutionSchema, 'body'),
+    checkTTL,
     asyncHandler(add),
   )
   .get(

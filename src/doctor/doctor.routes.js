@@ -5,12 +5,6 @@ import {
   getDoctorById,
   setDoctorIdFromUserId,
 } from './doctor.controllers.js';
-// import {
-//   nameSchema,
-//   resolutionSchema,
-//   bodySchema,
-// } from '../schemas/schemas.js';
-// import { validator, checkTTL } from '../middlewares/validate.js';
 import verifyToken from '../middlewares/verifyToken.js';
 
 const router = Router();
