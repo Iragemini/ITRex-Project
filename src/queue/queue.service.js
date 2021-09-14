@@ -15,25 +15,16 @@ export default class QueueService {
     await this.storage.add(patient.id, doctorId);
   };
 
-  getCurrentPatient = async (doctor) => {
-    if (!doctor.id) {
-      const doc = await this.doctorService.getDoctorByUserId(doctor.userId);
-      /* eslint-disable no-param-reassign */
-      doctor.id = doc.id;
-    }
-
-    const currentId = await this.storage.getFirstKey(doctor.id);
+  getCurrentPatient = async (doctorId) => {
+    const currentId = await this.storage.getFirstKey(doctorId);
     const current = await this.patientService.getPatientById(currentId);
 
     return current;
   };
 
-  nextPatient = async (doctorUserId) => {
+  nextPatient = async (doctorId) => {
     let nextInQueue = null;
     let nextId = null;
-
-    const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
-    const doctorId = doctor.id;
 
     await this.storage.remove(doctorId);
 

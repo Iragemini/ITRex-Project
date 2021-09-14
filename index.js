@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan'; /* eslint import/no-extraneous-dependencies: 0 */
 import path from 'path';
-import cookieParser from 'cookie-parser';
 import config from './config/config.js';
 import errorHandler from './src/middlewares/errorHandler.js';
+import doctorRouter from './src/doctor/doctor.routes.js';
 import queueRouter from './src/queue/queue.routes.js';
 import resolutionRouter from './src/resolution/resolution.routes.js';
 import userRouter from './src/user/user.routes.js';
@@ -16,18 +16,12 @@ const PORT = config.server.port;
 const app = express();
 
 app.use(cors());
-
-app.set('view engine', 'pug');
-app.set('views', path.join(path.resolve(), 'src/view/pug'));
-
-app.use(cookieParser());
 app.use(express.static(path.join(path.resolve(), 'newFront/public')));
 
 if (process.env.NODE_ENV === 'local') {
   app.use(morgan('dev'));
 }
 
-app.use(cors());
 app.use(express.json());
 
 // front-end routes
@@ -39,7 +33,8 @@ app.use('/', viewRouter);
 app.use('/api', authRouter);
 app.use('/api/queue', queueRouter);
 app.use('/api/resolutions', resolutionRouter);
-app.use('/api/users', userRouter); // not used
+app.use('/api/doctors', doctorRouter);
+app.use('/api/users', userRouter);
 
 app.use((req, res) => {
   res.status(404);

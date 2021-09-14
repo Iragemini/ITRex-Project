@@ -1,0 +1,60 @@
+<!DOCTYPE html >
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+    <title>Clinic</title>
+  </head>
+
+  <header class="header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+      <div class="container-fluid"><a class="navbar-brand mx-2 m-1" href="http://127.0.0.1:3000/">Clinic</a>
+        <span class="navbar-text mx-2"></span>
+        <ul id='auth-navbar-nav' class="navbar-nav me-auto mb-2 mb-lg-0">
+        </ul>
+          <form id='auth-navbar-form' class="d-flex justify-content-end m-1">
+          </form>
+      </div>
+    </nav>
+  </header>
+
+  <body> 
+    <div class="d-flex">
+      <div class="container-fluid">
+        <div class="row justify-content p-5 m-4">
+          <div class="col-md-5 text-center text-md-start">
+            <h1>
+              <div class="display-5 my-3">Your name:
+                <div id='process-doctor-name' class="lead text-muted my-4">empty</div>
+              </div>
+              <div class="display-5 my-3">Current patient:
+                <div id='process-current-name' class="lead text-muted my-4">empty</div>
+              </div>
+            </h1>
+          </div>
+          <div class="col-md-5 text-center text-md-start">
+            <form class="m-5" id="form-submit-resolution">
+              <div class="my-3">
+                <label class="form-label" for="doctor-new-resolution">Resolution:</label>
+                <textarea class="form-control" id="doctor-new-resolution" rows="4"></textarea>
+                <div class="form-floating my-2">
+                  <input class="form-control" id="timeToLive" type="number" min="1" placeholder="TTL value"/>
+                  <label for="timeToLive">TTL value (optional)</label>
+                </div>
+              </div>
+              <div class="my-3">
+                <button class="btn btn-secondary btn-lg" type="submit">Submit resolution</button>
+                <button class="btn btn-secondary btn-lg m-4" id="btn-next-patient">Next patient</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="module" src="js/index.js"></script>
+</html>

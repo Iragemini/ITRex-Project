@@ -1,8 +1,5 @@
 # Queue-patient-resolution application
 
-Documentation:
-https://documenter.getpostman.com/view/15720374/U16kqk72
-
 ## Endpoints
 
 - _`/api/user`_ - Authorization
@@ -58,22 +55,16 @@ NODE_LOCAL_PORT=3000
 NODE_DOCKER_PORT=3000
 ```
 
-Start application:
-```sh
-docker-compose up -d
-```
+- Start application
 
-Stop application:
-```sh
-docker-compose down
-```
+  - `docker-compose up -d`
 
-- Application is available on **`http://127.0.0.1:3000`**
+- Stop application
+
+  - `docker-compose down`
+
+- Application is available on **`http://localhost:3000`**
 
 ## **Tests**
 
-Tests (deprecated) can be run via the following command:
-
-```sh
-npm run test
-```
+- tests starts with `npm run test` command

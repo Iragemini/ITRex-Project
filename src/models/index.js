@@ -1,5 +1,5 @@
-import Sequelize from 'sequelize';
 import bcrypt from 'bcryptjs';
+import Sequelize from 'sequelize';
 import config from '../../config/config.js';
 import User from './user.model.js';
 import Role from './role.model.js';
@@ -85,78 +85,115 @@ db.resolution.belongsTo(db.patient, {
 });
 
 const initRoles = async () => {
-  await db.role.create({
-    id: 1,
-    title: 'patient',
+  await db.role.findOrCreate({
+    where: { title: 'patient' },
+    defaults: {
+      id: 1,
+      title: 'patient',
+    },
   });
-  await db.role.create({
-    id: 2,
-    title: 'doctor',
+  await db.role.findOrCreate({
+    where: { title: 'doctor' },
+    defaults: {
+      id: 2,
+      title: 'doctor',
+    },
   });
 
-  await db.specialization.create({
-    id: 1,
-    title: 'pediatrician',
+  await db.specialization.findOrCreate({
+    where: { title: 'pediatrician' },
+    defaults: {
+      id: 1,
+      title: 'pediatrician',
+    },
   });
-  await db.specialization.create({
-    id: 2,
-    title: 'dermatologist',
+  await db.specialization.findOrCreate({
+    where: { title: 'dermatologist' },
+    defaults: {
+      id: 2,
+      title: 'dermatologist',
+    },
   });
-  await db.specialization.create({
-    id: 3,
-    title: 'psychiatrist',
+  await db.specialization.findOrCreate({
+    where: { title: 'psychiatrist' },
+    defaults: {
+      id: 3,
+      title: 'psychiatrist',
+    },
   });
 };
 
 // seeding of doctors since we don't have registration for them
 const initUsers = async () => {
-  await db.user.create({
-    email: 'doctor1@gmail.com',
-    password: bcrypt.hashSync('12345678', 8),
+  await db.user.findOrCreate({
+    where: { email: 'doctor1@gmail.com' },
+    defaults: {
+      email: 'doctor1@gmail.com',
+      password: bcrypt.hashSync('12345678', 8),
+    },
   }).then((user) => {
-    user.setRoles([2]);
+    user[0].setRoles([2]);
   });
-  await db.user.create({
-    email: 'doctor2@gmail.com',
-    password: bcrypt.hashSync('12345678', 8),
+  await db.user.findOrCreate({
+    where: { email: 'doctor2@gmail.com' },
+    defaults: {
+      email: 'doctor2@gmail.com',
+      password: bcrypt.hashSync('12345678', 8),
+    },
   }).then((user) => {
-    user.setRoles([2]);
+    user[0].setRoles([2]);
   });
-  await db.user.create({
-    email: 'doctor3@gmail.com',
-    password: bcrypt.hashSync('12345678', 8),
+  await db.user.findOrCreate({
+    where: { email: 'doctor3@gmail.com' },
+    defaults: {
+      email: 'doctor3@gmail.com',
+      password: bcrypt.hashSync('12345678', 8),
+    },
   }).then((user) => {
-    user.setRoles([2]);
+    user[0].setRoles([2]);
   });
 };
 
 const initDoctors = async () => {
-  await db.doctor.create({
-    userId: 1,
-    name: 'Lyolik',
+  await db.doctor.findOrCreate({
+    where: { name: 'Lyolik' },
+    defaults: {
+      userId: 1,
+      name: 'Lyolik',
+    },
   }).then((doctor) => {
-    doctor.setSpecializations([1]);
+    doctor[0].setSpecializations([1]);
   });
 
-  await db.doctor.create({
-    userId: 2,
-    name: 'Ms. Andersen',
+  await db.doctor.findOrCreate({
+    where: { name: 'Ms. Andersen' },
+    defaults: {
+      userId: 2,
+      name: 'Ms. Andersen',
+    },
   }).then((doctor) => {
-    doctor.setSpecializations([2]);
+    doctor[0].setSpecializations([2]);
   });
 
-  await db.doctor.create({
-    userId: 3,
-    name: 'Mr. Lecter',
+  await db.doctor.findOrCreate({
+    where: { name: 'Ms. Andersen' },
+    defaults: {
+      userId: 3,
+      name: 'Mr. Lecter',
+    },
   }).then((doctor) => {
-    doctor.setSpecializations([3]);
+    doctor[0].setSpecializations([3]);
   });
 };
 
 db.init = async () => {
-  await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
-  await db.sequelize.sync({ force: true });
-  await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
+  if (process.env.NODE_ENV === 'local') {
+    await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
+    await db.sequelize.sync({ force: true });
+    await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
+  } else {
+    db.sequelize.sync();
+  }
 
   await initRoles();
   await initUsers();

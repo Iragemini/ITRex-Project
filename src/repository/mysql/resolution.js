@@ -1,5 +1,4 @@
 import getExpiration from '../../utils/getExpiration.js';
-import ApiError from '../../errors/ApiError.js';
 
 export default class MySQLResolution {
   constructor(db) {
@@ -14,15 +13,7 @@ export default class MySQLResolution {
       expire = new Date(getExpiration(data.ttl));
     }
 
-    let newResolution;
-
-    try {
-      newResolution = await this.Resolution.create({ expire, ...data });
-    } catch (error) {
-      throw new ApiError(500, `ERROR: ${error}`);
-    }
-
-    return newResolution;
+    return this.Resolution.create({ expire, ...data });
   }
 
   async getAllResolutions(query) {
@@ -33,12 +24,16 @@ export default class MySQLResolution {
     if (patientName) {
       const sequelizeQuery = `
       SELECT 
-        resolutions.*
+        resolutions.* 
       FROM 
         resolutions 
-        INNER JOIN patients ON patients.id = resolutions.patientId 
+        INNER JOIN patients ON patients.id = resolutions.patientid 
       WHERE 
-        patients.name = "${patientName}"
+        patients.name = "${patientName}" 
+        AND (
+          resolutions.expire IS NULL
+          OR resolutions.expire > Now() 
+        )
       `;
 
       resolutions = await this.db.sequelize.query(sequelizeQuery, {
@@ -55,12 +50,16 @@ export default class MySQLResolution {
   async getResolutionsByUserId(id) {
     const query = `
     SELECT 
-      resolutions.*
+      resolutions.* 
     FROM 
       resolutions 
       INNER JOIN patients ON patients.id = resolutions.patientId 
     WHERE 
-      patients.userId = "${id}"
+      patients.userId = "${id}" 
+      AND (
+        resolutions.expire IS NULL 
+        OR resolutions.expire > Now()
+      )
     `;
 
     const resolutions = await this.db.sequelize.query(query, {

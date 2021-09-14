@@ -7,21 +7,13 @@ export const add = async (req, res, next) => {
 };
 
 export const getCurrent = async (req, res, next) => {
-  const doctor = {};
-
-  if (!req.params.doctorId && req.user['roles.title'] === 'doctor') {
-    doctor.userId = req.user.id;
-  } else {
-    doctor.id = req.params.doctorId;
-  }
-
-  const current = await queueService.getCurrentPatient(doctor);
+  const current = await queueService.getCurrentPatient(req.params.doctorId);
 
   res.status(200).json({ current });
 };
 
 export const remove = async (req, res, next) => {
-  const nextInQueue = await queueService.nextPatient(req.user.id);
+  const nextInQueue = await queueService.nextPatient(req.params.doctorId);
 
   res.status(200).json({ next: nextInQueue });
 };

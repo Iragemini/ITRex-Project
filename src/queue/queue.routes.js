@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { add, remove, getCurrent } from './queue.controllers.js';
+import { setDoctorIdFromUserId } from '../doctor/doctor.controllers.js';
 // import { validator } from '../middlewares/validate.js';
 // import { bodySchema } from '../schemas/schemas.js';
 import verifyToken from '../middlewares/verifyToken.js';
@@ -14,11 +15,13 @@ queueRouter
   .get(
     asyncHandler(verifyToken),
     restrictTo('doctor'),
+    setDoctorIdFromUserId,
     asyncHandler(getCurrent),
   )
   .delete(
     asyncHandler(verifyToken),
     restrictTo('doctor'),
+    setDoctorIdFromUserId,
     asyncHandler(remove),
   );
 

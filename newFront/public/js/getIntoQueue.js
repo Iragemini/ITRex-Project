@@ -1,26 +1,26 @@
-/* eslint-disable */
+import constants from "./constants.js";
+
+const { baseUrl } = constants;
 
 const getIntoQueue = async () => {
-  const test = window.location.href;
-  const array = test.split('/')
+  const windowhref = window.location.href;
+  const hrefArray = windowhref.split('/')
 
-  const doctorId = array[array.length - 1].replace('doctor-', '').replace('#', '');
+  const doctorId = hrefArray[hrefArray.length - 1].replace('doctor-', '').replace('#', '');
 
   const config = {
     method: 'POST',
-    url: `http://127.0.0.1:3000/api/queue/${doctorId}`,
+    url: `${baseUrl}/api/queue/${doctorId}`,
   };
 
-  const res = await axios(config)
+  axios(config)
     .then(function (response) {
       if (response.status === 201) {
-        console.log(response);
-        // location.reload(true);
+        location.reload();
       }
     })
     .catch(function (error) {
-      alert(error);
-      // showAlert('error', error.response.data.message);
+      console.log(error);
     });
 };
 

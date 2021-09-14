@@ -13,7 +13,6 @@ export default class UserService {
     this.patientService = patientService;
   }
 
-  // should be in the auth controller?
   verifyEmail = async (email) => {
     const user = await this.repository.getUserByEmail(email);
     if (user) {
@@ -22,7 +21,6 @@ export default class UserService {
     return true;
   };
 
-  // should be in the auth controller?
   authenticate = async (user) => {
     const userEntity = await this.getUserByEmail(user.email);
 
@@ -42,8 +40,6 @@ export default class UserService {
     return { ...userEntity, token };
   };
 
-  // should be called register probably
-  // and should be in the auth controller?
   createUser = async (data) => {
     // basically we can create only patients this way
     const userData = {
@@ -55,7 +51,7 @@ export default class UserService {
     const isValidEmail = await this.verifyEmail(data.email);
 
     if (!isValidEmail) {
-      throw new ApiError(400, 'Email is already in use');
+      throw new ApiError(400, 'Email is already exists');
     }
 
     const patientData = {
@@ -75,7 +71,7 @@ export default class UserService {
     const user = await this.repository.getUserByEmail(email);
 
     if (!user) {
-      throw new ApiError(404, `User for ${email} does not exist`);
+      throw new ApiError(404, `User for ${email} not found`);
     }
 
     return user;
@@ -85,7 +81,7 @@ export default class UserService {
     const user = await this.repository.getUserById(id);
 
     if (!user) {
-      throw new ApiError(404, 'User does not exist');
+      throw new ApiError(404, 'User not exists');
     }
 
     return user;

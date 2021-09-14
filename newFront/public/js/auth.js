@@ -1,24 +1,26 @@
-/* eslint-disable */
+import constants from "./constants.js";
+
+const { baseUrl } = constants;
 
 const signin = async (email, password) => {
   const config = {
     method: 'POST',
-    url: 'http://127.0.0.1:3000/api/login',
+    url: `${baseUrl}/api/login`,
     data: {
       email,
       password,
     },
   };
 
-  const res = await axios(config)
+  axios(config)
     .then(function (response) {
       if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
         location.assign('/');
       }
     })
     .catch(function (error) {
-      alert(error);
-      // showAlert('error', error.response.data.message);
+      console.log(error);
     });
 };
 
@@ -26,40 +28,22 @@ const signin = async (email, password) => {
 const doctorSignin = async (email, password) => {
   const config = {
     method: 'POST',
-    url: 'http://127.0.0.1:3000/api/login',
+    url:  `${baseUrl}/api/login`,
     data: {
       email,
       password,
     },
   };
 
-  const res = await axios(config)
+  axios(config)
     .then(function (response) {
       if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
         location.assign('/process');
       }
     })
     .catch(function (error) {
-      alert(error);
-      // showAlert('error', error.response.data.message);
-    });
-};
-
-const signout = async () => {
-  const config = {
-    method: 'GET',
-    url: 'http://127.0.0.1:3000/api/signout',
-  };
-
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.status === 200) {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error);
-      // showAlert('error', error.response.data.message);
+      console.log(error);
     });
 };
 
@@ -73,8 +57,7 @@ const signup = async (
 ) => {
   const config = {
     method: 'POST',
-    url: 'http://127.0.0.1:3000/api/signup',
-    headers: {},
+    url:  `${baseUrl}/api/signup`,
     data: {
       name,
       email,
@@ -85,16 +68,16 @@ const signup = async (
     },
   };
 
-  const res = await axios(config)
+  axios(config)
     .then(function (response) {
       if (response.status === 201) {
         location.assign('/');
       }
     })
     .catch(function (error) {
-      alert(error);
-      // showAlert('error', error.response.data.message);
+      alert(error.response.data.message)
+      console.log(error.response);
     });
 };
 
-export { signin, signout, signup, doctorSignin };
+export { signin, signup, doctorSignin };

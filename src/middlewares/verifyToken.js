@@ -12,15 +12,11 @@ const {
 const verifyToken = async (req, res, next) => {
   let token;
 
-  // added bearer token auth + temporary cookie auth for our front-end
   if (
     req.headers.authorization
     && req.headers.authorization.startsWith('Bearer')
   ) {
-    /* eslint prefer-destructuring: 0 */
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
+    [, token] = req.headers.authorization.split(' ');
   }
 
   if (!token) {
@@ -36,17 +32,16 @@ const verifyToken = async (req, res, next) => {
     throw new ApiError(401, 'Unauthorized!');
   }
 
-  // added a check for no user
   let user;
 
   try {
     user = await userService.getUserById(decoded.id);
+    delete user.password;
   } catch {
     throw new ApiError(401, 'Unauthorized!');
   }
 
   req.user = user;
-  req.user.password = undefined;
 
   next();
 };

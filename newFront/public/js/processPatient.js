@@ -1,18 +1,24 @@
-/* eslint-disable */
+import constants from "./constants.js";
+
+const { baseUrl } = constants;
 
 export const getPatientId = async () => {
   const config = {
     method: 'GET',
-    url: 'http://127.0.0.1:3000/api/queue',
+    url: `${baseUrl}/api/queue`,
   };
 
-  return await axios(config);
+  try {
+    return await axios(config)
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const submitResolution = async (patientId, resolution, ttl) => {
   const config = {
     method: 'POST',
-    url: 'http://127.0.0.1:3000/api/resolutions',
+    url: `${baseUrl}/api/resolutions`,
     data: {
       patientId,
       resolution,
@@ -20,33 +26,25 @@ export const submitResolution = async (patientId, resolution, ttl) => {
     },
   };
 
-  const res = await axios(config)
+  axios(config)
     .then(function (response) {
-      if (response.status === 200) {
-        // console.log(response);
+      if (response.status === 201) {
+        alert('Resolution submitted.')
       }
     })
     .catch(function (error) {
-      alert(error);
+      console.log(error);
     });
 };
 
 export const dequeue = async () => {
   const config = {
     method: 'DELETE',
-    url: 'http://127.0.0.1:3000/api/queue',
+    url: `${baseUrl}/api/queue`,
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      // if (response.data.statusCode === 404) {
-      //   alert('test');
-      // }
-    })
+  axios(config)
     .catch(function (error) {
-      alert(error);
-      // showAlert('error', error.response.data.message);
+      console.log(error);
     });
-
-  return res;
 };

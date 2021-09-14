@@ -18,7 +18,7 @@ const createClient = () => {
   });
 
   redisClient.on('connect', () => {
-    console.log('Redis client has been connected.\n');
+    console.log('connect');
   });
 
   return promisifyRedis(redisClient);

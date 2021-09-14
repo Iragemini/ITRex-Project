@@ -8,12 +8,6 @@ export default class RedisQueue {
     await this.redisClient.FLUSHALL();
   }
 
-  // async get(doctorId) { // not required?
-  //   const data = await this.redisClient.LRANGE(`${this.listName}:${doctorId}`, 0, -1);
-
-  //   return data;
-  // }
-
   async getFirstKey(doctorId) {
     const value = await this.redisClient.LINDEX(`${this.listName}:${doctorId}`, 0);
 

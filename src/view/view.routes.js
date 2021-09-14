@@ -1,40 +1,38 @@
 import express from 'express';
-import asyncHandler from 'express-async-handler';
-import viewController from './view.controller.js';
-import verifyToken from '../middlewares/verifyToken.js';
+import path from 'path';
 
 const router = express.Router();
 
-router.get('/', viewController.isLoggedIn, viewController.getDoctorList);
+router.get('/', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/main.html'));
+});
 
-router.get('/doctor-signin', viewController.isLoggedIn, viewController.getDoctorSigninForm);
-router.get('/signin', viewController.isLoggedIn, viewController.getSigninForm);
-router.get('/signup', viewController.isLoggedIn, viewController.getSignupForm);
+router.get('/docsignin', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/doctorSignin.html'));
+});
 
-router.get(
-  '/doctor-:doctorId',
-  viewController.isLoggedIn,
-  viewController.getQueue,
-);
+router.get('/signin', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/signin.html'));
+});
 
-router.get(
-  '/process',
-  viewController.isLoggedIn,
-  viewController.processPatient,
-);
+router.get('/signup', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/signup.html'));
+});
 
-router.get(
-  '/personal-resolutions',
-  viewController.isLoggedIn,
-  asyncHandler(verifyToken),
-  viewController.getPersonalResolutions,
-);
+router.get('/doctor-:doctorId', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/queue.html'));
+});
 
-router.get(
-  '/resolutions',
-  viewController.isLoggedIn,
-  asyncHandler(verifyToken),
-  viewController.getAllResolutionsByName,
-);
+router.get('/process', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/process.html'));
+});
+
+router.get('/personal-resolutions', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/personalResolutions.html'));
+});
+
+router.get('/resolutions', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './newFront/public/html/resolutionsSearch.html'));
+});
 
 export default router;

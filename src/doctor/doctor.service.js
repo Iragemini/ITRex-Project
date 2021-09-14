@@ -8,7 +8,9 @@ export default class DoctorService {
   getAllDoctors = async () => {
     const doctors = await this.repository.getAll();
 
-    if (!doctors) { throw new ApiError(404, 'Doctors not found'); }
+    if (!doctors) {
+      throw new ApiError(404, 'Doctors not found');
+    }
 
     return doctors;
   }
@@ -16,7 +18,9 @@ export default class DoctorService {
   getDoctorById = async (id) => {
     const doctor = await this.repository.getById(id);
 
-    if (!doctor) { throw new ApiError(404, 'Doctor not found'); }
+    if (!doctor) {
+      throw new ApiError(404, 'Doctor not found');
+    }
 
     return doctor;
   }
@@ -24,7 +28,9 @@ export default class DoctorService {
   getDoctorByUserId = async (userId) => {
     const doctor = await this.repository.getByUserId(userId);
 
-    if (!doctor) { throw new ApiError(404, 'Doctor not found'); }
+    if (!doctor) {
+      throw new ApiError(404, 'Doctor not found');
+    }
 
     return doctor;
   };

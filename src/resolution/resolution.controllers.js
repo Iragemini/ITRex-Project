@@ -9,7 +9,7 @@ export const add = async (req, res, next) => {
 };
 
 export const findAll = async (req, res, next) => {
-  const resolutions = await resolutionService.getAllResolutions(req.query);
+  const resolutions = await resolutionService.findAllResolutions(req.query);
 
   res.status(200).json({
     data: resolutions,
@@ -17,7 +17,7 @@ export const findAll = async (req, res, next) => {
 };
 
 export const findAllByUserId = async (req, res, next) => {
-  const resolutions = await resolutionService.getResolutionsByUserId(req.user.id);
+  const resolutions = await resolutionService.findResolutionsByUserId(req.user.id);
 
   res.status(200).json({
     data: resolutions,
