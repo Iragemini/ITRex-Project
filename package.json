@@ -7,7 +7,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=local nodemon index.js",
-    "test": "mocha test/unit -b --inline-diffs",
+    "test": "nyc --reporter=text mocha test/unit",
     "lint": "eslint --ext .js .",
     "prepare": "husky install"
   },
