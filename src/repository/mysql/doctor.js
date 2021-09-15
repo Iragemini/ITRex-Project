@@ -30,7 +30,7 @@ export default class MySQLDoctor {
   getByUserId = async (userId) => {
     const doctor = await this.Doctor.findOne({
       raw: true,
-      where: { userId },
+      where: { user_id: userId },
       include: [
         this.db.specialization,
       ],

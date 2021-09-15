@@ -45,7 +45,7 @@ describe('User tests', () => {
       const data = {
         name,
         gender,
-        birthDate,
+        birth_date: user.birthDate,
         email,
       };
 
@@ -60,7 +60,7 @@ describe('User tests', () => {
       await userService.createUser(user);
       expect(spyCreateUser.withArgs({ email, password: hashPassword, role: 'patient' }).calledOnce).to.be.true;
       expect(spyCreateUser.returned(user)).to.be.true;
-      expect(spyAddPatient.withArgs({ userId: user.id, ...data }).calledOnce).to.be.true;
+      expect(spyAddPatient.withArgs({ user_id: user.id, ...data }).calledOnce).to.be.true;
       expect(spyAddPatient.returned(undefined)).to.be.true;
       expect(spyBcrypt.withArgs(password, 8).calledOnce).to.be.true;
     });

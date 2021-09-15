@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import Sequelize from 'sequelize';
 import config from '../../config/config.js';
 import User from './user.model.js';
@@ -7,6 +6,7 @@ import Patient from './patient.model.js';
 import Doctor from './doctor.model.js';
 import Specialization from './specialization.model.js';
 import Resolution from './resolution.model.js';
+import seed from './seeding.js';
 
 const {
   db: { mysql },
@@ -41,150 +41,51 @@ db.resolution = Resolution(sequelize, Sequelize);
 // associations
 db.user.belongsToMany(db.role, {
   through: 'user_roles',
-  foreignKey: 'userId',
-  otherKey: 'roleId',
+  foreignKey: 'user_id',
+  otherKey: 'role_id',
 });
 db.role.belongsToMany(db.user, {
   through: 'user_roles',
-  foreignKey: 'roleId',
-  otherKey: 'userId',
+  foreignKey: 'role_id',
+  otherKey: 'user_id',
 });
 
 db.user.hasOne(db.patient, {
+  foreignKey: 'user_id',
   onDelete: 'cascade',
 });
 db.user.hasOne(db.doctor, {
+  foreignKey: 'user_id',
   onDelete: 'cascade',
 });
 
 db.patient.belongsTo(db.user, {
-  foreignKey: 'userId',
+  foreignKey: 'user_id',
 });
 db.doctor.belongsTo(db.user, {
-  foreignKey: 'userId',
+  foreignKey: 'user_id',
 });
 
 db.doctor.belongsToMany(db.specialization, {
   through: 'doctor_specializations',
-  foreignKey: 'doctorId',
-  otherKey: 'specializationId',
+  foreignKey: 'doctor_id',
+  otherKey: 'specialization_id',
 });
 db.specialization.belongsToMany(db.doctor, {
   through: 'doctor_specializations',
-  foreignKey: 'specializationId',
-  otherKey: 'doctorId',
+  foreignKey: 'specialization_id',
+  otherKey: 'doctor_id',
 });
 
 db.patient.hasMany(db.resolution, {
+  foreignKey: 'patient_id',
   onDelete: 'cascade',
   truncate: true,
   hooks: true,
 });
 db.resolution.belongsTo(db.patient, {
-  foreignKey: 'patientId',
+  foreignKey: 'patient_id',
 });
-
-const initRoles = async () => {
-  await db.role.findOrCreate({
-    where: { title: 'patient' },
-    defaults: {
-      id: 1,
-      title: 'patient',
-    },
-  });
-  await db.role.findOrCreate({
-    where: { title: 'doctor' },
-    defaults: {
-      id: 2,
-      title: 'doctor',
-    },
-  });
-
-  await db.specialization.findOrCreate({
-    where: { title: 'pediatrician' },
-    defaults: {
-      id: 1,
-      title: 'pediatrician',
-    },
-  });
-  await db.specialization.findOrCreate({
-    where: { title: 'dermatologist' },
-    defaults: {
-      id: 2,
-      title: 'dermatologist',
-    },
-  });
-  await db.specialization.findOrCreate({
-    where: { title: 'psychiatrist' },
-    defaults: {
-      id: 3,
-      title: 'psychiatrist',
-    },
-  });
-};
-
-// seeding of doctors since we don't have registration for them
-const initUsers = async () => {
-  await db.user.findOrCreate({
-    where: { email: 'doctor1@gmail.com' },
-    defaults: {
-      email: 'doctor1@gmail.com',
-      password: bcrypt.hashSync('12345678', 8),
-    },
-  }).then((user) => {
-    user[0].setRoles([2]);
-  });
-  await db.user.findOrCreate({
-    where: { email: 'doctor2@gmail.com' },
-    defaults: {
-      email: 'doctor2@gmail.com',
-      password: bcrypt.hashSync('12345678', 8),
-    },
-  }).then((user) => {
-    user[0].setRoles([2]);
-  });
-  await db.user.findOrCreate({
-    where: { email: 'doctor3@gmail.com' },
-    defaults: {
-      email: 'doctor3@gmail.com',
-      password: bcrypt.hashSync('12345678', 8),
-    },
-  }).then((user) => {
-    user[0].setRoles([2]);
-  });
-};
-
-const initDoctors = async () => {
-  await db.doctor.findOrCreate({
-    where: { name: 'Lyolik' },
-    defaults: {
-      userId: 1,
-      name: 'Lyolik',
-    },
-  }).then((doctor) => {
-    doctor[0].setSpecializations([1]);
-  });
-
-  await db.doctor.findOrCreate({
-    where: { name: 'Ms. Andersen' },
-    defaults: {
-      userId: 2,
-      name: 'Ms. Andersen',
-    },
-  }).then((doctor) => {
-    doctor[0].setSpecializations([2]);
-  });
-
-  await db.doctor.findOrCreate({
-    where: { name: 'Mr. Lecter' },
-    defaults: {
-      userId: 3,
-      name: 'Mr. Lecter',
-    },
-  }).then((doctor) => {
-    doctor[0].setSpecializations([3]);
-  });
-};
 
 db.init = async () => {
   if (process.env.NODE_ENV === 'local') {
@@ -195,9 +96,7 @@ db.init = async () => {
     db.sequelize.sync();
   }
 
-  await initRoles();
-  await initUsers();
-  await initDoctors();
+  await seed(db);
 };
 
 export default db;

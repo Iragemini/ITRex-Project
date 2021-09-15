@@ -14,8 +14,10 @@ export default class ResolutionService {
     const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
 
     const data = body;
-    data.doctorName = doctor.name;
-    data.doctorSpecialization = doctor['specializations.title'];
+    data.doctor_name = doctor.name;
+    data.doctor_specialization = doctor['specializations.title'];
+
+    data.patient_id = body.patientId;
 
     if (!body.ttl) {
       data.ttl = defaultTTL;

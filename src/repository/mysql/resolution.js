@@ -4,7 +4,7 @@ export default class MySQLResolution {
   constructor(db) {
     this.db = db;
     this.Resolution = this.db.resolution;
-    this.sequelize = db.sequelize;
+    this.sequelize = this.db.sequelize;
   }
 
   async add(data) {
@@ -28,7 +28,7 @@ export default class MySQLResolution {
         resolutions.* 
       FROM 
         resolutions 
-        INNER JOIN patients ON patients.id = resolutions.patientid 
+        INNER JOIN patients ON patients.id = resolutions.patient_id 
       WHERE 
         patients.name = "${patientName}" 
         AND (
@@ -37,7 +37,7 @@ export default class MySQLResolution {
         )
       `;
 
-      resolutions = await this.db.sequelize.query(sequelizeQuery, {
+      resolutions = await this.sequelize.query(sequelizeQuery, {
         raw: true,
         type: this.sequelize.QueryTypes.SELECT,
       });
@@ -54,16 +54,16 @@ export default class MySQLResolution {
       resolutions.* 
     FROM 
       resolutions 
-      INNER JOIN patients ON patients.id = resolutions.patientId 
+      INNER JOIN patients ON patients.id = resolutions.patient_id
     WHERE 
-      patients.userId = "${id}" 
+      patients.user_id = "${id}" 
       AND (
         resolutions.expire IS NULL 
         OR resolutions.expire > Now()
       )
     `;
 
-    const resolutions = await this.db.sequelize.query(query, {
+    const resolutions = await this.sequelize.query(query, {
       raw: true,
       type: this.sequelize.QueryTypes.SELECT,
     });

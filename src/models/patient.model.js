@@ -18,7 +18,12 @@ export default (sequelize, Sequelize) => {
       birth_date: {
         type: Sequelize.DATE,
       },
-    }, { sequelize, modelName: 'patient', timestamps: true },
+    }, {
+      modelName: 'patient',
+      underscored: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
   );
 
   return Patient;

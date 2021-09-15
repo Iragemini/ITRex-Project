@@ -32,8 +32,9 @@ describe('Resolution tests', () => {
   };
 
   const data = {
-    doctorName: doctor.name,
-    doctorSpecialization: doctor['specializations.title'],
+    patient_id: body.patientId,
+    doctor_name: doctor.name,
+    doctor_specialization: doctor['specializations.title'],
     ...body,
   };
 

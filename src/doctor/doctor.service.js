@@ -8,10 +8,6 @@ export default class DoctorService {
   getAllDoctors = async () => {
     const doctors = await this.repository.getAll();
 
-    if (doctors.length === 0) {
-      return [];
-    }
-
     return doctors;
   }
 

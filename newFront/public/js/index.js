@@ -126,12 +126,12 @@ if (searchResolutionsByNameForm) {
         listGroup.className = 'list-group-item py-3'
 
         const patientID = document.createElement('small');
-        patientID.innerHTML = `PatientID: ${el.patientId}`;
+        patientID.innerHTML = `PatientID: ${el.patient_id}`;
         listGroup.append(patientID)
 
         const doctorInfo = document.createElement('p');
         doctorInfo.className = 'mb-1';
-        doctorInfo.innerHTML = `Submitted by ${el.doctorName}, ${el.doctorSpecialization}`;
+        doctorInfo.innerHTML = `Submitted by ${el.doctor_name}, ${el.doctor_specialization}`;
         listGroup.append(doctorInfo)
 
         const resolution = document.createElement('p');
@@ -140,7 +140,7 @@ if (searchResolutionsByNameForm) {
         listGroup.append(resolution)
 
         const created = document.createElement('small');
-        const date = el.createdAt.toLocaleString('en-us');
+        const date = el.created_at.toLocaleString('en-us');
         created.innerHTML = date;
         listGroup.append(created)
 
@@ -169,9 +169,9 @@ if (personalResolutionsDiv) {
     resolutionsArray.forEach(el => {
       const listGroup = document.createElement('div');
       listGroup.className = 'list-group-item py-3'
-      const createdAt = el.createdAt.toLocaleString('en-us');
+      const createdAt = el.created_at.toLocaleString('en-us');
       listGroup.innerHTML = `
-      <p class="mb-1">Submitted by ${el.doctorName} (${el.doctorSpecialization})</p>
+      <p class="mb-1">Submitted by ${el.doctor_name} (${el.doctor_specialization})</p>
       <p class="mb-1">${el.resolution}</p>
       <small>${createdAt}</small>
       `;

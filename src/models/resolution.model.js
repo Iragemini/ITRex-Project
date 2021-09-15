@@ -10,16 +10,20 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: true,
       },
-      doctorName: {
+      doctor_name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      doctorSpecialization: {
+      doctor_specialization: {
         type: Sequelize.STRING,
         allowNull: false,
       },
+    }, {
+      modelName: 'resolution',
+      underscored: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-    { sequelize, modelName: 'resolution', timestamps: true },
   );
 
   return Resolution;

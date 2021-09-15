@@ -47,12 +47,12 @@ describe('Patient repository tests', () => {
     it('should return patient', async () => {
       db.patient.findOne.withArgs({
         raw: true,
-        where: { userId },
+        where: { user_id: userId },
       }).resolves({ id, ...user });
       expect(await mysqlPatient.getPatientByUserId(userId)).to.deep.equal({ id, ...user });
       expect(db.patient.findOne.calledWith({
         raw: true,
-        where: { userId },
+        where: { user_id: userId },
       })).to.be.true;
       expect(db.patient.findOne.calledOnce).to.be.true;
     });
@@ -60,12 +60,12 @@ describe('Patient repository tests', () => {
     it('should return null when there are not such patient', async () => {
       db.patient.findOne.withArgs({
         raw: true,
-        where: { userId },
+        where: { user_id: userId },
       }).resolves(null);
       expect(await mysqlPatient.getPatientByUserId(userId)).to.be.null;
       expect(db.patient.findOne.calledWith({
         raw: true,
-        where: { userId },
+        where: { user_id: userId },
       })).to.be.true;
     });
   });

@@ -23,7 +23,7 @@ export default class MySQLPatient {
   getPatientByUserId = async (userId) => {
     const patient = await this.Patient.findOne({
       raw: true,
-      where: { userId },
+      where: { user_id: userId },
     });
 
     if (!patient) {
