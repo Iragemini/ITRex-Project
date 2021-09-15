@@ -4,6 +4,7 @@ import { add, remove, getCurrent } from './queue.controllers.js';
 import { setDoctorIdFromUserId } from '../doctor/doctor.controllers.js';
 import verifyToken from '../middlewares/verifyToken.js';
 import restrictTo from '../middlewares/restrictRoute.js';
+import constants from '../utils/constants.js';
 
 const queueRouter = Router();
 
@@ -12,13 +13,13 @@ queueRouter
   .route('/')
   .get(
     asyncHandler(verifyToken),
-    restrictTo('doctor'),
+    restrictTo(constants.roles.doctor),
     setDoctorIdFromUserId,
     asyncHandler(getCurrent),
   )
   .delete(
     asyncHandler(verifyToken),
-    restrictTo('doctor'),
+    restrictTo(constants.roles.doctor),
     setDoctorIdFromUserId,
     asyncHandler(remove),
   );
@@ -28,12 +29,12 @@ queueRouter
   .route('/:doctorId')
   .post(
     asyncHandler(verifyToken),
-    restrictTo('patient'),
+    restrictTo(constants.roles.patient),
     asyncHandler(add),
   )
   .get(
     asyncHandler(verifyToken),
-    restrictTo('patient'),
+    restrictTo(constants.roles.patient),
     asyncHandler(getCurrent),
   );
 

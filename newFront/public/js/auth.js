@@ -12,16 +12,13 @@ const signin = async (email, password) => {
     },
   };
 
-  axios(config)
-    .then(function (response) {
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  try {
+    const response = await axios(config)
+    localStorage.setItem('token', response.data.token);
+    location.assign('/');
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 
@@ -35,16 +32,13 @@ const doctorSignin = async (email, password) => {
     },
   };
 
-  axios(config)
-    .then(function (response) {
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
-        location.assign('/process');
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  try {
+    const response = await axios(config)
+    localStorage.setItem('token', response.data.token);
+    location.assign('/process');
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const signup = async (
@@ -68,16 +62,15 @@ const signup = async (
     },
   };
 
-  axios(config)
-    .then(function (response) {
-      if (response.status === 201) {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message)
-      console.log(error.response);
-    });
+  try {
+    const response = await axios(config)
+    if (response.status === 201) {
+      location.assign('/');
+    }
+  } catch (error) {
+    alert(error.response.data.message)
+    console.log(error.response);
+  }
 };
 
 export { signin, signup, doctorSignin };

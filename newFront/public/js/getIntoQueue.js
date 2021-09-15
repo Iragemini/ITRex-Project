@@ -13,15 +13,14 @@ const getIntoQueue = async () => {
     url: `${baseUrl}/api/queue/${doctorId}`,
   };
 
-  axios(config)
-    .then(function (response) {
-      if (response.status === 201) {
-        location.reload();
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  try {
+    const response = await axios(config)
+    if (response.status === 201) {
+      location.reload();
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export { getIntoQueue };

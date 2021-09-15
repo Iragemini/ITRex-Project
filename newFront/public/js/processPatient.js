@@ -26,15 +26,14 @@ export const submitResolution = async (patientId, resolution, ttl) => {
     },
   };
 
-  axios(config)
-    .then(function (response) {
-      if (response.status === 201) {
-        alert('Resolution submitted.')
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  try {
+    const response = await axios(config)
+    if (response.status === 201) {
+      alert('Resolution submitted.')
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const dequeue = async () => {
@@ -43,8 +42,9 @@ export const dequeue = async () => {
     url: `${baseUrl}/api/queue`,
   };
 
-  axios(config)
-    .catch(function (error) {
-      console.log(error);
-    });
+  try {
+    await axios(config)
+  } catch (error) {
+    console.log(error);
+  }
 };

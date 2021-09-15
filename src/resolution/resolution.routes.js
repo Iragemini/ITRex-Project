@@ -13,6 +13,7 @@ import {
 import { validator, checkTTL } from '../middlewares/validate.js';
 import verifyToken from '../middlewares/verifyToken.js';
 import restrictTo from '../middlewares/restrictRoute.js';
+import constants from '../utils/constants.js';
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router
   .route('/me')
   .get(
     asyncHandler(verifyToken),
-    restrictTo('patient'),
+    restrictTo(constants.roles.patient),
     asyncHandler(findAllByUserId),
   );
 
@@ -28,7 +29,7 @@ router
   .route('/')
   .post(
     asyncHandler(verifyToken),
-    restrictTo('doctor'),
+    restrictTo(constants.roles.doctor),
     validator(bodySchema, 'body'),
     validator(resolutionSchema, 'body'),
     checkTTL,
@@ -36,7 +37,7 @@ router
   )
   .get(
     asyncHandler(verifyToken),
-    restrictTo('doctor'),
+    restrictTo(constants.roles.doctor),
     asyncHandler(findAll),
   );
 
@@ -44,7 +45,7 @@ router
   .route('/:resolutionId')
   .delete(
     asyncHandler(verifyToken),
-    restrictTo('doctor'),
+    restrictTo(constants.roles.doctor),
     asyncHandler(remove),
   );
 

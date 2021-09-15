@@ -116,9 +116,10 @@ if (searchResolutionsByNameForm) {
     const patientName = searchResolutionsByNameForm.querySelector('#name').value;
     const resolutions = await get.resolutionsByName(patientName);
 
-    if (resolutions) {
+    const resolutionsArray = resolutions.data.data;
+
+    if (resolutionsArray.length !== 0) {
       searchResolutionsDiv.innerHTML = '';
-      const resolutionsArray = resolutions.data.data;
 
       resolutionsArray.forEach(el => {
         const listGroup = document.createElement('div');
@@ -164,7 +165,7 @@ if (personalResolutionsDiv) {
 
   const resolutionsArray = resolutions.data.data;
 
-  if (resolutionsArray) {
+  if (resolutionsArray.length !== 0) {
     resolutionsArray.forEach(el => {
       const listGroup = document.createElement('div');
       listGroup.className = 'list-group-item py-3'

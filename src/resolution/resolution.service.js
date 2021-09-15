@@ -32,7 +32,7 @@ export default class ResolutionService {
     const resolutions = await this.repository.getAllResolutions(query);
 
     if (resolutions.length === 0) {
-      throw new ApiError(404, 'No resolutions found');
+      return [];
     }
 
     return resolutions;
@@ -42,7 +42,7 @@ export default class ResolutionService {
     const resolutions = await this.repository.getResolutionsByUserId(userId);
 
     if (resolutions.length === 0) {
-      throw new ApiError(404, 'No resolutions found');
+      return [];
     }
 
     return resolutions;

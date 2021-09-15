@@ -1,7 +1,8 @@
+import constants from '../utils/constants.js';
 import doctorService from './index.js';
 
 export const setDoctorIdFromUserId = async (req, res, next) => {
-  if (!req.params.doctorId && req.user['roles.title'] === 'doctor') {
+  if (!req.params.doctorId && req.user['roles.title'] === constants.roles.doctor) {
     const doctor = await doctorService.getDoctorByUserId(req.user.id);
     req.params.doctorId = doctor.id;
   }

@@ -56,21 +56,21 @@ describe('Resolution tests', () => {
   describe('Find all resolutions with optional name query', () => {
     const patientName = 'Patient_999';
 
+    const query = {
+      patientName,
+    };
+
     afterEach(() => {
       sandbox.restore();
     });
 
-    it('should throw an error when there are no resolutions/they have expired', async () => {
+    it('should return an empty list when no resolutions/they have expired', async () => {
       sandbox.replace(mysqlResolution, 'getAllResolutions', () => []);
 
       const spyGetAllResolutions = sandbox.spy(mysqlResolution, 'getAllResolutions');
 
-      try {
-        await resolutionService.findAllResolutions(patientName);
-      } catch (err) {
-        expect(spyGetAllResolutions.withArgs(patientName).calledOnce).to.be.true;
-        expect(err.message).to.equal('No resolutions found');
-      }
+      expect(await resolutionService.findAllResolutions(query)).to.deep.equal([]);
+      expect(spyGetAllResolutions.withArgs(query).calledOnce).to.be.true;
     });
 
     it('should return resolutions', async () => {
@@ -78,9 +78,9 @@ describe('Resolution tests', () => {
 
       const spyGetAllResolutions = sandbox.spy(mysqlResolution, 'getAllResolutions');
 
-      expect(await resolutionService.findAllResolutions(patientName)).to.deep.equal([resolution]);
+      expect(await resolutionService.findAllResolutions(query)).to.deep.equal([resolution]);
       expect(spyGetAllResolutions.calledOnce).to.be.true;
-      expect(spyGetAllResolutions.calledWith(patientName)).to.be.true;
+      expect(spyGetAllResolutions.calledWith(query)).to.be.true;
     });
   });
 
@@ -91,17 +91,14 @@ describe('Resolution tests', () => {
       sandbox.restore();
     });
 
-    it('should throw an error when there are no resolutions/they have expired', async () => {
+    it('should return an empty list when no resolutions/they have expired', async () => {
       sandbox.replace(mysqlResolution, 'getResolutionsByUserId', () => []);
 
       const spyGetResolutionsByUserId = sandbox.spy(mysqlResolution, 'getResolutionsByUserId');
 
-      try {
-        await resolutionService.findResolutionsByUserId(userId);
-      } catch (err) {
-        expect(spyGetResolutionsByUserId.withArgs(userId).calledOnce).to.be.true;
-        expect(err.message).to.equal('No resolutions found');
-      }
+      expect(await resolutionService.findResolutionsByUserId(userId)).to.deep.equal([]);
+      expect(spyGetResolutionsByUserId.calledOnce).to.be.true;
+      expect(spyGetResolutionsByUserId.withArgs(userId).calledOnce).to.be.true;
     });
 
     it('should return resolutions', async () => {

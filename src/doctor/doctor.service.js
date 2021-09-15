@@ -8,8 +8,8 @@ export default class DoctorService {
   getAllDoctors = async () => {
     const doctors = await this.repository.getAll();
 
-    if (!doctors) {
-      throw new ApiError(404, 'Doctors not found');
+    if (doctors.length === 0) {
+      return [];
     }
 
     return doctors;
