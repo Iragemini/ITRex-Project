@@ -86,77 +86,79 @@ const doctors = [
   },
 ];
 
-const initRoles = (db) => {
-  for (let i = 0; i < roles.length; i += 1) {
-    db.role.findOrCreate({
-      where: roles[i].whereObject,
-      defaults: roles[i].defaultsObject,
+const initRoles = async (db) => {
+  await roles.reduce(async (previousPromise, roleObj) => {
+    await previousPromise;
+    return db.role.findOrCreate({
+      where: roleObj.whereObject,
+      defaults: roleObj.defaultsObject,
     });
-  }
+  }, Promise.resolve());
 
-  for (let i = 0; i < spec.length; i += 1) {
-    db.specialization.findOrCreate({
-      where: spec[i].whereObject,
-      defaults: spec[i].defaultsObject,
+  await spec.reduce(async (previousPromise, specObj) => {
+    await previousPromise;
+    return db.specialization.findOrCreate({
+      where: specObj.whereObject,
+      defaults: specObj.defaultsObject,
     });
-  }
+  }, Promise.resolve());
 };
 
 const initDoctors = async (db) => {
-  const doctorOne = await db.user.findOrCreate({
+  const userOne = await db.user.findOrCreate({
     where: users[0].whereObject,
     defaults: users[0].defaultsObject,
   });
 
-  doctorOne[0].setRoles([2]);
+  userOne[0].setRoles([2]);
 
-  const doctorTwo = await db.user.findOrCreate({
+  const userTwo = await db.user.findOrCreate({
     where: users[1].whereObject,
     defaults: users[1].defaultsObject,
   });
 
-  doctorTwo[0].setRoles([2]);
+  userTwo[0].setRoles([2]);
 
-  const doctorThree = await db.user.findOrCreate({
+  const userThree = await db.user.findOrCreate({
     where: users[2].whereObject,
     defaults: users[2].defaultsObject,
   });
 
-  doctorThree[0].setRoles([2]);
+  userThree[0].setRoles([2]);
 
-  db.doctor.findOrCreate({
+  const doctorOne = await db.doctor.findOrCreate({
     where: doctors[0].whereObject,
     defaults: {
-      user_id: doctorOne[0].id,
+      user_id: userOne[0].id,
       name: doctors[0].defaultsObject.name,
     },
-  }).then((doctor) => {
-    doctor[0].setSpecializations([1]);
   });
 
-  db.doctor.findOrCreate({
+  doctorOne[0].setSpecializations([1]);
+
+  const doctorTwo = await db.doctor.findOrCreate({
     where: doctors[1].whereObject,
     defaults: {
-      user_id: doctorTwo[0].id,
+      user_id: userTwo[0].id,
       name: doctors[1].defaultsObject.name,
     },
-  }).then((doctor) => {
-    doctor[0].setSpecializations([2]);
   });
 
-  db.doctor.findOrCreate({
+  doctorTwo[0].setSpecializations([2]);
+
+  const doctorThree = await db.doctor.findOrCreate({
     where: doctors[2].whereObject,
     defaults: {
-      user_id: doctorThree[0].id,
+      user_id: userThree[0].id,
       name: doctors[2].defaultsObject.name,
     },
-  }).then((doctor) => {
-    doctor[0].setSpecializations([3]);
   });
+
+  doctorThree[0].setSpecializations([3]);
 };
 
 const seed = async (db) => {
-  initRoles(db);
+  await initRoles(db);
   await initDoctors(db);
 };
 
