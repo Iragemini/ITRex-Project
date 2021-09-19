@@ -11,9 +11,9 @@ A backend part of ITRex lab
   - `docker-compose -f ./doc/swagger-docker-compose.yml -p itrex-project down`
 ## How to use
 
-- [Wiki]()
+- [Wiki](https://github.com/Iragemini/ITRex-Project/wiki)
 
-- [API Request Examples]()
+- [API Request Examples](https://github.com/Iragemini/ITRex-Project/wiki/API-Request-Examples)
 
 ## **Local run**
 
