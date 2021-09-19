@@ -1,35 +1,19 @@
-# Queue-patient-resolution application
+# Med center
+A backend part of ITRex lab
 
-## Endpoints
+## Swagger documentation
 
-- _`/api/user`_ - Authorization
-  - **POST**   _`/signup`_ - user registration
-  - **POST**   _`/login`_ - user authorization
-- _`/api/queue`_ - Queue (for patients);
-  - **POST**   _`/:doctorId`_ - get into queue
-  - **GET**    _`/:doctorId`_ - return current patient in the queue
-- _`/api/queue`_ - Queue (for doctors);
-  - **GET**    _`/`_ - return current patient in doctor's own queue 
-  - **DELETE** _`/`_ - delete current patient from doctor's own queue and return next
-- _`/api/resolutions`_ - Resolution
-  - **GET**    _`/`_ - return all resolutions
-  - **GET**    _`/?patientName=`_ - return resolution by patient name
-  - **GET**    _`/me`_ - return resolutions for authorized user
-  - **POST**   _`/`_ - add a new resolution
-  - **DELETE** _`/:resolutionId`_ - delete resolution
+- Start
+  - `docker-compose -f ./doc/swagger-docker-compose.yml -p itrex-project up -d`
 
-# How to use application:
+  - [Swagger doc](http://localhost:80)
+- Stop
+  - `docker-compose -f ./doc/swagger-docker-compose.yml -p itrex-project down`
+## How to use
 
-## **Doctor accounts that you can use:**
+- [Wiki]()
 
-email: 'doctor1@gmail.com',
-password: '12345678',
-
-email: 'doctor2@gmail.com',
-password: '12345678',
-
-email: 'doctor3@gmail.com',
-password: '12345678',
+- [API Request Examples]()
 
 ## **Local run**
 
@@ -53,6 +37,7 @@ MYSQLDB_DOCKER_PORT=3306
 
 NODE_LOCAL_PORT=3000
 NODE_DOCKER_PORT=3000
+JWT_SECRET=<your secret key>
 ```
 
 - Start application
@@ -67,4 +52,5 @@ NODE_DOCKER_PORT=3000
 
 ## **Tests**
 
-- tests starts with `npm run test` command
+- tests start with `npm run test` command
+

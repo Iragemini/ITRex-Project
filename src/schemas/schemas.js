@@ -37,7 +37,7 @@ export const userLogInSchema = Joi.object()
     password: Joi.string()
       .required()
       .min(MIN_PASSWORD_LENGTH)
-      .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+      .pattern(new RegExp('^[a-zA-Z0-9]{4,30}$')),
   });
 
 export const bodySchema = Joi.object().min(1);
