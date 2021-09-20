@@ -56,7 +56,13 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
+          nullable: false
+          minimum: 1
+        userId:
+          type: integer
+          nullable: false
+          minimum: 1
         name:
           type: string
         specialization:
@@ -358,11 +364,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemes/doctor'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemes/doctor'
 
-  /doctor/me:
+  /doctors/me:
     parameters:
       - $ref: '#/components/userIdSchemes/userId'
     get:
