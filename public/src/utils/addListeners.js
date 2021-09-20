@@ -1,5 +1,5 @@
 import { loginUser, signupUser } from '../../components/auth/auth.js';
-import { makeAppointment, logoutUser, showResolution } from '../../components/account/account.js';
+import { makeAppointment, logoutUser, showResolution, getDoctorsList } from '../../components/account/account.js';
 import {
   changeTTL,
   deleteResolution,
@@ -19,6 +19,7 @@ const addListeners = () => {
   const nextBtn = document.getElementById('next');
   const deleteResolutionBtn = document.getElementById('deleteResolution');
   const ttlCheckbox = document.getElementById('ttl');
+  const doctorSelect = document.getElementById('doctorSelect');
 
   /* auth */
   if (loginBtn) {
@@ -64,6 +65,9 @@ const addListeners = () => {
   if (ttlCheckbox) {
     ttlCheckbox.removeEventListener('change', changeTTL);
     ttlCheckbox.addEventListener('change', () => changeTTL());
+  }
+  if(doctorSelect){
+    getDoctorsList(doctorSelect);
   }
 };
 

@@ -1,7 +1,7 @@
-const loginForm = () => `
+const loginForm = (user) => `
     <div class="container">
       <div class="card text-white bg-primary m-1">
-        <div class="card-header p-1">Log in</div>
+        <div class="card-header p-1">Log in as ${user}</div>
         <div class="card-body">
           <div class="form-group">
             <label for="email" class="form-label mt-4">Email address</label>

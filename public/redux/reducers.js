@@ -1,18 +1,25 @@
 import {
-  USER_LOGOUT,
+  PATIENT_LOGOUT,
+  DOCTOR_LOGOUT,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
   SET_MESSAGE,
-  LOGIN_SUCCESS,
-  LOGIN_FAIL,
+  LOGIN_DOCTOR_FAIL,
+  LOGIN_PATIENT_FAIL,
+  LOGIN_DOCTOR_SUCCESS,
+  LOGIN_PATIENT_SUCCESS,
   CLEAR_MESSAGE,
+  CURRENT_USER,
 } from './types.js';
-
-const user = JSON.parse(localStorage.getItem('user'));
+import Roles from '../src/utils/roles.js';
 
 const initialState = {};
 
-const initialUserState = user ? { isLoggedIn: true, user } : { isLoggedIn: false, user: null };
+const initialPatientState = { isPatientLoggedIn: false, user: null };
+
+const initialDoctorState = { isDoctorLoggedIn: false, user: null };
+
+const initialCurrentUserState = { currentUser: Roles.PATIENT };
 
 const messageReducer = (state = initialState, action) => {
   const { type, payload } = action;
@@ -28,37 +35,76 @@ const messageReducer = (state = initialState, action) => {
   }
 };
 
-const userReducer = (state = initialUserState, action) => {
+const patientReducer = (state = initialPatientState, action) => {
   const { type, payload } = action;
   switch (type) {
     case REGISTER_SUCCESS:
       return {
         ...state,
-        isLoggedIn: false,
+        isPatientLoggedIn: false,
         user: payload,
       };
     case REGISTER_FAIL:
       return {
         ...state,
-        isLoggedIn: false,
+        isPatientLoggedIn: false,
       };
-    case LOGIN_SUCCESS:
+    case LOGIN_PATIENT_SUCCESS:
       return {
         ...state,
-        isLoggedIn: true,
+        isPatientLoggedIn: true,
         user: payload,
       };
-    case LOGIN_FAIL:
+    case LOGIN_PATIENT_FAIL:
       return {
         ...state,
-        isLoggedIn: false,
+        isPatientLoggedIn: false,
         user: null,
       };
-    case USER_LOGOUT:
+    case PATIENT_LOGOUT:
       return {
         ...state,
-        isLoggedIn: false,
+        isPatientLoggedIn: false,
         user: null,
+      };
+    default:
+      return state;
+  }
+};
+
+const doctorReducer = (state = initialDoctorState, action) => {
+  const { type, payload } = action;
+  switch (type) {
+    case LOGIN_DOCTOR_SUCCESS:
+      return {
+        ...state,
+        isDoctorLoggedIn: true,
+        user: payload,
+      };
+    case LOGIN_DOCTOR_FAIL:
+      return {
+        ...state,
+        isDoctorLoggedIn: false,
+        user: null,
+      };
+    case DOCTOR_LOGOUT:
+      return {
+        ...state,
+        isDoctorLoggedIn: false,
+        user: null,
+      };
+    default:
+      return state;
+  }
+};
+
+const userReducer = (state = initialCurrentUserState, action) => {
+  const { type, payload } = action;
+  switch (type) {
+    case CURRENT_USER:
+      return {
+        ...state,
+        currentUser: payload,
       };
     default:
       return state;
@@ -68,6 +114,8 @@ const userReducer = (state = initialUserState, action) => {
 /* eslint no-undef: 0 */
 const reducer = Redux.combineReducers({
   messageReducer,
+  patientReducer,
+  doctorReducer,
   userReducer,
 });
 

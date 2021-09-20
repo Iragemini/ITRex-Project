@@ -6,8 +6,8 @@ class QueueService extends Service {
     return res;
   };
 
-  postPatientInQueue = async (data) => {
-    const res = await this.postResource('/queue', data);
+  postPatientInQueue = async (doctorId) => {
+    const res = await this.postResource(`/queue/${doctorId}`);
     return res;
   };
 
