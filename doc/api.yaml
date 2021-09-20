@@ -1,0 +1,422 @@
+openapi: 3.0.0
+info:
+  title: Med center
+  description: API
+  version: 1.0.0
+
+servers:
+  - url: http://itrex-project:3000/api
+
+tags:
+  - name: doctor
+    description: Doctor's routes
+  - name: patient
+    description: Patient's routes
+  - name: auth
+    description: Authentication
+  - name: public
+    description: Public routes
+  - name: user
+    description: User routes
+
+components:
+  schemes:
+    resolution:
+      type: object
+      properties:
+        id:
+          type: string
+        resolution:
+          type: string
+        expire:
+          type: string
+          format: date-time
+        doctorName:
+          type: string
+        doctorSpecialization:
+          type: string
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: false
+          minimum: 1
+        name:
+          type: string
+        gender:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+    doctor:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        specialization:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+    UnauthenticatedError:
+      description: Access token is missing, expired or invalid
+    ForbiddenError:
+      description: You do not have permission to perform this action
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  userIdSchemes:
+    userId:
+      name: userId
+      type: string
+      description: user ID
+      in: request
+      required: true
+
+security:
+  - bearerAuth: []
+
+paths:
+  /signup:
+    post:
+      tags:
+        - auth
+      summary: Create a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string
+                  description: User name
+                email:
+                  type: string
+                  format: email
+                  description: E-mail
+                birthDate:
+                  type: string
+                  format: date
+                  description: Birth date
+                gender:
+                  type: string
+                  description: Gender (male/female)
+                password:
+                  type: string
+                  format: password
+                  minLength: 4
+                  maxLength: 30
+                  description: Password
+                confirmPassword:
+                  type: string
+                  format: password
+                  minLength: 4
+                  maxLength: 30
+                  description: Password
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Email is already exists
+
+  /login:
+    post:
+      tags:
+        - auth
+      summary: Sign in
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: E-mail
+                password:
+                  type: string
+                  format: password
+                  minLength: 4
+                  maxLength: 30
+                  description: Password
+      responses:
+        '200':
+          description: A JSON object containing token and user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+                    bearerFormat: JWT
+                  data:
+                    $ref: '#/components/schemes/user'
+
+  /queue:
+    parameters:
+      - $ref: '#/components/userIdSchemes/userId'
+    get:
+      tags:
+        - doctor
+      summary: Returns current patient in the queue for logged in doctor
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON with current patient
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+    delete:
+      tags:
+        - doctor
+      summary: Delete current patient from the queue and return next
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON with next patient
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  next:
+                    type: string
+
+  /queue/:doctorId:
+    parameters:
+      - name: doctorId
+        description: doctor ID
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/userIdSchemes/userId'
+    post:
+      tags:
+        - patient
+      summary: Add new patient to the queue
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '201':
+          description: Successful creation
+    get:
+      tags:
+        - patient
+      summary: Returns current patient in the queue
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON with current patient
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: string
+
+  /resolutions:
+    get:
+      parameters:
+        - name: patientName
+          description: Patient name
+          in: query
+          required: true
+          schema:
+            type: string
+      tags:
+        - doctor
+      summary: Returns all patient's resolutions by name
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON with array of resolutions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemes/resolution'
+    post:
+      tags:
+        - doctor
+      summary: Create resolution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                patientId:
+                  type: string
+                resolution:
+                  type: string
+                ttl:
+                  type: integer
+                  nullable: true
+                  minimum: 1
+              required:
+                - patientId
+                - resolution
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '201':
+          description: Created
+
+  /resolutions/me:
+    parameters:
+      - $ref: '#/components/userIdSchemes/userId'
+    get:
+      tags:
+        - patient
+      summary: Get all resolutions
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON with patient's resolutions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemes/resolution'
+
+  /resolutions/:resolutionId:
+    parameters:
+      - name: resolutionId
+        description: resolution ID
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags:
+        - doctor
+      summary: Delete specified resolution
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '204':
+          description: Resolution successfully deleted
+
+  /doctors:
+    get:
+      tags:
+        - public
+      summary: Get list of doctors
+      security: []
+      responses:
+        '200':
+          description: A JSON with doctors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemes/doctor'
+
+  /doctor/me:
+    parameters:
+      - $ref: '#/components/userIdSchemes/userId'
+    get:
+      tags:
+        - doctor
+      summary: Returns data of the logged in doctor
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemes/doctor'
+
+  /doctor/:doctorId:
+    parameters:
+      - name: doctorId
+        description: doctor ID
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - public
+      summary: Returns data of the specified doctor
+      security: []
+      responses:
+        '200':
+          description: A JSON object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemes/doctor'
+
+  /users/me:
+    get:
+      tags:
+        - user
+      summary: Returns user's data
+      parameters:
+        - $ref: '#/components/userIdSchemes/userId'
+      responses:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: A JSON object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemes/user'
