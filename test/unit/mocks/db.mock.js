@@ -10,10 +10,15 @@ const db = {
     destroy: () => {},
   }),
   patient: sinon.stub({
+    create: () => {},
     findOne: () => {},
     findOrCreate: () => {},
     findByPk: () => {},
     destroy: () => {},
+  }),
+  doctor: sinon.stub({
+    findAll: () => {},
+    findOne: () => {},
   }),
   user: sinon.stub({
     create: () => {},

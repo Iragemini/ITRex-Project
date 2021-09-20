@@ -1,32 +1,31 @@
 import resolutionService from './index.js';
 
 export const add = async (req, res, next) => {
-  const { name } = req.params;
-  const { resolution, ttl } = req.body;
-  await resolutionService.addResolution(name, resolution, ttl);
-  res.sendStatus(201);
+  const resolution = await resolutionService.addResolution(req.body, req.user.id); // doctor user id
+
+  res.status(201).json({
+    data: resolution,
+  });
 };
 
-export const find = async (req, res, next) => {
-  const { name } = req.params;
-  let resolution = await resolutionService.findResolution(name);
-  if (!resolution) {
-    resolution = `Resolution for ${name} not found`;
-  }
-  res.status(200).json({ resolution });
+export const findAll = async (req, res, next) => {
+  const resolutions = await resolutionService.findAllResolutions(req.query);
+
+  res.status(200).json({
+    data: resolutions,
+  });
+};
+
+export const findAllByUserId = async (req, res, next) => {
+  const resolutions = await resolutionService.findResolutionsByUserId(req.user.id);
+
+  res.status(200).json({
+    data: resolutions,
+  });
 };
 
 export const remove = async (req, res, next) => {
-  const { name } = req.params;
-  await resolutionService.deleteResolution(name);
-  res.sendStatus(200);
-};
+  await resolutionService.deleteResolutionById(req.params.resolutionId);
 
-export const getUserResolution = async (req, res, next) => {
-  const { userId } = req.user;
-  let resolution = await resolutionService.findResolutionByUserId(userId);
-  if (!resolution) {
-    resolution = 'Resolution not found';
-  }
-  res.status(200).json({ resolution });
+  res.sendStatus(204);
 };

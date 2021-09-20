@@ -11,6 +11,11 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+    }, {
+      modelName: 'user',
+      underscored: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
   );
 

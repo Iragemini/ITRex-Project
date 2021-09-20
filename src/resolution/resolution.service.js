@@ -1,46 +1,62 @@
-import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
+import ApiError from '../errors/ApiError.js';
 
 const defaultTTL = config.ttl;
 
 export default class ResolutionService {
-  constructor(repository, patientService) {
+  constructor(repository, patientService, doctorService) {
     this.repository = repository;
     this.patientService = patientService;
+    this.doctorService = doctorService;
   }
 
-  addResolution = async (name, resolution, ttl = defaultTTL) => {
-    const patientId = await this.patientService.getPatientId(name);
-    if (await this.findResolutionById(patientId)) {
-      await this.repository.update(patientId, resolution, ttl);
+  addResolution = async (body, doctorUserId) => {
+    const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
+
+    const data = body;
+    data.doctor_name = doctor.name;
+    data.doctor_specialization = doctor['specializations.title'];
+
+    data.patient_id = body.patientId;
+
+    if (!body.ttl) {
+      data.ttl = defaultTTL;
     } else {
-      await this.repository.add(patientId, { resolution, ttl });
+      data.ttl = body.ttl;
     }
+
+    const resolution = await this.repository.add(data);
+
+    return resolution;
   };
 
-  deleteResolution = async (name) => {
-    const patientId = await this.patientService.getPatientId(name);
-    if (!(await this.findResolutionById(patientId))) {
-      throw new ApiError(404, `Resolution for ${name} not found`);
+  findAllResolutions = async (query) => {
+    const resolutions = await this.repository.getAllResolutions(query);
+
+    if (resolutions.length === 0) {
+      return [];
     }
-    await this.repository.removeResolution(patientId);
+
+    return resolutions;
   };
 
-  findResolution = async (name) => {
-    const patientId = await this.patientService.getPatientId(name);
-    const { resolution } = await this.repository.getResolution(patientId);
+  findResolutionsByUserId = async (userId) => {
+    const resolutions = await this.repository.getResolutionsByUserId(userId);
 
-    return resolution || null;
+    if (resolutions.length === 0) {
+      return [];
+    }
+
+    return resolutions;
   };
 
-  findResolutionById = async (patientId) => {
-    const { resolution } = await this.repository.getResolution(patientId);
-    return resolution || null;
-  };
+  deleteResolutionById = async (id) => {
+    const resolution = await this.repository.removeResolution(id);
 
-  findResolutionByUserId = async (userId) => {
-    const patientId = await this.patientService.getPatientIdByUserId(userId);
-    const resolution = await this.findResolutionById(patientId);
+    if (resolution === 0) { // sequelize-specific case, it returns 0 if no rows were destroyed
+      throw new ApiError(404, 'Resolution not found');
+    }
+
     return resolution;
   };
 }

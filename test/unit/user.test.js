@@ -18,6 +18,7 @@ const userService = new UserService(mysqlUser, patientService);
 const sandbox = sinon.createSandbox();
 
 describe('User tests', () => {
+  const id = 1;
   const name = 'Patient_1';
   const email = 'email@email.com';
   const gender = 'male';
@@ -27,14 +28,12 @@ describe('User tests', () => {
   const userId = 777;
   const token = 'token';
   const user = {
+    id,
     name,
     email,
     password,
     gender,
     birthDate,
-    birth_date: birthDate,
-    userId,
-    user_id: userId,
   };
 
   describe('Create user', () => {
@@ -46,21 +45,22 @@ describe('User tests', () => {
       const data = {
         name,
         gender,
-        birthDate,
+        birth_date: user.birthDate,
         email,
-        userId,
       };
-      sandbox.replace(mysqlUser, 'createUser', () => userId);
+
+      sandbox.replace(mysqlUser, 'createUser', () => user);
       sandbox.replace(patientService, 'addPatient', () => undefined);
       sandbox.replace(bcrypt, 'hashSync', () => 'hashPassword');
+
       const spyCreateUser = sandbox.spy(mysqlUser, 'createUser');
       const spyAddPatient = sandbox.spy(patientService, 'addPatient');
       const spyBcrypt = sandbox.spy(bcrypt, 'hashSync');
 
       await userService.createUser(user);
-      expect(spyCreateUser.withArgs({ email, password: hashPassword }).calledOnce).to.be.true;
-      expect(spyCreateUser.returned(userId)).to.be.true;
-      expect(spyAddPatient.withArgs(data).calledOnce).to.be.true;
+      expect(spyCreateUser.withArgs({ email, password: hashPassword, role: 'patient' }).calledOnce).to.be.true;
+      expect(spyCreateUser.returned(user)).to.be.true;
+      expect(spyAddPatient.withArgs({ user_id: user.id, ...data }).calledOnce).to.be.true;
       expect(spyAddPatient.returned(undefined)).to.be.true;
       expect(spyBcrypt.withArgs(password, 8).calledOnce).to.be.true;
     });
@@ -68,12 +68,14 @@ describe('User tests', () => {
 
   describe('Authenticate user', () => {
     const userData = {
+      id,
       name,
       email,
       gender,
       birthDate,
+      password,
     };
-    const expectedValue = { accessToken: token, ...userData };
+    const expectedValue = { token, ...userData };
 
     beforeEach(() => {
       sandbox.replace(userService, 'getUserByEmail', () => user);
@@ -94,8 +96,8 @@ describe('User tests', () => {
       expect(await userService.authenticate({ email, password })).to.be.deep.equal(expectedValue);
       expect(spyGetUserByEmail.withArgs(email).calledOnce).to.be.true;
       expect(spyBcrypt.returned(true)).to.be.true;
-      expect(spyJwt.withArgs({ id: userId }, SECRET, { expiresIn: JWT_EXPIRE_TIME }).calledOnce).to
-        .be.true;
+      expect(spyJwt.withArgs({ id: userData.id }, SECRET,
+        { expiresIn: JWT_EXPIRE_TIME }).calledOnce).to.be.true;
     });
 
     it('should throw an error when password is invalid', async () => {

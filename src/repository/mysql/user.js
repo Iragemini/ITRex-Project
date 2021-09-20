@@ -7,25 +7,39 @@ export default class MySQLUser {
 
   createUser = async (data) => {
     const user = await this.User.create(data);
-    return user.id;
+
+    if (data.role === 'patient') {
+      user.setRoles(1);
+    }
+
+    return user;
   };
 
   getUserByEmail = async (email) => {
-    const [user] = await this.sequelize.query(
-      `SELECT users.password, patients.* FROM users RIGHT JOIN patients 
-      ON users.id = patients.user_id WHERE users.email = '${email}'`,
-      { type: this.sequelize.QueryTypes.SELECT },
-    );
+    const user = await this.User.findOne({
+      raw: true,
+      where: { email },
+      include: [
+        this.db.role,
+      ],
+    });
+
     return user;
   };
 
   getUserById = async (id) => {
     const user = await this.User.findOne({
+      raw: true,
       where: { id },
+      include: [
+        this.db.role,
+      ],
     });
+
     if (!user) {
       return null;
     }
+
     return user;
   };
 
@@ -38,16 +52,5 @@ export default class MySQLUser {
   /* not used */
   deleteUser = async (id) => {
     await this.User.destroy({ where: { id } });
-  };
-
-  /* not used */
-  isUserExists = async (id) => {
-    const user = await this.User.findOne({
-      where: { id },
-    });
-    if (!user) {
-      return false;
-    }
-    return true;
   };
 }

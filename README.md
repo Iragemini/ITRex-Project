@@ -2,27 +2,34 @@
 
 ## Endpoints
 
-- Queue: _`/api/queue`_
-  - **GET:** _`/api/queue`_ - return current patient in queue
-  - **POST:** _`/api/queue`_ - add new patient to queue
-  - **DELETE:** _`/api/queue`_ - delete current patient from the queue and return next
-- Resolution _`/api/resolution`_
-  - **GET** _`/api/resolution/doctor/:name`_ - return resolution by name
-  - **GET** _`/api/resolution/patient`_ - return resolution for authorized user
-  - **PATCH:** _`/api/resolution/doctor/:name`_ - add new resolution to patient
-  - **PATCH:** _`/api/resolution/doctor/:name/delete`_ - delete resolution
-- User
-  - **POST** _`/api/user`_ - user registration
-- Log in
-  - **POST** _`/api/login`_ - user authorization
-
-#
+- _`/api/user`_ - Authorization
+  - **POST**   _`/signup`_ - user registration
+  - **POST**   _`/login`_ - user authorization
+- _`/api/queue`_ - Queue (for patients);
+  - **POST**   _`/:doctorId`_ - get into queue
+  - **GET**    _`/:doctorId`_ - return current patient in the queue
+- _`/api/queue`_ - Queue (for doctors);
+  - **GET**    _`/`_ - return current patient in doctor's own queue 
+  - **DELETE** _`/`_ - delete current patient from doctor's own queue and return next
+- _`/api/resolutions`_ - Resolution
+  - **GET**    _`/`_ - return all resolutions
+  - **GET**    _`/?patientName=`_ - return resolution by patient name
+  - **GET**    _`/me`_ - return resolutions for authorized user
+  - **POST**   _`/`_ - add a new resolution
+  - **DELETE** _`/:resolutionId`_ - delete resolution
 
 # How to use application:
 
-### **Before start**:
+## **Doctor accounts that you can use:**
 
-- Application supports two types of storage for queue: **_im memory_** and **_redis_**. You might switch this option in `config.js` file : `config.js -> storage -> queueType: 'redis' /* choose 'redis' or 'memory' */`
+email: 'doctor1@gmail.com',
+password: '12345678',
+
+email: 'doctor2@gmail.com',
+password: '12345678',
+
+email: 'doctor3@gmail.com',
+password: '12345678',
 
 ## **Local run**
 

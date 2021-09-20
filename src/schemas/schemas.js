@@ -6,8 +6,9 @@ const {
 } = config;
 
 export const resolutionSchema = Joi.object().keys({
+  patientId: Joi.number().required(),
   resolution: Joi.string().required(),
-  ttl: Joi.string().optional().allow('').min(1),
+  ttl: Joi.number().optional().allow('').min(1),
 });
 
 export const nameSchema = Joi.object({

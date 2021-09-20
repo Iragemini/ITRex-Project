@@ -6,6 +6,7 @@ const redisClient = sinon.stub({
   LLEN: () => {},
   LPOP: () => {},
   FLUSHALL: () => {},
+  LINDEX: () => {},
 });
 
 const createClient = () => redisClient;

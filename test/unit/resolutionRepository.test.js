@@ -1,67 +1,78 @@
 import { expect } from 'chai';
-import sinon from 'sinon';
 import MySQLResolution from '../../src/repository/mysql/resolution.js';
 import db from './mocks/db.mock.js';
 
 const mysqlResolution = new MySQLResolution(db);
-const sandbox = sinon.createSandbox();
 
 describe('Resolution repository tests', () => {
   const id = 1;
   const resolution = 'resolution';
   const ttl = -1;
   const expire = null;
-  const dataValues = { id, resolution, expire };
-  const data = { resolution: `${resolution} ${resolution}`, expire };
+  const patientId = 5;
+  const doctorName = 'test';
+  const doctorSpecialization = 'test';
+
+  const data = {
+    patientId,
+    resolution,
+    ttl,
+    doctorName,
+    doctorSpecialization,
+  };
+
+  const outputValues = {
+    id,
+    patientId,
+    resolution,
+    expire,
+    doctorName,
+    doctorSpecialization,
+  };
+
+  const patientName = 'test';
+  const userId = 5;
 
   describe('Add resolution', () => {
     it('should add resolution to database', async () => {
-      db.resolution
-        .create
-        .withArgs({ patient_id: id, resolution, expire: null })
-        .resolves(undefined);
-      expect(await mysqlResolution.add(id, { resolution, ttl })).to.be.undefined;
-      expect(db.resolution.create.calledWith({ patient_id: id, resolution, expire: null }))
-        .to.be.true;
+      db.resolution.create.resolves(outputValues);
+
+      expect(await mysqlResolution.add(data)).to.deep.equal(outputValues);
     });
   });
 
-  describe('Update resolution', () => {
-    it('should add new text to resolution field', async () => {
-      db.resolution.findOne.withArgs({ where: { patient_id: id } }).resolves(dataValues);
-      db.resolution.update.withArgs(data, { where: { id } }).resolves(undefined);
+  describe('Get all resolutions with optional name query', () => {
+    it('should return resolutions list without optional query', async () => {
+      db.resolution.findAll.resolves([{ outputValues }]);
 
-      expect(await mysqlResolution.update(id, resolution, ttl)).to.be.undefined;
-      expect(db.resolution.update.calledWith(data, { where: { id } })).to.be.true;
+      expect(await mysqlResolution.getAllResolutions({}))
+        .to.be.deep.equal([{ outputValues }]);
+      expect(db.resolution.findAll.calledOnce).to.be.true;
+    });
 
-      sandbox.restore();
+    it('should return resolutions list with optional query', async () => {
+      db.sequelize.query.resolves([{ outputValues }]);
+
+      expect(await mysqlResolution.getAllResolutions({ patientName }))
+        .to.be.deep.equal([{ outputValues }]);
+      expect(db.sequelize.query.calledOnce).to.be.true;
     });
   });
 
-  describe('Get resolution', () => {
-    it('should return resolution object', async () => {
-      db.resolution.findOne.withArgs({ where: { patient_id: id } }).resolves(dataValues);
-      expect(await mysqlResolution.getResolution(id))
-        .to.be.an('object')
-        .with.property('resolution')
-        .that.to.equal(resolution);
-      expect(db.resolution.findOne.calledWith({ where: { patient_id: id } })).to.be.true;
+  describe('Get resolution by user Id', () => {
+    it('should return resolutions list with optional query', async () => {
+      db.sequelize.query.resolves([{ outputValues }]);
+
+      expect(await mysqlResolution.getResolutionsByUserId(userId))
+        .to.be.deep.equal([{ outputValues }]);
     });
   });
 
   describe('Remove resolution', () => {
-    it('should delete field in resolutions table by patient id', async () => {
-      db.resolution.destroy.withArgs({ where: { patient_id: id } }).resolves(undefined);
-      expect(await mysqlResolution.removeResolution(id)).to.be.undefined;
-      expect(db.resolution.destroy.calledWith({ where: { patient_id: id } })).to.be.true;
-    });
-  });
-
-  describe('Get one resolution', () => {
-    it('should return patient resolution', async () => {
-      db.resolution.findOne.withArgs({ where: { patient_id: id } }).resolves(dataValues);
-      expect(await mysqlResolution.getOneResolution(id)).to.deep.include(dataValues);
-      expect(db.resolution.findOne.calledWith({ where: { patient_id: id } })).to.be.true;
+    it('should delete resolution by id', async () => {
+      db.resolution.destroy.withArgs({ where: { id } }).resolves(1);
+      expect(await mysqlResolution.removeResolution(id)).to.equal(1);
+      expect(db.resolution.destroy.calledWith({ where: { id } })).to.be.true;
     });
   });
 });

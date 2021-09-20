@@ -1,33 +1,52 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import {
-  find,
   add,
+  findAll,
+  findAllByUserId,
   remove,
-  getUserResolution,
 } from './resolution.controllers.js';
 import {
-  nameSchema,
   resolutionSchema,
   bodySchema,
 } from '../schemas/schemas.js';
 import { validator, checkTTL } from '../middlewares/validate.js';
 import verifyToken from '../middlewares/verifyToken.js';
+import restrictTo from '../middlewares/restrictRoute.js';
+import constants from '../utils/constants.js';
 
-const resolutionRouter = Router();
+const router = Router();
 
-resolutionRouter
-  .route('/doctor/:name')
-  .get(validator(nameSchema, 'params'), asyncHandler(find))
-  .patch(
+router
+  .route('/me')
+  .get(
+    asyncHandler(verifyToken),
+    restrictTo(constants.roles.patient),
+    asyncHandler(findAllByUserId),
+  );
+
+router
+  .route('/')
+  .post(
+    asyncHandler(verifyToken),
+    restrictTo(constants.roles.doctor),
     validator(bodySchema, 'body'),
-    validator(nameSchema, 'params'),
     validator(resolutionSchema, 'body'),
     checkTTL,
     asyncHandler(add),
+  )
+  .get(
+    asyncHandler(verifyToken),
+    restrictTo(constants.roles.doctor),
+    asyncHandler(findAll),
   );
-resolutionRouter.patch('/doctor/:name/delete', validator(nameSchema, 'params'), asyncHandler(remove));
 
-resolutionRouter.get('/patient', verifyToken, asyncHandler(getUserResolution));
+router
+  .route('/:resolutionId')
+  .delete(
+    asyncHandler(verifyToken),
+    restrictTo(constants.roles.doctor),
+    asyncHandler(remove),
+  );
 
-export default resolutionRouter;
+export default router;

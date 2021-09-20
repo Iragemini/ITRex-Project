@@ -1,27 +1,48 @@
+import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import config from '../../config/config.js';
 import ApiError from '../errors/ApiError.js';
+import userService from '../user/index.js';
 
 const {
   auth: { SECRET },
 } = config;
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
-  const user = { userId: null };
+const verifyToken = async (req, res, next) => {
+  let token;
 
-  if (!token) {
-    throw new ApiError(403, 'No token provided!');
+  if (
+    req.headers.authorization
+    && req.headers.authorization.startsWith('Bearer')
+  ) {
+    [, token] = req.headers.authorization.split(' ');
   }
 
-  jwt.verify(token, SECRET, (err, decoded) => {
-    if (err) {
-      throw new ApiError(401, 'Unauthorized!');
-    }
-    user.userId = decoded.id;
-    req.user = user;
-    return next();
-  });
+  if (!token) {
+    throw new ApiError(401, 'No token provided!');
+  }
+
+  // checking for the wrong signature
+  let decoded;
+
+  try {
+    decoded = await promisify(jwt.verify)(token, SECRET);
+  } catch {
+    throw new ApiError(401, 'Unauthorized!');
+  }
+
+  let user;
+
+  try {
+    user = await userService.getUserById(decoded.id);
+    delete user.password;
+  } catch {
+    throw new ApiError(401, 'Unauthorized!');
+  }
+
+  req.user = user;
+
+  next();
 };
 
 export default verifyToken;

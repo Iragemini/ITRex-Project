@@ -2,9 +2,8 @@ import sinon from 'sinon';
 
 const patientService = sinon.stub({
   addPatient: () => {},
-  getPatientId: () => {},
-  getPatientName: () => {},
-  getPatientIdByUserId: () => {},
+  getPatientById: () => {},
+  getPatientByUserId: () => {},
 });
 
 export default patientService;

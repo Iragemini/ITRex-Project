@@ -6,31 +6,31 @@ const redisStorage = new RedisQueue(createClient);
 const redisClient = createClient();
 
 describe('Redis storage tests', () => {
-  const id = '1';
-  const reason = 'reason';
-  const data = [`${id}:${reason}`];
+  const id = 1;
+  const doctorId = 1;
+  const queueName = `queue:${doctorId}`;
 
   describe('[METHOD] add', () => {
-    it('should add id and reason', async () => {
-      redisClient.RPUSH.withArgs('queue', `${id}:${reason}`).resolves(undefined);
-      expect(await redisStorage.add(id, reason)).to.be.undefined;
-      expect(redisClient.RPUSH.calledWith('queue', `${id}:${reason}`)).to.be.true;
+    it('should add id for the specified doctor', async () => {
+      redisClient.RPUSH.withArgs(queueName, id).resolves(undefined);
+      expect(await redisStorage.add(id, doctorId)).to.be.undefined;
+      expect(redisClient.RPUSH.calledWith(queueName, `${id}`)).to.be.true;
     });
   });
 
-  describe('[METHOD] get', () => {
-    it('should return all values for the key', async () => {
-      redisClient.LRANGE.withArgs('queue', 0, -1).resolves(data);
-      expect(await redisStorage.get()).to.be.equal(data);
-      expect(redisClient.LRANGE.calledWith('queue', 0, -1)).to.be.true;
+  describe('[METHOD] getFirstKey', () => {
+    it('should return the first patientId of the specific queue', async () => {
+      redisClient.LINDEX.withArgs(queueName, 0).resolves(id);
+      expect(await redisStorage.getFirstKey(doctorId)).to.be.equal(id);
+      expect(redisClient.LINDEX.calledWith(queueName, 0)).to.be.true;
     });
   });
 
   describe('[METHOD] remove', () => {
     it('should delete first element from queue', async () => {
-      redisClient.LPOP.withArgs('queue').resolves(data);
-      expect(await redisStorage.remove()).to.be.undefined;
-      expect(redisClient.LPOP.calledWith('queue')).to.be.true;
+      redisClient.LPOP.withArgs(queueName).resolves(id);
+      expect(await redisStorage.remove(doctorId)).to.be.undefined;
+      expect(redisClient.LPOP.calledWith(queueName)).to.be.true;
     });
   });
 
@@ -42,18 +42,11 @@ describe('Redis storage tests', () => {
     });
   });
 
-  describe('[METHOD] getFirstKey', () => {
-    it('should return key', async () => {
-      redisClient.LRANGE.withArgs('queue', 0, -1).resolves(data);
-      expect(await redisStorage.getFirstKey()).to.be.equal(id);
-    });
-  });
-
   describe('[METHOD] isEmpty', () => {
     it('should return false when queue is not empty', async () => {
-      redisClient.LLEN.withArgs('queue').resolves(1);
-      expect(await redisStorage.isEmpty()).to.be.false;
-      expect(redisClient.LLEN.calledWith('queue')).to.be.true;
+      redisClient.LLEN.withArgs(queueName).resolves(1);
+      expect(await redisStorage.isEmpty(doctorId)).to.be.false;
+      expect(redisClient.LLEN.calledWith(queueName)).to.be.true;
     });
   });
 });
