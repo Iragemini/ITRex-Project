@@ -14,6 +14,7 @@ const addListeners = () => {
   const makeAppointmentBtn = document.getElementById('makeAppointment');
   const showResolutionBtn = document.getElementById('showResolution');
   const logOutBtn = document.getElementById('logout');
+  const doctorLogOutBtn = document.getElementById('doctorLogout');
   const showResolutionDoctorBtn = document.getElementById('showResolutionDoctor');
   const newResolutionBtn = document.getElementById('newResolution');
   const nextBtn = document.getElementById('next');
@@ -43,6 +44,10 @@ const addListeners = () => {
   if (logOutBtn) {
     logOutBtn.removeEventListener('click', logoutUser);
     logOutBtn.addEventListener('click', () => logoutUser());
+  }
+  if (doctorLogOutBtn) {
+    doctorLogOutBtn.removeEventListener('click', logoutUser);
+    doctorLogOutBtn.addEventListener('click', () => logoutUser());
   }
 
   /* doctor page */

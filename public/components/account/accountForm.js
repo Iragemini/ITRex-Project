@@ -61,8 +61,7 @@ const accountForm = (user) => {
                                         </button>
                                     </div>
                                     <div class="form-group m-1">
-                                        <textarea class="form-control" id="userResolution" rows="3" cols="80"
-                                            readonly></textarea>
+                                        <div id="userResolution"></div>
                                     </div>
                                 </div>
                             </div>

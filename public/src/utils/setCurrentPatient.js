@@ -2,26 +2,28 @@ import queueService from '../../http/queue.service.js';
 
 const getCurrent = async () => {
   let currentPatient = '';
+  let patientId = '';
   const { current } = await queueService.getCurrentInQueue();
   if (current) {
     currentPatient = current.name;
+    patientId = current.id;
   }
-  return currentPatient;
+  return { currentPatient, patientId };
 };
 
 export default async function setCurrentPatient() {
   const current = document.getElementById('current');
-  const hiddenCurrent = document.getElementById('hiddenCurrent');
+  const hiddenPatientId = document.getElementById('hiddenPatientId');
   const patientName = document.getElementById('patientName');
   try {
-    const name = await getCurrent();
+    const { currentPatient: name, patientId: id } = await getCurrent();
     current.innerText = name;
-    hiddenCurrent.value = name;
+    hiddenPatientId.value = id;
     patientName.value = name;
   } catch (err) {
     console.log(err.text, err.message);
     current.innerText = err.message;
-    hiddenCurrent.value = '';
+    hiddenPatientId.value = '';
     patientName.value = '';
   }
 }
