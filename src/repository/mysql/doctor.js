@@ -38,8 +38,18 @@ export default class MySQLDoctor {
         },
       ],
     });
+    if (!doctor) {
+      return null;
+    }
 
-    return doctor;
+    const result = {
+      id: doctor.id,
+      userId: doctor.user_id,
+      name: doctor.name,
+      specialization: doctor.specializations[0].title,
+    };
+
+    return result;
   };
 
   getByUserId = async (userId) => {
@@ -53,6 +63,17 @@ export default class MySQLDoctor {
       ],
     });
 
-    return doctor;
+    if (!doctor) {
+      return null;
+    }
+
+    const result = {
+      id: doctor.id,
+      userId: doctor.user_id,
+      name: doctor.name,
+      specialization: doctor.specializations[0].title,
+    };
+
+    return result;
   };
 }

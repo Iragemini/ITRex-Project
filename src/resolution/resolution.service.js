@@ -15,7 +15,7 @@ export default class ResolutionService {
 
     const data = body;
     data.doctor_name = doctor.name;
-    data.doctor_specialization = doctor['specializations.title'];
+    data.doctor_specialization = doctor.specialization;
 
     data.patient_id = body.patientId;
 
@@ -53,7 +53,8 @@ export default class ResolutionService {
   deleteResolutionById = async (id) => {
     const resolution = await this.repository.removeResolution(id);
 
-    if (resolution === 0) { // sequelize-specific case, it returns 0 if no rows were destroyed
+    if (resolution === 0) {
+      // sequelize-specific case, it returns 0 if no rows were destroyed
       throw new ApiError(404, 'Resolution not found');
     }
 

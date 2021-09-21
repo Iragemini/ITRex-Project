@@ -17,18 +17,18 @@ describe('Doctor repository tests', () => {
     specializations,
   };
 
+  const expectedDoctor = {
+    id,
+    userId,
+    name,
+    specialization: title,
+  };
+
   describe('Get all doctors', () => {
     it('should return doctor list', async () => {
       db.doctor.findAll.resolves([doctor]);
 
-      expect(await mysqlDoctor.getAll()).to.deep.equal([
-        {
-          id,
-          userId,
-          name,
-          specialization: title,
-        },
-      ]);
+      expect(await mysqlDoctor.getAll()).to.deep.equal([expectedDoctor]);
       expect(db.doctor.findAll.calledOnce).to.be.true;
     });
 
@@ -43,15 +43,15 @@ describe('Doctor repository tests', () => {
     it('should return doctor', async () => {
       db.doctor.findOne.resolves(doctor);
 
-      expect(await mysqlDoctor.getById(id)).to.deep.equal(doctor);
+      expect(await mysqlDoctor.getById(id)).to.deep.equal(expectedDoctor);
       expect(db.doctor.findOne.called).to.be.true;
       expect(db.doctor.findOne.calledOnce).to.be.true;
     });
 
-    it('should return undefined ', async () => {
+    it('should return null ', async () => {
       db.doctor.findOne.resolves(undefined);
 
-      expect(await mysqlDoctor.getById(id)).to.be.undefined;
+      expect(await mysqlDoctor.getById(id)).to.be.null;
       expect(db.doctor.findOne.called).to.be.true;
     });
   });
@@ -60,14 +60,14 @@ describe('Doctor repository tests', () => {
     it('should return doctor', async () => {
       db.doctor.findOne.resolves(doctor);
 
-      expect(await mysqlDoctor.getByUserId(userId)).to.deep.equal(doctor);
+      expect(await mysqlDoctor.getByUserId(userId)).to.deep.equal(expectedDoctor);
       expect(db.doctor.findOne.called).to.be.true;
     });
 
-    it('should return undefined', async () => {
+    it('should return null', async () => {
       db.doctor.findOne.resolves(undefined);
 
-      expect(await mysqlDoctor.getByUserId(userId)).to.be.undefined;
+      expect(await mysqlDoctor.getByUserId(userId)).to.be.null;
       expect(db.doctor.findOne.called).to.be.true;
     });
   });
