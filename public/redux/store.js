@@ -1,5 +1,6 @@
 import addListeners from '../src/utils/addListeners.js';
 import { render } from '../src/utils/render.js';
+import Roles from '../src/utils/roles.js';
 import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 import reducer from './reducers.js';
 
@@ -22,7 +23,9 @@ store.subscribe(() => {
   localStorage.setItem('reduxState', JSON.stringify(state));
   render(state);
   addListeners();
-  setCurrentPatient();
+  if (state.userReducer.currentUser === Roles.DOCTOR && state.doctorReducer.isDoctorLoggedIn) {
+    setCurrentPatient();
+  }
 });
 
 export default store;
