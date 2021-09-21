@@ -1,5 +1,6 @@
 import addListeners from '../src/utils/addListeners.js';
 import { render } from '../src/utils/render.js';
+import setCurrentPatient from '../src/utils/setCurrentPatient.js';
 import reducer from './reducers.js';
 
 const persistedState = localStorage.getItem('reduxState')
@@ -21,6 +22,7 @@ store.subscribe(() => {
   localStorage.setItem('reduxState', JSON.stringify(state));
   render(state);
   addListeners();
+  setCurrentPatient();
 });
 
 export default store;

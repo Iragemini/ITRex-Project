@@ -69,3 +69,10 @@ export const setCurrentUser = (role) => ({
   type: CURRENT_USER,
   payload: role,
 });
+
+export const setMessage = (message) => (dispatch) => {
+  dispatch({
+    type: SET_MESSAGE,
+    payload: message,
+  });
+};

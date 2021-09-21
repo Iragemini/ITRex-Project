@@ -30,6 +30,9 @@ export default class Service {
         this.errorHandler(`${this.base + url}`, await response.json());
       }
       const responseHeaders = response.headers.get('content-type');
+      if (!responseHeaders) {
+        return {};
+      }
       const type = responseHeaders.split(';')[0];
       let result = {};
       if (type === 'application/json') {

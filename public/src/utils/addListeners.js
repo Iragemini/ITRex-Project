@@ -1,5 +1,10 @@
 import { loginUser, signupUser } from '../../components/auth/auth.js';
-import { makeAppointment, logoutUser, showResolution, getDoctorsList } from '../../components/account/account.js';
+import {
+  makeAppointment,
+  logoutUser,
+  showResolution,
+  getDoctorsList,
+} from '../../components/account/account.js';
 import {
   changeTTL,
   deleteResolution,
@@ -71,7 +76,7 @@ const addListeners = () => {
     ttlCheckbox.removeEventListener('change', changeTTL);
     ttlCheckbox.addEventListener('change', () => changeTTL());
   }
-  if(doctorSelect){
+  if (doctorSelect) {
     getDoctorsList(doctorSelect);
   }
 };

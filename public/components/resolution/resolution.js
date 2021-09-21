@@ -3,6 +3,8 @@ import queueService from '../../http/queue.service.js';
 import setCurrentPatient from '../../src/utils/setCurrentPatient.js';
 import createTable from './resolutionsTable.js';
 import Roles from '../../src/utils/roles.js';
+import store from '../../redux/store.js';
+import { setMessage } from '../../redux/actions.js';
 
 export const changeTTL = () => {
   const ttlDiv = document.querySelector('.ttl__div');
@@ -30,15 +32,14 @@ export const showResolutionDoctor = async () => {
   }
 };
 
-export const deleteResolution = async () => {
-  const patientName = document.getElementById('patientName');
+export const deleteResolution = async (id) => {
   const doctorResolutionFound = document.getElementById('doctorResolutionFound');
-  const name = patientName.value.trim();
   try {
-    await resolutionService.deleteResolution(name);
+    await resolutionService.deleteResolution(id);
     doctorResolutionFound.value = '';
+    store.dispatch(setMessage('Resolution successfully deleted!'));
   } catch (e) {
-    console.log(e.text);
+    console.log(e.text, e.message);
     doctorResolutionFound.value = e.message;
   }
 };

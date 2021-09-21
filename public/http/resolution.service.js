@@ -17,7 +17,7 @@ class ResolutionService extends Service {
   };
 
   deleteResolution = async (resolutionId) => {
-    const res = await this.patchResource(`/resolutions/${resolutionId}`);
+    const res = await this.deleteResource(`/resolutions/${resolutionId}`);
     return res;
   };
 }
