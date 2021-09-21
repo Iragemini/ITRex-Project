@@ -1,3 +1,5 @@
+import constants from '../../utils/constants.js';
+
 export default class MySQLUser {
   constructor(db) {
     this.db = db;
@@ -33,16 +35,27 @@ export default class MySQLUser {
     });
 
     if (user) {
-      result = {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        name: user.patient.name,
-        gender: user.patient.gender,
-        birthDate: user.patient.birth_date,
-        roleId: user.roles[0].id,
-        roleTitle: user.roles[0].title,
-      };
+      if (user.roles[0].title === constants.roles.patient) {
+        result = {
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          name: user.patient.name,
+          gender: user.patient.gender,
+          birthDate: user.patient.birth_date,
+          roleId: user.roles[0].id,
+          roleTitle: user.roles[0].title,
+        };
+      } else {
+        result = {
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          roleId: user.roles[0].id,
+          roleTitle: user.roles[0].title,
+        };
+      }
+
       return result;
     }
 
@@ -69,16 +82,26 @@ export default class MySQLUser {
     if (!user) {
       return null;
     }
-    result = {
-      id: user.id,
-      email: user.email,
-      password: user.password,
-      name: user.patient.name,
-      gender: user.patient.gender,
-      birthDate: user.patient.birth_date,
-      roleId: user.roles[0].id,
-      roleTitle: user.roles[0].title,
-    };
+    if (user.roles[0].title === constants.roles.patient) {
+      result = {
+        id: user.id,
+        email: user.email,
+        password: user.password,
+        name: user.patient.name,
+        gender: user.patient.gender,
+        birthDate: user.patient.birth_date,
+        roleId: user.roles[0].id,
+        roleTitle: user.roles[0].title,
+      };
+    } else {
+      result = {
+        id: user.id,
+        email: user.email,
+        password: user.password,
+        roleId: user.roles[0].id,
+        roleTitle: user.roles[0].title,
+      };
+    }
     return result;
   };
 

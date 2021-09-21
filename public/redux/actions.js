@@ -33,11 +33,9 @@ export const register = (data) => async (dispatch) => {
 };
 
 export const login = (data, role) => async (dispatch) => {
-  console.log('role', role, data);
   const SUCCESS = +role === 1 ? LOGIN_PATIENT_SUCCESS : LOGIN_DOCTOR_SUCCESS;
   const FAIL = +role === 1 ? LOGIN_PATIENT_FAIL : LOGIN_DOCTOR_FAIL;
 
-  console.log('login', SUCCESS, FAIL);
   try {
     const user = await authService.authenticateUser(data);
     dispatch({

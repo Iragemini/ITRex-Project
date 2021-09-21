@@ -11,10 +11,9 @@ export const logoutUser = () => {
 };
 
 export const makeAppointment = async () => {
-  const doctors = document.getElementById('doctors');
-  const selectedOption = doctors.options.selectedIndex;
-  const doctorId = doctors.options[selectedOption].value;
-  console.log('makeAppointment doctorId', doctorId);
+  const doctorSelect = document.getElementById('doctorSelect');
+  const selectedOption = doctorSelect.options.selectedIndex;
+  const doctorId = doctorSelect.options[selectedOption].value;
   try {
     await queueService.postPatientInQueue(doctorId);
   } catch (e) {

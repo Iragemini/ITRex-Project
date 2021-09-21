@@ -1,7 +1,7 @@
 const accountForm = (user) => {
   const { name, email, gender, birthDate } = user;
   const date = new Date(`${birthDate}`);
-  const dateConvert = `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`;
+  const dateConvert = date.toLocaleDateString();
 
   return `
     <div class="container">

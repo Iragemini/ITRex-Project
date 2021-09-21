@@ -2,9 +2,9 @@ import queueService from '../../http/queue.service.js';
 
 const getCurrent = async () => {
   let currentPatient = '';
-  const current = await queueService.getCurrentInQueue();
+  const { current } = await queueService.getCurrentInQueue();
   if (current) {
-    currentPatient = current.current;
+    currentPatient = current.name;
   }
   return currentPatient;
 };
