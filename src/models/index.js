@@ -93,7 +93,7 @@ db.init = async () => {
     await db.sequelize.sync({ force: true });
     await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
   } else {
-    db.sequelize.sync();
+    await db.sequelize.sync();
   }
 
   await seed(db);
