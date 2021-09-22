@@ -1,12 +1,8 @@
 const accountForm = (user) => {
-  const {
-    name,
-    email,
-    gender,
-    birthDate,
-  } = user;
+  const { name, email, gender, birthDate } = user;
   const date = new Date(`${birthDate}`);
-  const dateConvert = `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`;
+  const dateConvert = date.toLocaleDateString();
+
   return `
     <div class="container">
         <div class="card text-white bg-primary m-1">
@@ -49,8 +45,8 @@ const accountForm = (user) => {
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div class="form-group has-success">
-                                        <input type="text" placeholder="reason" class="form-control m-2" name="reason"
-                                            id="reason" size="35" />
+                                        <select class="form-select" id='doctorSelect'>
+                                        </select>
                                     </div>
                                     <div class="d-flex align-items-center justify-content-end">
                                         <button type="button" id="makeAppointment" class="btn btn-success m-2">
@@ -65,8 +61,7 @@ const accountForm = (user) => {
                                         </button>
                                     </div>
                                     <div class="form-group m-1">
-                                        <textarea class="form-control" id="userResolution" rows="3" cols="80"
-                                            readonly></textarea>
+                                        <div id="userResolution"></div>
                                     </div>
                                 </div>
                             </div>

@@ -20,7 +20,7 @@ const signupForm = () => `
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="birthDate" class="form-label mt-4">Birth date</label>
+                        <label for="birthDate" class="form-label mt-4">*Birth date</label>
                         <input type="date" class="form-control" id="birthDate" name="birthDate" placeholder="Password"
                             min="1960-01-01">
                     </div>

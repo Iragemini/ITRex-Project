@@ -2,10 +2,11 @@ import store from '../../redux/store.js';
 import { login, register } from '../../redux/actions.js';
 
 export const loginUser = () => {
+  const state = store.getState();
   const loginEmail = document.querySelector('.login__email');
   const loginPassword = document.querySelector('.login__psw');
   const data = { email: loginEmail.value, password: loginPassword.value };
-  store.dispatch(login(data));
+  store.dispatch(login(data, state.userReducer.currentUser));
 };
 
 export const signupUser = () => {

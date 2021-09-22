@@ -5,37 +5,75 @@ export default class MySQLDoctor {
   }
 
   getAll = async () => {
+    const result = [];
+
     const doctors = await this.Doctor.findAll({
-      raw: true,
       include: [
-        this.db.specialization,
+        {
+          model: this.db.specialization,
+          attributes: ['title'],
+        },
       ],
     });
 
-    return doctors;
-  }
+    doctors.forEach((doctor) => {
+      result.push({
+        id: doctor.id,
+        userId: doctor.user_id,
+        name: doctor.name,
+        specialization: doctor.specializations[0].title,
+      });
+    });
+
+    return result;
+  };
 
   getById = async (id) => {
     const doctor = await this.Doctor.findOne({
-      raw: true,
       where: { id },
       include: [
-        this.db.specialization,
+        {
+          model: this.db.specialization,
+          attributes: ['title'],
+        },
       ],
     });
+    if (!doctor) {
+      return null;
+    }
 
-    return doctor;
-  }
+    const result = {
+      id: doctor.id,
+      userId: doctor.user_id,
+      name: doctor.name,
+      specialization: doctor.specializations[0].title,
+    };
+
+    return result;
+  };
 
   getByUserId = async (userId) => {
     const doctor = await this.Doctor.findOne({
-      raw: true,
       where: { user_id: userId },
       include: [
-        this.db.specialization,
+        {
+          model: this.db.specialization,
+          attributes: ['title'],
+        },
       ],
     });
 
-    return doctor;
+    if (!doctor) {
+      return null;
+    }
+
+    const result = {
+      id: doctor.id,
+      userId: doctor.user_id,
+      name: doctor.name,
+      specialization: doctor.specializations[0].title,
+    };
+
+    return result;
   };
 }

@@ -13,19 +13,43 @@ describe('User repository tests', () => {
   const birthDate = '22.01.2016';
   const password = 'password';
   const id = 777;
+  const roleId = 1;
+  const roleTitle = 'patient';
+  const patient = {
+    name,
+    gender,
+    birth_date: birthDate,
+  };
+  const roles = [
+    {
+      id: roleId,
+      title: roleTitle,
+    },
+  ];
+
   const user = {
     id,
-    name,
     email,
     password,
+    patient,
+    roles,
+  };
+
+  const expectedUser = {
+    id,
+    email,
+    password,
+    name,
     gender,
     birthDate,
+    roleId,
+    roleTitle,
   };
 
   describe('Create user', () => {
     it('should return user id', async () => {
-      db.user.create.withArgs({ email, password }).resolves(user);
-      expect(await mysqlUser.createUser({ email, password })).to.be.equal(user);
+      db.user.create.withArgs({ email, password }).resolves({ id });
+      expect(await mysqlUser.createUser({ email, password })).to.deep.equal({ id });
       expect(db.user.create.calledWith({ email, password })).to.be.true;
     });
   });
@@ -34,14 +58,8 @@ describe('User repository tests', () => {
     it('should return user data', async () => {
       db.user.findOne.resolves(user);
 
-      expect(await mysqlUser.getUserByEmail(email)).to.be.deep.equal(user);
-      expect(db.user.findOne.calledWith({
-        raw: true,
-        where: { email },
-        include: [
-          db.role,
-        ],
-      })).to.be.true;
+      expect(await mysqlUser.getUserByEmail(email)).to.deep.equal(expectedUser);
+      expect(db.user.findOne.called).to.be.true;
 
       sandbox.restore();
     });
@@ -49,16 +67,10 @@ describe('User repository tests', () => {
 
   describe('Get user by id', () => {
     it('should return user data', async () => {
-      db.user.findOne.withArgs({ where: { id } }).resolves(user);
+      db.user.findOne.resolves(user);
 
-      expect(await mysqlUser.getUserById(id)).to.be.deep.equal(user);
-      expect(db.user.findOne.calledWith({
-        raw: true,
-        where: { id },
-        include: [
-          db.role,
-        ],
-      })).to.be.true;
+      expect(await mysqlUser.getUserById(id)).to.deep.equal(expectedUser);
+      expect(db.user.findOne.called).to.be.true;
     });
   });
 });

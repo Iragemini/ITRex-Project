@@ -7,12 +7,12 @@ class AuthService extends Service {
   };
 
   registerUser = async (data) => {
-    const res = await this.postResource('/signup', data);
+    const res = await this.postPublicResource('/signup', data);
     return res;
   };
 
   authenticateUser = async (data) => {
-    const res = await this.postResource('/login', data);
+    const res = await this.postPublicResource('/login', data);
     return res;
   };
 }

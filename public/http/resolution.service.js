@@ -1,23 +1,23 @@
 import Service from './Service.js';
 
 class ResolutionService extends Service {
-  getResolution = async (name) => {
-    const res = await this.getResource(`/resolution/doctor/${name}`);
+  getResolutions = async (name) => {
+    const res = await this.getResource(`/resolutions/?patientName=${name}`);
     return res;
   };
 
-  getUserResolution = async () => {
-    const res = await this.getResource('/resolution/patient');
+  getUserResolutions = async () => {
+    const res = await this.getResource('/resolutions/me');
     return res;
   };
 
-  patchResolution = async (name, data) => {
-    const res = await this.patchResource(`/resolution/doctor/${name}`, data);
+  postResolution = async (data) => {
+    const res = await this.postResource(`/resolutions`, data);
     return res;
   };
 
-  deleteResolution = async (name) => {
-    const res = await this.patchResource(`/resolution/doctor/${name}/delete`);
+  deleteResolution = async (resolutionId) => {
+    const res = await this.deleteResource(`/resolutions/${resolutionId}`);
     return res;
   };
 }

@@ -1,6 +1,15 @@
 const resolutionForm = () => `<div class="container">
     <div class="card text-white bg-primary m-1">
-        <div class="card-header p-1">Doctor</div>
+        <div class="card-header p-1 d-flex justify-content-between">
+            <div>
+                Doctor
+            </div>
+            <div>
+            <button type="button" id="doctorLogout" class="btn btn-danger m-2">
+                Log out
+            </button>
+            </div>
+        </div>
         <div class="card-body">
             <div id='doctor' class="card">
                 <div class="card-body d-flex justify-content-between align-items-center">
@@ -14,7 +23,7 @@ const resolutionForm = () => `<div class="container">
                     </div>
                 </div>
                 <div class="add card-body d-flex justify-content-center align-items-start">
-                    <h5 class="text-dark m-2">Set appointment resolutionForm </h5>
+                    <h5 class="text-dark m-2">Set appointment resolution </h5>
                     <div class="d-flex justify-content-end align-items-start">
                         <div class="input__patient d-flex flex-column">
                             <div class="form-group has-success d-flex">
@@ -41,7 +50,7 @@ const resolutionForm = () => `<div class="container">
                     </div>
                 </div>
                 <div class="delete card-body d-flex justify-content-center align-items-start">
-                    <div class="d-flex flex-column justify-content-center">
+                    <div class="d-flex justify-content-center">
                         <div class="d-flex align-items-center justify-content-start">
                             <button type="button" id="showResolutionDoctor" class="btn btn-success">Show resolution</button>
                         </div>
@@ -57,11 +66,7 @@ const resolutionForm = () => `<div class="container">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="form-group m-2">
-                            <textarea class="form-control" id="doctorResolutionFound" rows="3" cols="80"
-                                readonly></textarea>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-end">
-                            <button type="button" id="deleteResolution" class="btn btn-success">Delete</button>
+                            <div id="doctorResolutionFound"></div>
                         </div>
                     </div>
                 </div>
@@ -69,7 +74,7 @@ const resolutionForm = () => `<div class="container">
         </div>
     </div>
 </div>
-<input type="hidden" id="hiddenCurrent" value="" />
+<input type="hidden" id="hiddenPatientId" value="" />
 `;
 
 export default resolutionForm;

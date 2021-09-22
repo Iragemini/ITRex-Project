@@ -1,3 +1,5 @@
+import constants from '../../utils/constants.js';
+
 export default class MySQLUser {
   constructor(db) {
     this.db = db;
@@ -16,31 +18,91 @@ export default class MySQLUser {
   };
 
   getUserByEmail = async (email) => {
+    let result = {};
+
     const user = await this.User.findOne({
-      raw: true,
       where: { email },
       include: [
-        this.db.role,
+        {
+          model: this.db.role,
+          attributes: ['id', 'title'],
+        },
+        {
+          model: this.db.patient,
+          attributes: ['name', 'gender', 'birth_date'],
+        },
       ],
     });
+
+    if (user) {
+      if (user.roles[0].title === constants.roles.patient) {
+        result = {
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          name: user.patient.name,
+          gender: user.patient.gender,
+          birthDate: user.patient.birth_date,
+          roleId: user.roles[0].id,
+          roleTitle: user.roles[0].title,
+        };
+      } else {
+        result = {
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          roleId: user.roles[0].id,
+          roleTitle: user.roles[0].title,
+        };
+      }
+
+      return result;
+    }
 
     return user;
   };
 
   getUserById = async (id) => {
+    let result = {};
+
     const user = await this.User.findOne({
-      raw: true,
       where: { id },
       include: [
-        this.db.role,
+        {
+          model: this.db.role,
+          attributes: ['id', 'title'],
+        },
+        {
+          model: this.db.patient,
+          attributes: ['name', 'gender', 'birth_date'],
+        },
       ],
     });
 
     if (!user) {
       return null;
     }
-
-    return user;
+    if (user.roles[0].title === constants.roles.patient) {
+      result = {
+        id: user.id,
+        email: user.email,
+        password: user.password,
+        name: user.patient.name,
+        gender: user.patient.gender,
+        birthDate: user.patient.birth_date,
+        roleId: user.roles[0].id,
+        roleTitle: user.roles[0].title,
+      };
+    } else {
+      result = {
+        id: user.id,
+        email: user.email,
+        password: user.password,
+        roleId: user.roles[0].id,
+        roleTitle: user.roles[0].title,
+      };
+    }
+    return result;
   };
 
   /* not used */

@@ -1,5 +1,10 @@
 import { loginUser, signupUser } from '../../components/auth/auth.js';
-import { makeAppointment, logoutUser, showResolution } from '../../components/account/account.js';
+import {
+  makeAppointment,
+  logoutUser,
+  showResolution,
+  getDoctorsList,
+} from '../../components/account/account.js';
 import {
   changeTTL,
   deleteResolution,
@@ -14,11 +19,13 @@ const addListeners = () => {
   const makeAppointmentBtn = document.getElementById('makeAppointment');
   const showResolutionBtn = document.getElementById('showResolution');
   const logOutBtn = document.getElementById('logout');
+  const doctorLogOutBtn = document.getElementById('doctorLogout');
   const showResolutionDoctorBtn = document.getElementById('showResolutionDoctor');
   const newResolutionBtn = document.getElementById('newResolution');
   const nextBtn = document.getElementById('next');
   const deleteResolutionBtn = document.getElementById('deleteResolution');
   const ttlCheckbox = document.getElementById('ttl');
+  const doctorSelect = document.getElementById('doctorSelect');
 
   /* auth */
   if (loginBtn) {
@@ -43,6 +50,10 @@ const addListeners = () => {
     logOutBtn.removeEventListener('click', logoutUser);
     logOutBtn.addEventListener('click', () => logoutUser());
   }
+  if (doctorLogOutBtn) {
+    doctorLogOutBtn.removeEventListener('click', logoutUser);
+    doctorLogOutBtn.addEventListener('click', () => logoutUser());
+  }
 
   /* doctor page */
   if (showResolutionDoctorBtn) {
@@ -64,6 +75,9 @@ const addListeners = () => {
   if (ttlCheckbox) {
     ttlCheckbox.removeEventListener('change', changeTTL);
     ttlCheckbox.addEventListener('change', () => changeTTL());
+  }
+  if (doctorSelect) {
+    getDoctorsList(doctorSelect);
   }
 };
 

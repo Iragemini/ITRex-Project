@@ -19,11 +19,9 @@ describe('Resolution tests', () => {
   const doctorUserId = 1;
 
   const doctor = {
-    name: 'Lyolik',
-    ['specializations.title']: 'dermatologist', // eslint-disable-line 
+    name: 'Doctor_1',
+    specialization: 'dermatologist',
   };
-
-  // disabled above because the property is being created via sequelize many-to-many associations
 
   const body = {
     patientId,
@@ -34,7 +32,7 @@ describe('Resolution tests', () => {
   const data = {
     patient_id: body.patientId,
     doctor_name: doctor.name,
-    doctor_specialization: doctor['specializations.title'],
+    doctor_specialization: doctor.specialization,
     ...body,
   };
 

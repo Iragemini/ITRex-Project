@@ -1,13 +1,4 @@
-import store from '../redux/store.js';
-
-const getToken = () => {
-  const state = store.getState();
-  const { user } = state.userReducer;
-  if (!user) {
-    return '';
-  }
-  return user.accessToken ? user.accessToken : '';
-};
+import getToken from './utils/token.js';
 export default class Service {
   constructor() {
     this.base = 'http://localhost:3000/api';
@@ -39,6 +30,9 @@ export default class Service {
         this.errorHandler(`${this.base + url}`, await response.json());
       }
       const responseHeaders = response.headers.get('content-type');
+      if (!responseHeaders) {
+        return {};
+      }
       const type = responseHeaders.split(';')[0];
       let result = {};
       if (type === 'application/json') {
@@ -61,12 +55,33 @@ export default class Service {
     return result;
   };
 
+  /* GET PUBLIC */
+  getPublicResource = async (url) => {
+    const options = {
+      method: 'GET',
+      headers: this.headers,
+    };
+    const result = await this.makeRequest(url, options);
+    return result;
+  };
+
   /* POST */
   postResource = async (url, data = {}) => {
     const options = {
       method: 'POST',
       withCredentials: true,
       headers: this.headersWithToken(),
+      body: JSON.stringify(data),
+    };
+    const result = await this.makeRequest(url, options);
+    return result;
+  };
+
+  /* POST PUBLIC */
+  postPublicResource = async (url, data = {}) => {
+    const options = {
+      method: 'POST',
+      headers: this.headers,
       body: JSON.stringify(data),
     };
     const result = await this.makeRequest(url, options);

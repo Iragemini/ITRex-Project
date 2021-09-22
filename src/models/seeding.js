@@ -67,21 +67,21 @@ const users = [
 
 const doctors = [
   {
-    whereObject: { name: 'Lyolik' },
+    whereObject: { name: 'Doctor_1' },
     defaultsObject: {
-      name: 'Lyolik',
+      name: 'Doctor_1',
     },
   },
   {
-    whereObject: { name: 'Ms. Andersen' },
+    whereObject: { name: 'Doctor_2' },
     defaultsObject: {
-      name: 'Ms. Andersen',
+      name: 'Doctor_2',
     },
   },
   {
-    whereObject: { name: 'Mr. Lecter' },
+    whereObject: { name: 'Doctor_3' },
     defaultsObject: {
-      name: 'Mr. Lecter',
+      name: 'Doctor_3',
     },
   },
 ];
