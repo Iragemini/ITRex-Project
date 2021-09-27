@@ -4,7 +4,7 @@ export default {
   },
   ttl: -1,
   storage: {
-    queueType: 'redis' /* redis */,
+    queueType: 'redis',
     redis: {
       client: {
         port: process.env.REDIS_PORT || 6379,
