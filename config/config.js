@@ -13,11 +13,12 @@ export default {
     },
   },
   db: {
+    dbType: 'mysql' /* 'postgres', 'mysql' */,
     mysql: {
       host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || 'root',
-      db: process.env.DB_NAME || 'itrex-mysql',
+      db: process.env.DB_NAME || 'med_center',
       port: process.env.DB_PORT || 3306,
       dialect: 'mysql',
       pool: {
@@ -28,11 +29,11 @@ export default {
       },
     },
     postgres: {
+      user: process.env.DB_PG_USER || 'client',
+      password: process.env.DB_PG_PASSWORD || 'client',
       host: process.env.DB_PG_HOST || '127.0.0.1',
-      user: process.env.DB_PG_USER || 'postgres',
-      password: process.env.DB_PG_PASSWORD || 'root',
-      db: process.env.DB_PG_NAME || 'itrex-pg',
       port: process.env.DB_PG_PORT || 5432,
+      database: process.env.DB_NAME || 'med_center',
     },
   },
   auth: {
