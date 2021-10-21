@@ -11,6 +11,7 @@ ALTER ROLE admin CREATEDB CREATEROLE;
 psql -d postgres -U admin
 
 CREATE USER client WITH PASSWORD 'client';
+GRANT admin TO client;
 
 CREATE DATABASE med_center;
 
