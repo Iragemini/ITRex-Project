@@ -24,10 +24,7 @@ export default class UserService {
   authenticate = async (user) => {
     const userEntity = await this.getUserByEmail(user.email);
 
-    const isValidPassword = bcrypt.compareSync(
-      user.password,
-      userEntity.password,
-    );
+    const isValidPassword = bcrypt.compareSync(user.password, userEntity.password);
 
     if (!isValidPassword) {
       throw new ApiError(401, 'Invalid password');
@@ -51,18 +48,13 @@ export default class UserService {
     const isValidEmail = await this.verifyEmail(data.email);
 
     if (!isValidEmail) {
-      throw new ApiError(400, 'Email is already exists');
+      throw new ApiError(400, 'Email already exists');
     }
 
-    const patientData = {
-      name: data.name,
-      gender: data.gender,
-      birth_date: data.birthDate,
-      email: data.email,
-    };
+    const patientData = { ...data };
 
     const user = await this.repository.createUser(userData);
-    patientData.user_id = user.id;
+    patientData.userId = user.id;
 
     await this.patientService.addPatient(patientData);
   };
@@ -81,7 +73,7 @@ export default class UserService {
     const user = await this.repository.getUserById(id);
 
     if (!user) {
-      throw new ApiError(404, 'User not exists');
+      throw new ApiError(404, 'User doesn\'t exist');
     }
 
     return user;

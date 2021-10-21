@@ -5,7 +5,15 @@ export default class MySQLPatient {
   }
 
   createPatient = async (data) => {
-    const patient = await this.Patient.create(data);
+    const patientData = {
+      name: data.name,
+      gender: data.gender,
+      birth_date: data.birthDate,
+      email: data.email,
+      user_id: data.userId,
+    };
+
+    const patient = await this.Patient.create(patientData);
 
     return patient;
   };
