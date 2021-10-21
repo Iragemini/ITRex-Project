@@ -151,14 +151,6 @@ BEFORE UPDATE ON resolutions
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
-CREATE or REPLACE VIEW extended_user_info AS
-    SELECT users.*, patients.name patient_name, patients.gender, patients.birth_date, roles.title,
-    doctors.name doctor_name, doctors.id doctor_id
-    FROM users
-        LEFT JOIN roles ON roles.id = users.role_id
-        LEFT JOIN patients ON patients.user_id = users.id
-        LEFT JOIN doctors ON doctors.user_id = users.id;
-
 CREATE or REPLACE VIEW doctors_info AS
     SELECT doctors.id, doctors.name, specializations.title specialization
     FROM doctors 
