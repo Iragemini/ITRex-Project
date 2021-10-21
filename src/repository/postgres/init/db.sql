@@ -1,12 +1,20 @@
 --
--- PostgreSQL database itrex
+-- PostgreSQL database med_center
 --
 
-DROP DATABASE itrex;
+psql -U postgres
 
-CREATE DATABASE itrex;
+CREATE USER admin WITH PASSWORD 'admin';
+ALTER ROLE admin CREATEDB CREATEROLE;
+\q
 
-\c itrex
+psql -d postgres -U admin
+
+CREATE USER client WITH PASSWORD 'client';
+
+CREATE DATABASE med_center;
+
+\c med_center
 
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
@@ -102,14 +110,12 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE TABLE patients (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    user_id INTEGER,
     name VARCHAR(255) NOT NULL,
     gender VARCHAR(30) NOT NULL,
     birth_date DATE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE (email),
     FOREIGN KEY (user_id)
     REFERENCES users (id)
     ON DELETE CASCADE
@@ -129,7 +135,7 @@ CREATE TABLE resolutions (
     doctor_id INTEGER,
     patient_id INTEGER,
     resolution VARCHAR(255) NOT NULL,
-    expire DATE,
+    expire TIMESTAMP,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     FOREIGN KEY (doctor_id)
@@ -144,3 +150,16 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON resolutions
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE or REPLACE VIEW extended_user_info AS
+    SELECT users.*, patients.name patient_name, patients.gender, patients.birth_date, roles.title,
+    doctors.name doctor_name, doctors.id doctor_id
+    FROM users
+        LEFT JOIN roles ON roles.id = users.role_id
+        LEFT JOIN patients ON patients.user_id = users.id
+        LEFT JOIN doctors ON doctors.user_id = users.id;
+
+CREATE or REPLACE VIEW doctors_info AS
+    SELECT doctors.id, doctors.name, specializations.title specialization
+    FROM doctors 
+        LEFT JOIN specializations ON doctors.specialization_id = specializations.id;

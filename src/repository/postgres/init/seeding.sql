@@ -47,4 +47,43 @@ UPDATE doctors
     WHERE name = 'Doctor_3';
 COMMIT;
 
-UPDATE users SET role_id = (SELECT id FROM roles WHERE title='doctor') WHERE email ~ 'doctor_.@clinic.com';
+UPDATE users 
+    SET 
+        role_id = (SELECT id FROM roles WHERE title='doctor') 
+    WHERE email ~ 'doctor_.@clinic.com';
+
+---
+---  USERS, PATIENTS
+---
+
+BEGIN;
+INSERT INTO users(email, password) VALUES('ivanov@gmail.com', crypt('qwerty1234', gen_salt('bf', 8)));
+INSERT INTO patients(name, gender, birth_date) VALUES('Ivan', 'male', make_date(1990, 2, 10));
+UPDATE patients 
+    SET 
+        user_id = (SELECT id FROM users WHERE email = 'ivanov@gmail.com')
+    WHERE name = 'Ivan';
+COMMIT;
+
+BEGIN;
+INSERT INTO users(email, password) VALUES('petrov@gmail.com', crypt('qwerty1234', gen_salt('bf', 8)));
+INSERT INTO patients(name, gender, birth_date) VALUES('Petr', 'male', make_date(1995, 8, 25));
+UPDATE patients 
+    SET 
+        user_id = (SELECT id FROM users WHERE email = 'petrov@gmail.com')
+    WHERE name = 'Petr';
+COMMIT;
+
+BEGIN;
+INSERT INTO users(email, password) VALUES('sidorova@gmail.com', crypt('qwerty1234', gen_salt('bf', 8)));
+INSERT INTO patients(name, gender, birth_date) VALUES('Anna', 'female', make_date(2000, 6, 15));
+UPDATE patients 
+    SET 
+        user_id = (SELECT id FROM users WHERE email = 'sidorova@gmail.com')
+    WHERE name = 'Anna';
+COMMIT;
+
+UPDATE users 
+    SET 
+        role_id = (SELECT id FROM roles WHERE title='patient') 
+    WHERE email IN ('ivanov@gmail.com', 'petrov@gmail.com', 'sidorova@gmail.com');
