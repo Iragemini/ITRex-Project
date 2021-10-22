@@ -13,11 +13,12 @@ export default class ResolutionService {
   addResolution = async (body, doctorUserId) => {
     const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
 
-    const data = body;
-    data.doctor_name = doctor.name;
-    data.doctor_specialization = doctor.specialization;
+    const data = { ...body };
+    data.doctorName = doctor.name;
+    data.doctorId = doctor.id;
+    data.doctorSpecialization = doctor.specialization;
 
-    data.patient_id = body.patientId;
+    data.patientId = body.patientId;
 
     if (!body.ttl) {
       data.ttl = defaultTTL;

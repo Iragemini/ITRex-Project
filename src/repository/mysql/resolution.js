@@ -9,12 +9,19 @@ export default class MySQLResolution {
 
   async add(data) {
     let expire = null;
+    const resolutionData = {
+      doctor_name: data.doctorName,
+      doctor_specialization: data.doctorSpecialization,
+      patient_id: data.patientId,
+      ttl: data.ttl,
+      resolution: data.resolution,
+    };
 
-    if (data.ttl > 0) {
-      expire = new Date(getExpiration(data.ttl));
+    if (resolutionData.ttl > 0) {
+      expire = new Date(getExpiration(resolutionData.ttl));
     }
 
-    return this.Resolution.create({ expire, ...data });
+    return this.Resolution.create({ expire, ...resolutionData });
   }
 
   async getAllResolutions(query) {
