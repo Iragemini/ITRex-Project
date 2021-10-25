@@ -6,7 +6,6 @@ export default class PGResolution {
   }
 
   async add(data) {
-    let expire = null;
     const {
       doctorId,
       patientId,
@@ -14,9 +13,9 @@ export default class PGResolution {
       ttl,
     } = data;
 
-    if (data.ttl > 0) {
-      expire = new Date(getExpiration(ttl));
-    }
+    const expire = ttl > 0
+      ? new Date(getExpiration(ttl))
+      : null;
 
     const query = `
       INSERT INTO resolutions(doctor_id, patient_id, resolution, expire) 

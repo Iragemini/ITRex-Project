@@ -8,7 +8,6 @@ export default class MySQLResolution {
   }
 
   async add(data) {
-    let expire = null;
     const resolutionData = {
       doctor_name: data.doctorName,
       doctor_specialization: data.doctorSpecialization,
@@ -17,9 +16,9 @@ export default class MySQLResolution {
       resolution: data.resolution,
     };
 
-    if (resolutionData.ttl > 0) {
-      expire = new Date(getExpiration(resolutionData.ttl));
-    }
+    const expire = resolutionData.ttl > 0
+      ? new Date(getExpiration(resolutionData.ttl))
+      : null;
 
     return this.Resolution.create({ expire, ...resolutionData });
   }
