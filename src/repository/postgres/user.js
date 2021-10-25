@@ -6,10 +6,6 @@ export default class PGUser {
   }
 
   getRoleID = async (title) => {
-    if (!title) {
-      return null;
-    }
-
     const query = 'SELECT id FROM roles WHERE title = $1';
     const data = await this.pool.query(query, [title]);
 
@@ -21,10 +17,6 @@ export default class PGUser {
   };
 
   getRoleTitle = async (id) => {
-    if (!id) {
-      return null;
-    }
-
     const query = 'SELECT title FROM roles WHERE id = $1';
     const data = await this.pool.query(query, [id]);
 
