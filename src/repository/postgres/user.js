@@ -127,20 +127,4 @@ export default class PGUser {
 
     return result;
   };
-
-  /* not used */
-  updateUser = async (id, data) => {
-    const { email, password } = data;
-
-    const query = 'UPDATE users SET email=$1, password=$2 WHERE id=$3';
-
-    const user = await this.pool.query(query, [email, password, id]);
-
-    return user.rows;
-  };
-
-  /* not used */
-  deleteUser = async (id) => {
-    await this.pool.query('DELETE FROM users WHERE id=$1', [id]);
-  };
 }
