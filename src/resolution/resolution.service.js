@@ -12,23 +12,25 @@ export default class ResolutionService {
 
   addResolution = async (body, doctorUserId) => {
     const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
+    const { resolution, patientId, ttl } = body;
+    const {
+      name: doctorName,
+      id: doctorId,
+      specialization: doctorSpecialization,
+    } = doctor;
 
-    const data = { ...body };
-    data.doctorName = doctor.name;
-    data.doctorId = doctor.id;
-    data.doctorSpecialization = doctor.specialization;
+    const data = {
+      resolution,
+      patientId,
+      doctorName,
+      doctorId,
+      doctorSpecialization,
+      ttl: ttl || defaultTTL,
+    };
 
-    data.patientId = body.patientId;
+    const newResolution = await this.repository.add(data);
 
-    if (!body.ttl) {
-      data.ttl = defaultTTL;
-    } else {
-      data.ttl = body.ttl;
-    }
-
-    const resolution = await this.repository.add(data);
-
-    return resolution;
+    return newResolution;
   };
 
   findAllResolutions = async (query) => {
