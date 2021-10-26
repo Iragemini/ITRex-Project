@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
+import constants from '../utils/constants.js';
 
 const {
   auth: { SECRET, JWT_EXPIRE_TIME },
@@ -42,7 +43,7 @@ export default class UserService {
     const userData = {
       email: data.email,
       password: bcrypt.hashSync(data.password, 8),
-      role: 'patient',
+      role: constants.roles.patient,
     };
 
     const isValidEmail = await this.verifyEmail(data.email);

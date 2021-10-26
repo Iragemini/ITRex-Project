@@ -30,7 +30,7 @@ export default class PGUser {
   createUser = async (data) => {
     const { email, password, role } = data;
 
-    const roleId = await this.getRoleID(role);
+    const roleId = role ? await this.getRoleID(role) : null;
 
     const query = `
       INSERT INTO users (role_id, email, password) 
@@ -45,17 +45,15 @@ export default class PGUser {
   getUserByEmail = async (email) => {
     const query = 'SELECT * FROM users WHERE email = $1';
 
-    const user = await this.pool.query(query, [email]);
+    const {
+      rows: [userInfo],
+    } = await this.pool.query(query, [email]);
 
-    if (!user.rows.length) {
+    if (!userInfo || Object.keys(userInfo).length === 0) {
       return null;
     }
 
-    const {
-      rows: [userInfo],
-    } = user;
-
-    const result = await this.getResult(userInfo);
+    const result = await this.getExtendedUserInfo(userInfo);
 
     return result;
   };
@@ -63,59 +61,83 @@ export default class PGUser {
   getUserById = async (id) => {
     const query = 'SELECT * FROM users WHERE id=$1';
 
-    const user = await this.pool.query(query, [id]);
+    const {
+      rows: [userInfo],
+    } = await this.pool.query(query, [id]);
 
-    if (!user.rows.length) {
+    if (!userInfo || Object.keys(userInfo).length === 0) {
       return null;
     }
 
-    const {
-      rows: [userInfo],
-    } = user;
-
-    const result = await this.getResult(userInfo);
+    const result = await this.getExtendedUserInfo(userInfo);
 
     return result;
   };
 
-  getResult = async (userInfo) => {
-    let result = {};
-    let query = '';
-    const roleTitle = await this.getRoleTitle(userInfo.role_id);
+  getExtendedPatientInfo = async (userID) => {
+    const query = 'SELECT * FROM patients WHERE user_id = $1';
 
-    if (!roleTitle) {
-      return result;
+    const {
+      rows: [patient],
+    } = await this.pool.query(query, [userID]);
+
+    if (!patient || Object.keys(patient).length === 0) {
+      return {};
     }
 
-    if (roleTitle === constants.roles.patient) {
-      query = 'SELECT * FROM patients WHERE user_id = $1';
-      const data = await this.pool.query(query, [userInfo.id]);
-      const {
-        rows: [patient],
-      } = data;
+    const patientData = {
+      name: patient.name,
+      gender: patient.gender,
+      birthDate: patient.birth_date,
+    };
 
-      result = {
-        name: patient.name,
-        gender: patient.gender,
-        birthDate: patient.birth_date,
-      };
-    } else {
-      query = 'SELECT * FROM doctors WHERE user_id = $1';
-      const data = await this.pool.query(query, [userInfo.id]);
-      const {
-        rows: [doctor],
-      } = data;
+    return patientData;
+  };
 
-      result = {
-        name: doctor.name,
-      };
+  getExtendedDoctorInfo = async (userID) => {
+    const query = 'SELECT * FROM doctors WHERE user_id = $1';
+
+    const {
+      rows: [doctor],
+    } = await this.pool.query(query, [userID]);
+
+    if (!doctor || Object.keys(doctor).length === 0) {
+      return {};
     }
 
-    result.id = userInfo.id;
-    result.email = userInfo.email;
-    result.password = userInfo.password;
-    result.roleId = userInfo.role_id;
-    result.roleTitle = roleTitle;
+    const doctorData = {
+      name: doctor.name,
+    };
+
+    return doctorData;
+  };
+
+  getExtendedUserInfo = async (userInfo) => {
+    const {
+      id,
+      role_id: roleID,
+      email,
+      password,
+    } = userInfo;
+
+    let additionalData = {};
+
+    const roleTitle = roleID ? await this.getRoleTitle(roleID) : null;
+
+    if (roleTitle in constants.roles) {
+      additionalData = roleTitle === constants.roles.patient
+        ? await this.getExtendedPatientInfo(id)
+        : await this.getExtendedDoctorInfo(id);
+    }
+
+    const result = {
+      id,
+      email,
+      password,
+      roleID,
+      roleTitle,
+      ...additionalData,
+    };
 
     return result;
   };
