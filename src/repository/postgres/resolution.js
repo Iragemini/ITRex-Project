@@ -24,7 +24,7 @@ export default class PGResolution {
 
     const resolutions = await this.pool.query(query, [doctorId, patientId, resolution, expire]);
 
-    return resolutions.rows;
+    return resolutions.rows[0];
   }
 
   async getAllResolutions(data) {
