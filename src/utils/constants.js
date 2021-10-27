@@ -3,4 +3,9 @@ const roles = Object.freeze({
   doctor: 'doctor',
 });
 
-export default { roles };
+const repositoryTypes = Object.freeze({
+  mysql: 'mysql',
+  postgres: 'postgres',
+});
+
+export default { roles, repositoryTypes };
