@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import MySQLUser from '../../src/repository/mysql/user.js';
-import db from './mocks/db.mock.js';
+import MySQLUser from '../../../src/repository/mysql/user.js';
+import db from '../mocks/db.mock.js';
 
 const mysqlUser = new MySQLUser(db);
 const sandbox = sinon.createSandbox();

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import MySQLPatient from '../../src/repository/mysql/patient.js';
-import db from './mocks/db.mock.js';
+import MySQLPatient from '../../../src/repository/mysql/patient.js';
+import db from '../mocks/db.mock.js';
 
 const mysqlPatient = new MySQLPatient(db);
 
