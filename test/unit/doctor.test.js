@@ -1,11 +1,21 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import MySQLDoctor from '../../src/repository/mysql/doctor.js';
+import PGDoctor from '../../src/repository/postgres/doctor.js';
 import DoctorService from '../../src/doctor/doctor.service.js';
-import db from './mocks/db.mock.js';
+import db, { pool } from './mocks/db.mock.js';
+import config from '../../config/config.js';
+import constants from '../../src/utils/constants.js';
 
-const mysqlDoctor = new MySQLDoctor(db);
-const doctorService = new DoctorService(mysqlDoctor);
+const {
+  db: { dbType },
+} = config;
+
+const repository = dbType === constants.repositoryTypes.mysql
+  ? new MySQLDoctor(db)
+  : new PGDoctor(pool);
+
+const doctorService = new DoctorService(repository);
 
 const sandbox = sinon.createSandbox();
 
@@ -25,8 +35,8 @@ describe('Doctor tests', () => {
 
   describe('Get all doctors', () => {
     it('should return an empty list of no doctors', async () => {
-      sandbox.replace(mysqlDoctor, 'getAll', () => []);
-      const spyGetAll = sandbox.spy(mysqlDoctor, 'getAll');
+      sandbox.replace(repository, 'getAll', () => []);
+      const spyGetAll = sandbox.spy(repository, 'getAll');
 
       expect(await doctorService.getAllDoctors()).to.deep.equal([]);
       expect(spyGetAll.calledOnce).to.be.true;
@@ -34,8 +44,8 @@ describe('Doctor tests', () => {
     });
 
     it('should return doctors', async () => {
-      sandbox.replace(mysqlDoctor, 'getAll', () => [doctor]);
-      const spyGetAll = sandbox.spy(mysqlDoctor, 'getAll');
+      sandbox.replace(repository, 'getAll', () => [doctor]);
+      const spyGetAll = sandbox.spy(repository, 'getAll');
 
       expect(await doctorService.getAllDoctors()).to.deep.equal([doctor]);
       expect(spyGetAll.calledOnce).to.be.true;
@@ -45,7 +55,7 @@ describe('Doctor tests', () => {
 
   describe('Get doctor by id', () => {
     it('should throw an error when there is no such doctor', async () => {
-      sandbox.replace(mysqlDoctor, 'getById', () => null);
+      sandbox.replace(repository, 'getById', () => null);
 
       try {
         await doctorService.getDoctorById(id);
@@ -55,8 +65,8 @@ describe('Doctor tests', () => {
     });
 
     it('should return doctor', async () => {
-      sandbox.replace(mysqlDoctor, 'getById', () => doctor);
-      const spyGetById = sandbox.spy(mysqlDoctor, 'getById');
+      sandbox.replace(repository, 'getById', () => doctor);
+      const spyGetById = sandbox.spy(repository, 'getById');
 
       expect(await doctorService.getDoctorById(id)).to.deep.equal(doctor);
       expect(spyGetById.calledOnce).to.be.true;
@@ -66,7 +76,7 @@ describe('Doctor tests', () => {
 
   describe('Get doctor by user id', () => {
     it('should throw an error when there is no such doctor', async () => {
-      sandbox.replace(mysqlDoctor, 'getByUserId', () => null);
+      sandbox.replace(repository, 'getByUserId', () => null);
 
       try {
         await doctorService.getDoctorByUserId(userId);
@@ -76,8 +86,8 @@ describe('Doctor tests', () => {
     });
 
     it('should return doctor', async () => {
-      sandbox.replace(mysqlDoctor, 'getByUserId', () => (doctor));
-      const spyGetByUserId = sandbox.spy(mysqlDoctor, 'getByUserId');
+      sandbox.replace(repository, 'getByUserId', () => (doctor));
+      const spyGetByUserId = sandbox.spy(repository, 'getByUserId');
 
       expect(await doctorService.getDoctorByUserId(userId)).to.deep.equal(doctor);
       expect(spyGetByUserId.calledOnce).to.be.true;
