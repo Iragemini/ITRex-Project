@@ -81,6 +81,6 @@ export default class PGResolution {
 
     const resolution = await this.pool.query(query, [id]);
 
-    return resolution.rows[0];
+    return resolution.rows;
   }
 }

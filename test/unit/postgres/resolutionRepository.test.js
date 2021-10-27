@@ -84,7 +84,7 @@ describe('Resolution repository tests', () => {
       pool.query.resolves({ rows: output });
 
       expect(await pgResolution.removeResolution(id))
-        .to.be.deep.equal(output[0]);
+        .to.be.deep.equal(output);
       expect(pool.query.calledOnce).to.be.true;
     });
   });
