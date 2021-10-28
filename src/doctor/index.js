@@ -1,8 +1,8 @@
 import DoctorService from './doctor.service.js';
 import repository from '../repository/index.js';
 
-const client = repository.createRepository();
+const { doctor } = repository;
 
-const doctorService = new DoctorService(client.doctor);
+const doctorService = new DoctorService(doctor);
 
 export default doctorService;

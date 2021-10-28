@@ -15,8 +15,6 @@ const {
   db: { dbType },
 } = config;
 
-const pool = initPG();
-
 class RepositoryFactory {
   constructor(type) {
     this.type = type;
@@ -31,6 +29,7 @@ class RepositoryFactory {
         doctor: new MySQLDoctor(db),
       };
     }
+    const pool = initPG();
     return {
       user: new PGUser(pool),
       patient: new PGPatient(pool),
@@ -40,6 +39,6 @@ class RepositoryFactory {
   }
 }
 
-const repository = new RepositoryFactory(dbType);
+const repository = new RepositoryFactory(dbType).createRepository();
 
 export default repository;
