@@ -5,7 +5,7 @@ import config from '../../config/config.js';
 import constants from '../utils/constants.js';
 
 const {
-  auth: { SECRET, JWT_EXPIRE_TIME },
+  auth: { SECRET, JWT_EXPIRE_TIME, SALT },
 } = config;
 
 export default class UserService {
@@ -14,12 +14,12 @@ export default class UserService {
     this.patientService = patientService;
   }
 
-  verifyEmail = async (email) => {
+  checkIsEmailExists = async (email) => {
     const user = await this.repository.getUserByEmail(email);
     if (user) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   };
 
   authenticate = async (user) => {
@@ -40,22 +40,34 @@ export default class UserService {
 
   createUser = async (data) => {
     // basically we can create only patients this way
+    const {
+      email,
+      password,
+      gender,
+      birthDate,
+      name,
+    } = data;
+
     const userData = {
-      email: data.email,
-      password: bcrypt.hashSync(data.password, 8),
+      email,
+      password: bcrypt.hashSync(password, SALT),
       role: constants.roles.patient,
     };
 
-    const isValidEmail = await this.verifyEmail(data.email);
+    const isEmailExists = await this.checkIsEmailExists(email);
 
-    if (!isValidEmail) {
+    if (isEmailExists) {
       throw new ApiError(400, 'Email already exists');
     }
 
-    const patientData = { ...data };
+    const { id } = await this.repository.createUser(userData);
 
-    const user = await this.repository.createUser(userData);
-    patientData.userId = user.id;
+    const patientData = {
+      userId: id,
+      name,
+      gender,
+      birthDate,
+    };
 
     await this.patientService.addPatient(patientData);
   };
