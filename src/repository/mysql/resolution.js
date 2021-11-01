@@ -3,7 +3,7 @@ import getExpiration from '../../utils/getExpiration.js';
 export default class MySQLResolution {
   constructor(db) {
     this.db = db;
-    this.Resolution = this.db.resolution;
+    this.resolution = this.db.resolution;
     this.sequelize = this.db.sequelize;
   }
 
@@ -20,7 +20,7 @@ export default class MySQLResolution {
       ? new Date(getExpiration(resolutionData.ttl))
       : null;
 
-    return this.Resolution.create({ expire, ...resolutionData });
+    return this.resolution.create({ expire, ...resolutionData });
   }
 
   async getAllResolutions(query) {
@@ -48,7 +48,7 @@ export default class MySQLResolution {
         type: this.sequelize.QueryTypes.SELECT,
       });
     } else {
-      resolutions = await this.Resolution.findAll({ raw: true });
+      resolutions = await this.resolution.findAll({ raw: true });
     }
 
     return resolutions;
@@ -78,8 +78,8 @@ export default class MySQLResolution {
   }
 
   async removeResolution(id) {
-    const resolution = await this.Resolution.destroy({ where: { id } });
+    const deletedResolution = await this.resolution.destroy({ where: { id } });
 
-    return resolution;
+    return deletedResolution;
   }
 }
