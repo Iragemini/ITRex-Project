@@ -22,12 +22,7 @@ export default class PGResolution {
       VALUES($1, $2, $3, $4)  RETURNING *
     `;
 
-    const resolutions = await this.pool.query(query, [
-      doctorId,
-      patientId,
-      resolution,
-      expire,
-    ]);
+    const resolutions = await this.pool.query(query, [doctorId, patientId, resolution, expire]);
 
     return resolutions.rows;
   }

@@ -16,12 +16,7 @@ export default class PGPatient {
       VALUES ($1, $2, $3, $4) RETURNING *
     `;
 
-    const patient = await this.pool.query(query, [
-      userId,
-      name,
-      gender,
-      birthDate,
-    ]);
+    const patient = await this.pool.query(query, [userId, name, gender, birthDate]);
 
     return patient.rows;
   };
