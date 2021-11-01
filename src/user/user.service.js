@@ -57,7 +57,7 @@ export default class UserService {
     const isEmailExists = await this.checkIsEmailExists(email);
 
     if (isEmailExists) {
-      throw new ApiError(400, 'Email already exists');
+      throw new ApiError(409, 'Email already exists');
     }
 
     const { id } = await this.repository.createUser(userData);
