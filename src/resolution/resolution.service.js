@@ -1,8 +1,6 @@
 import config from '../../config/config.js';
 import ApiError from '../errors/ApiError.js';
 
-const defaultTTL = config.ttl;
-
 export default class ResolutionService {
   constructor(repository, patientService, doctorService) {
     this.repository = repository;
@@ -25,7 +23,7 @@ export default class ResolutionService {
       doctorName,
       doctorId,
       doctorSpecialization,
-      ttl: ttl || defaultTTL,
+      ttl: ttl || config.ttl,
     };
 
     const newResolution = await this.repository.add(data);
