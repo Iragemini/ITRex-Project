@@ -49,7 +49,7 @@ export default class PGUser {
       rows: [userInfo],
     } = await this.pool.query(query, [email]);
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
+    if (!userInfo) {
       return null;
     }
 
@@ -65,7 +65,7 @@ export default class PGUser {
       rows: [userInfo],
     } = await this.pool.query(query, [id]);
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
+    if (!userInfo) {
       return null;
     }
 
@@ -81,17 +81,15 @@ export default class PGUser {
       rows: [patient],
     } = await this.pool.query(query, [userID]);
 
-    if (!patient || Object.keys(patient).length === 0) {
+    if (!patient) {
       return {};
     }
 
-    const patientData = {
+    return {
       name: patient.name,
       gender: patient.gender,
       birthDate: patient.birth_date,
     };
-
-    return patientData;
   };
 
   getExtendedDoctorInfo = async (userID) => {
@@ -101,15 +99,11 @@ export default class PGUser {
       rows: [doctor],
     } = await this.pool.query(query, [userID]);
 
-    if (!doctor || Object.keys(doctor).length === 0) {
+    if (!doctor) {
       return {};
     }
 
-    const doctorData = {
-      name: doctor.name,
-    };
-
-    return doctorData;
+    return { name: doctor.name };
   };
 
   getExtendedUserInfo = async (userInfo) => {
