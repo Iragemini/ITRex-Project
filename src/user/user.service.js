@@ -62,14 +62,13 @@ export default class UserService {
 
     const { id } = await this.repository.createUser(userData);
 
-    const patientData = {
+    await this.patientService.addPatient({
       userId: id,
       name,
+      email,
       gender,
       birthDate,
-    };
-
-    await this.patientService.addPatient(patientData);
+    });
   };
 
   getUserByEmail = async (email) => {
