@@ -35,30 +35,22 @@ export default class PGResolution {
   async getAllResolutions(data) {
     const { patientName } = data;
 
-    let WHERE = `
-      WHERE patients.name = $1 
-      AND (
-          resolutions.expire IS NULL
-          OR resolutions.expire > Now() 
-      )
-    `;
+    const WHERE = patientName
+      ? `WHERE patients.name = $1 
+        AND (
+            resolutions.expire IS NULL
+            OR resolutions.expire > Now() 
+        )`
+      : 'WHERE resolutions.expire IS NULL OR resolutions.expire > Now()';
 
-    let params = [patientName];
-
-    if (!patientName) {
-      WHERE = `
-        WHERE resolutions.expire IS NULL
-          OR resolutions.expire > Now() 
-      `;
-      params = [];
-    }
+    const params = patientName ? [patientName] : [];
 
     const query = `
       SELECT 
         resolutions.*, patients.name patient_name,
         di.name doctor_name, di.specialization doctor_specialization
       FROM resolutions 
-        INNER JOIN doctors_info di ON resolutions.doctor_id = di.id 
+        LEFT JOIN doctors_info di ON resolutions.doctor_id = di.id 
         INNER JOIN patients ON resolutions.patient_id = patients.id
       ${WHERE}
     `;
@@ -74,7 +66,7 @@ export default class PGResolution {
         resolutions.*, patients.name patient_name,
         di.name doctor_name, di.specialization doctor_specialization 
       FROM resolutions 
-        INNER JOIN doctors_info di ON resolutions.doctor_id = di.id 
+        LEFT JOIN doctors_info di ON resolutions.doctor_id = di.id 
         INNER JOIN patients ON resolutions.patient_id = patients.id
       WHERE 
         patients.user_id = $1 
