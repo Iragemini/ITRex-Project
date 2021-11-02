@@ -23,7 +23,13 @@ describe('Patient repository tests', () => {
     it('should return patient', async () => {
       db.patient.create.resolves({ id, ...user });
       expect(await mysqlPatient.createPatient(user)).to.deep.equal({ id, ...user });
-      expect(db.patient.create.calledWith(user)).to.be.true;
+      expect(db.patient.create.calledWith({
+        name,
+        gender,
+        birth_date: birthDate,
+        email,
+        user_id: userId,
+      })).to.be.true;
       expect(db.patient.create.calledOnce).to.be.true;
     });
   });
