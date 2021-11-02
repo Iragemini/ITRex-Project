@@ -12,12 +12,11 @@ export default class MySQLResolution {
       doctor_name: data.doctorName,
       doctor_specialization: data.doctorSpecialization,
       patient_id: data.patientId,
-      ttl: data.ttl,
       resolution: data.resolution,
     };
 
-    const expire = resolutionData.ttl > 0
-      ? new Date(getExpiration(resolutionData.ttl))
+    const expire = data.ttl > 0
+      ? new Date(getExpiration(data.ttl))
       : null;
 
     return this.resolution.create({ expire, ...resolutionData });
