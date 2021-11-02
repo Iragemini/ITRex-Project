@@ -3,9 +3,23 @@ export default class PGDoctor {
     this.pool = pool;
   }
 
-  getAll = async () => {
-    const result = [];
+  static mapper(doctorInfo) {
+    const {
+      id,
+      user_id: userId,
+      name,
+      title: specialization,
+    } = doctorInfo;
 
+    return {
+      id,
+      userId,
+      name,
+      specialization,
+    };
+  }
+
+  getAll = async () => {
     const query = `
       SELECT doctors.*, specializations.title 
       FROM doctors INNER JOIN specializations 
@@ -14,16 +28,7 @@ export default class PGDoctor {
 
     const doctors = await this.pool.query(query);
 
-    doctors.rows.forEach((doctor) => {
-      result.push({
-        id: doctor.id,
-        userId: doctor.user_id,
-        name: doctor.name,
-        specialization: doctor.title,
-      });
-    });
-
-    return result;
+    return doctors.rows.map((doctor) => PGDoctor.mapper(doctor));
   };
 
   getById = async (id) => {
@@ -44,14 +49,7 @@ export default class PGDoctor {
       rows: [doctorInfo],
     } = doctor;
 
-    const result = {
-      id: doctorInfo.id,
-      userId: doctorInfo.user_id,
-      name: doctorInfo.name,
-      specialization: doctorInfo.title,
-    };
-
-    return result;
+    return PGDoctor.mapper(doctorInfo);
   };
 
   getByUserId = async (userId) => {
@@ -63,6 +61,7 @@ export default class PGDoctor {
     `;
 
     const doctor = await this.pool.query(query, [userId]);
+
     if (!doctor.rows.length) {
       return null;
     }
@@ -71,13 +70,6 @@ export default class PGDoctor {
       rows: [doctorInfo],
     } = doctor;
 
-    const result = {
-      id: doctorInfo.id,
-      userId: doctorInfo.user_id,
-      name: doctorInfo.name,
-      specialization: doctorInfo.title,
-    };
-
-    return result;
+    return PGDoctor.mapper(doctorInfo);
   };
 }
