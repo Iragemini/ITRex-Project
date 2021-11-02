@@ -5,32 +5,31 @@ export default class PGUser {
     this.pool = pool;
   }
 
-  getRoleID = async (title) => {
-    const query = 'SELECT id FROM roles WHERE title = $1';
-    const data = await this.pool.query(query, [title]);
+  getRole = async (data = {}) => {
+    const { id, title } = data;
 
-    if (!data.rows.length) {
-      return null;
+    const WHERE = id ? 'WHERE id = $1' : 'WHERE title = $1';
+    const params = id ? [id] : [title];
+
+    const query = Object.keys(data).length
+      ? `SELECT * FROM roles ${WHERE}`
+      : 'SELECT * FROM roles';
+
+    const result = await this.pool.query(query, params);
+
+    if (!result.rows.length) {
+      return {};
     }
 
-    return data.rows[0].id;
-  };
-
-  getRoleTitle = async (id) => {
-    const query = 'SELECT title FROM roles WHERE id = $1';
-    const data = await this.pool.query(query, [id]);
-
-    if (!data.rows.length) {
-      return null;
-    }
-
-    return data.rows[0].title;
-  };
+    return result.rows;
+  }
 
   createUser = async (data) => {
     const { email, password, role } = data;
 
-    const roleId = role ? await this.getRoleID(role) : null;
+    const [{ id: roleId }] = role
+      ? await this.getRole({ title: role })
+      : null;
 
     const query = `
       INSERT INTO users (role_id, email, password) 
@@ -116,7 +115,9 @@ export default class PGUser {
 
     let additionalData = {};
 
-    const roleTitle = roleID ? await this.getRoleTitle(roleID) : null;
+    const [{ title: roleTitle }] = roleID
+      ? await this.getRole({ id: roleID })
+      : null;
 
     if (roleTitle in constants.roles) {
       additionalData = roleTitle === constants.roles.patient
@@ -124,7 +125,7 @@ export default class PGUser {
         : await this.getExtendedDoctorInfo(id);
     }
 
-    const result = {
+    return {
       id,
       email,
       password,
@@ -132,7 +133,5 @@ export default class PGUser {
       roleTitle,
       ...additionalData,
     };
-
-    return result;
   };
 }
