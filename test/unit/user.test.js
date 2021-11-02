@@ -12,7 +12,7 @@ import PGUser from '../../src/repository/postgres/user.js';
 
 const {
   db: { dbType },
-  auth: { SECRET, JWT_EXPIRE_TIME },
+  auth: { SECRET, JWT_EXPIRE_TIME, SALT },
 } = config;
 
 const repository = dbType === constants.repositoryTypes.mysql
@@ -51,22 +51,22 @@ describe('User tests', () => {
       sandbox.replace(repository, 'createUser', () => user);
       sandbox.replace(patientService, 'addPatient', () => undefined);
       sandbox.replace(bcrypt, 'hashSync', () => 'hashPassword');
-      sandbox.replace(userService, 'verifyEmail', () => true);
+      sandbox.replace(userService, 'checkIsEmailExists', () => false);
 
       const spyCreateUser = sandbox.spy(repository, 'createUser');
       const spyAddPatient = sandbox.spy(patientService, 'addPatient');
       const spyBcrypt = sandbox.spy(bcrypt, 'hashSync');
-      const spyVerifyEmail = sandbox.spy(userService, 'verifyEmail');
+      const spyCheckIsEmailExists = sandbox.spy(userService, 'checkIsEmailExists');
 
       await userService.createUser(user);
       expect(spyCreateUser.withArgs({ email, password: hashPassword, role: 'patient' }).calledOnce).to.be.true;
       expect(spyCreateUser.returned(user)).to.be.true;
       expect(spyAddPatient.calledWith(sinon.match.object)).to.be.true;
       expect(spyAddPatient.returned(undefined)).to.be.true;
-      expect(spyBcrypt.withArgs(password, 8).calledOnce).to.be.true;
-      expect(spyVerifyEmail.calledBefore(spyCreateUser)).to.be.true;
+      expect(spyBcrypt.withArgs(password, SALT).calledOnce).to.be.true;
+      expect(spyCheckIsEmailExists.calledBefore(spyCreateUser)).to.be.true;
       expect(spyCreateUser.calledBefore(spyAddPatient)).to.be.true;
-      expect(spyVerifyEmail.withArgs(email).calledOnce).to.be.true;
+      expect(spyCheckIsEmailExists.withArgs(email).calledOnce).to.be.true;
     });
   });
 

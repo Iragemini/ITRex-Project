@@ -60,8 +60,8 @@ describe('User repository tests', () => {
 
   describe('Create user', () => {
     it('should return new user', async () => {
-      sandbox.replace(pgUser, 'getRoleID', () => patient.roleID);
-      const spyGetRoleID = sandbox.spy(pgUser, 'getRoleID');
+      sandbox.replace(pgUser, 'getRole', () => [{ id: patient.roleID }]);
+      const spyGetRole = sandbox.spy(pgUser, 'getRole');
 
       pool.query.resolves({
         rows: [userAsPatient],
@@ -73,8 +73,8 @@ describe('User repository tests', () => {
         role: patient.roleTitle,
       })).to.be.deep.equal(userAsPatient);
       expect(pool.query.calledOnce).to.be.true;
-      expect(spyGetRoleID.calledOnce).to.be.true;
-      expect(spyGetRoleID.calledBefore(pool.query)).to.be.true;
+      expect(spyGetRole.calledOnce).to.be.true;
+      expect(spyGetRole.calledBefore(pool.query)).to.be.true;
     });
   });
 
@@ -143,77 +143,64 @@ describe('User repository tests', () => {
 
   describe('[METHOD] getExtendedUserInfo()', () => {
     it('should return patient data', async () => {
-      sandbox.replace(pgUser, 'getRoleTitle', () => patient.roleTitle);
+      sandbox.replace(pgUser, 'getRole', () => [{ title: patient.roleTitle }]);
       sandbox.replace(pgUser, 'getExtendedPatientInfo', () => ({
         name: patient.name,
         gender: patient.gender,
         birthDate: patient.birthDate,
       }));
-      const spyGetRoleTitle = sandbox.spy(pgUser, 'getRoleTitle');
+      const spyGetRole = sandbox.spy(pgUser, 'getRole');
       const spyGetExtendedPatientInfo = sandbox.spy(pgUser, 'getExtendedPatientInfo');
 
       expect(await pgUser.getExtendedUserInfo(userAsPatient))
         .to.be.deep.equal(patientData);
-      expect(spyGetRoleTitle.calledBefore(spyGetExtendedPatientInfo)).to.be
+      expect(spyGetRole.calledBefore(spyGetExtendedPatientInfo)).to.be
         .true;
-      expect(spyGetRoleTitle.calledOnce).to.be.true;
+      expect(spyGetRole.calledOnce).to.be.true;
       expect(spyGetExtendedPatientInfo.calledOnce).to.be.true;
     });
 
     it('should return doctor data', async () => {
-      sandbox.replace(pgUser, 'getRoleTitle', () => doctor.roleTitle);
+      sandbox.replace(pgUser, 'getRole', () => [{ title: doctor.roleTitle }]);
       sandbox.replace(pgUser, 'getExtendedDoctorInfo', () => ({
         name: doctor.name,
       }));
-      const spyGetRoleTitle = sandbox.spy(pgUser, 'getRoleTitle');
+      const spyGetRole = sandbox.spy(pgUser, 'getRole');
       const spyGetExtendedDoctorInfo = sandbox.spy(pgUser, 'getExtendedDoctorInfo');
 
       expect(await pgUser.getExtendedUserInfo(userAsDoctor))
         .to.be.deep.equal(doctorData);
-      expect(spyGetRoleTitle.calledBefore(spyGetExtendedDoctorInfo)).to.be.true;
-      expect(spyGetRoleTitle.calledOnce).to.be.true;
+      expect(spyGetRole.calledBefore(spyGetExtendedDoctorInfo)).to.be.true;
+      expect(spyGetRole.calledOnce).to.be.true;
       expect(spyGetExtendedDoctorInfo.calledOnce).to.be.true;
     });
   });
 
-  describe('[METHOD] getRoleID()', () => {
-    it('should return id', async () => {
+  describe('[METHOD] getRole()', () => {
+    it('should return role entity', async () => {
+      const roleEntity = {
+        id: patient.roleID,
+        title: patient.roleTitle,
+      };
       pool.query.resolves({
-        rows: [{ id: patient.roleID }],
+        rows: [roleEntity],
       });
 
-      expect(await pgUser.getRoleID(patient.roleTitle))
-        .to.be.equal(patient.roleID);
-      expect(pool.query.calledOnce).to.be.true;
+      expect(await pgUser.getRole({ title: patient.roleTitle }))
+        .to.deep.equal([roleEntity]);
+      expect(await pgUser.getRole({ id: patient.roleID }))
+        .to.deep.equal([roleEntity]);
+      expect(await pgUser.getRole())
+        .to.deep.equal([roleEntity]);
+      expect(pool.query.callCount).to.be.equal(3);
     });
 
-    it('should return null', async () => {
+    it('should return {}', async () => {
       pool.query.resolves({
         rows: [],
       });
 
-      expect(await pgUser.getRoleID(patient.roleTitle)).to.be.null;
-      expect(pool.query.calledOnce).to.be.true;
-    });
-  });
-
-  describe('[METHOD] getRoleTitle()', () => {
-    it('should return title', async () => {
-      pool.query.resolves({
-        rows: [{ title: patient.roleTitle }],
-      });
-
-      expect(await pgUser.getRoleTitle(patient.roleID))
-        .to.be.equal(patient.roleTitle);
-      expect(pool.query.calledOnce).to.be.true;
-    });
-
-    it('should return null', async () => {
-      pool.query.resolves({
-        rows: [],
-      });
-
-      expect(await pgUser.getRoleTitle(patient.roleID)).to.be.null;
+      expect(await pgUser.getRole({ title: patient.roleTitle })).to.deep.equal({});
       expect(pool.query.calledOnce).to.be.true;
     });
   });
