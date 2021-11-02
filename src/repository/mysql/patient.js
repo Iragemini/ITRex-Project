@@ -1,35 +1,43 @@
 export default class MySQLPatient {
   constructor(db) {
     this.db = db;
-    this.Patient = this.db.patient;
+    this.patient = this.db.patient;
   }
 
   createPatient = async (data) => {
-    const patient = await this.Patient.create(data);
+    const patientData = {
+      name: data.name,
+      gender: data.gender,
+      birth_date: data.birthDate,
+      email: data.email,
+      user_id: data.userId,
+    };
 
-    return patient;
+    const newPatient = await this.patient.create(patientData);
+
+    return newPatient;
   };
 
   getPatientById = async (id) => {
-    const patient = await this.Patient.findByPk(id);
+    const foundPatient = await this.patient.findByPk(id);
 
-    if (!patient) {
+    if (!foundPatient) {
       return null;
     }
 
-    return patient;
+    return foundPatient;
   };
 
   getPatientByUserId = async (userId) => {
-    const patient = await this.Patient.findOne({
+    const foundPatient = await this.patient.findOne({
       raw: true,
       where: { user_id: userId },
     });
 
-    if (!patient) {
+    if (!foundPatient) {
       return null;
     }
 
-    return patient;
+    return foundPatient;
   };
 }

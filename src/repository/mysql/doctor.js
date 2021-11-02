@@ -1,13 +1,27 @@
 export default class MySQLDoctor {
   constructor(db) {
     this.db = db;
-    this.Doctor = this.db.doctor;
+    this.doctor = this.db.doctor;
+  }
+
+  static mapper(doctor) {
+    const {
+      id,
+      user_id: userId,
+      name,
+      specializations: [{ title }],
+    } = doctor;
+
+    return {
+      id,
+      userId,
+      name,
+      title,
+    };
   }
 
   getAll = async () => {
-    const result = [];
-
-    const doctors = await this.Doctor.findAll({
+    const doctors = await this.doctor.findAll({
       include: [
         {
           model: this.db.specialization,
@@ -16,20 +30,13 @@ export default class MySQLDoctor {
       ],
     });
 
-    doctors.forEach((doctor) => {
-      result.push({
-        id: doctor.id,
-        userId: doctor.user_id,
-        name: doctor.name,
-        specialization: doctor.specializations[0].title,
-      });
-    });
+    const result = doctors.map((doctor) => MySQLDoctor.mapper(doctor));
 
     return result;
   };
 
   getById = async (id) => {
-    const doctor = await this.Doctor.findOne({
+    const foundDoctor = await this.doctor.findOne({
       where: { id },
       include: [
         {
@@ -38,22 +45,15 @@ export default class MySQLDoctor {
         },
       ],
     });
-    if (!doctor) {
+    if (!foundDoctor) {
       return null;
     }
 
-    const result = {
-      id: doctor.id,
-      userId: doctor.user_id,
-      name: doctor.name,
-      specialization: doctor.specializations[0].title,
-    };
-
-    return result;
+    return MySQLDoctor.mapper(foundDoctor);
   };
 
   getByUserId = async (userId) => {
-    const doctor = await this.Doctor.findOne({
+    const foundDoctor = await this.doctor.findOne({
       where: { user_id: userId },
       include: [
         {
@@ -63,17 +63,10 @@ export default class MySQLDoctor {
       ],
     });
 
-    if (!doctor) {
+    if (!foundDoctor) {
       return null;
     }
 
-    const result = {
-      id: doctor.id,
-      userId: doctor.user_id,
-      name: doctor.name,
-      specialization: doctor.specializations[0].title,
-    };
-
-    return result;
+    return MySQLDoctor.mapper(foundDoctor);
   };
 }

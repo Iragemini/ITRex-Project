@@ -1,8 +1,6 @@
 import config from '../../config/config.js';
 import ApiError from '../errors/ApiError.js';
 
-const defaultTTL = config.ttl;
-
 export default class ResolutionService {
   constructor(repository, patientService, doctorService) {
     this.repository = repository;
@@ -12,22 +10,25 @@ export default class ResolutionService {
 
   addResolution = async (body, doctorUserId) => {
     const doctor = await this.doctorService.getDoctorByUserId(doctorUserId);
+    const { resolution, patientId, ttl } = body;
+    const {
+      name: doctorName,
+      id: doctorId,
+      specialization: doctorSpecialization,
+    } = doctor;
 
-    const data = body;
-    data.doctor_name = doctor.name;
-    data.doctor_specialization = doctor.specialization;
+    const data = {
+      resolution,
+      patientId,
+      doctorName,
+      doctorId,
+      doctorSpecialization,
+      ttl: ttl || config.ttl,
+    };
 
-    data.patient_id = body.patientId;
+    const newResolution = await this.repository.add(data);
 
-    if (!body.ttl) {
-      data.ttl = defaultTTL;
-    } else {
-      data.ttl = body.ttl;
-    }
-
-    const resolution = await this.repository.add(data);
-
-    return resolution;
+    return newResolution;
   };
 
   findAllResolutions = async (query) => {

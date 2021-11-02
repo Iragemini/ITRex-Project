@@ -4,23 +4,61 @@ export default class MySQLUser {
   constructor(db) {
     this.db = db;
     this.sequelize = db.sequelize;
-    this.User = this.db.user;
+    this.user = this.db.user;
+  }
+
+  static mapper(userData) {
+    const {
+      id,
+      email,
+      password,
+      patient,
+      roles: [{
+        id: roleId,
+        title: roleTitle,
+      }],
+    } = userData;
+
+    const {
+      name,
+      gender,
+      birth_date: birthDate,
+    } = patient || {};
+
+    const result = roleTitle === constants.roles.patient
+      ? {
+        id,
+        email,
+        password,
+        name,
+        gender,
+        birthDate,
+        roleId,
+        roleTitle,
+      }
+      : {
+        id,
+        email,
+        password,
+        roleId,
+        roleTitle,
+      };
+
+    return result;
   }
 
   createUser = async (data) => {
-    const user = await this.User.create(data);
+    const newUser = await this.user.create(data);
 
-    if (data.role === 'patient') {
-      user.setRoles(1);
+    if (data.role === constants.roles.patient) {
+      newUser.setRoles(1);
     }
 
-    return user;
+    return newUser;
   };
 
   getUserByEmail = async (email) => {
-    let result = {};
-
-    const user = await this.User.findOne({
+    const foundUser = await this.user.findOne({
       where: { email },
       include: [
         {
@@ -34,38 +72,15 @@ export default class MySQLUser {
       ],
     });
 
-    if (user) {
-      if (user.roles[0].title === constants.roles.patient) {
-        result = {
-          id: user.id,
-          email: user.email,
-          password: user.password,
-          name: user.patient.name,
-          gender: user.patient.gender,
-          birthDate: user.patient.birth_date,
-          roleId: user.roles[0].id,
-          roleTitle: user.roles[0].title,
-        };
-      } else {
-        result = {
-          id: user.id,
-          email: user.email,
-          password: user.password,
-          roleId: user.roles[0].id,
-          roleTitle: user.roles[0].title,
-        };
-      }
-
-      return result;
+    if (!foundUser) {
+      return null;
     }
 
-    return user;
+    return MySQLUser.mapper(foundUser);
   };
 
   getUserById = async (id) => {
-    let result = {};
-
-    const user = await this.User.findOne({
+    const foundUser = await this.user.findOne({
       where: { id },
       include: [
         {
@@ -79,40 +94,10 @@ export default class MySQLUser {
       ],
     });
 
-    if (!user) {
+    if (!foundUser) {
       return null;
     }
-    if (user.roles[0].title === constants.roles.patient) {
-      result = {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        name: user.patient.name,
-        gender: user.patient.gender,
-        birthDate: user.patient.birth_date,
-        roleId: user.roles[0].id,
-        roleTitle: user.roles[0].title,
-      };
-    } else {
-      result = {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        roleId: user.roles[0].id,
-        roleTitle: user.roles[0].title,
-      };
-    }
-    return result;
-  };
 
-  /* not used */
-  updateUser = async (id, data) => {
-    const user = await this.User.update(data, { where: { id } });
-    return user;
-  };
-
-  /* not used */
-  deleteUser = async (id) => {
-    await this.User.destroy({ where: { id } });
+    return MySQLUser.mapper(foundUser);
   };
 }

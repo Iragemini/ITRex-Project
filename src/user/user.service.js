@@ -2,9 +2,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import ApiError from '../errors/ApiError.js';
 import config from '../../config/config.js';
+import constants from '../utils/constants.js';
 
 const {
-  auth: { SECRET, JWT_EXPIRE_TIME },
+  auth: { SECRET, JWT_EXPIRE_TIME, SALT },
 } = config;
 
 export default class UserService {
@@ -13,21 +14,18 @@ export default class UserService {
     this.patientService = patientService;
   }
 
-  verifyEmail = async (email) => {
+  checkIsEmailExists = async (email) => {
     const user = await this.repository.getUserByEmail(email);
     if (user) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   };
 
   authenticate = async (user) => {
     const userEntity = await this.getUserByEmail(user.email);
 
-    const isValidPassword = bcrypt.compareSync(
-      user.password,
-      userEntity.password,
-    );
+    const isValidPassword = bcrypt.compareSync(user.password, userEntity.password);
 
     if (!isValidPassword) {
       throw new ApiError(401, 'Invalid password');
@@ -42,29 +40,35 @@ export default class UserService {
 
   createUser = async (data) => {
     // basically we can create only patients this way
+    const {
+      email,
+      password,
+      gender,
+      birthDate,
+      name,
+    } = data;
+
     const userData = {
-      email: data.email,
-      password: bcrypt.hashSync(data.password, 8),
-      role: 'patient',
+      email,
+      password: bcrypt.hashSync(password, SALT),
+      role: constants.roles.patient,
     };
 
-    const isValidEmail = await this.verifyEmail(data.email);
+    const isEmailExists = await this.checkIsEmailExists(email);
 
-    if (!isValidEmail) {
-      throw new ApiError(400, 'Email is already exists');
+    if (isEmailExists) {
+      throw new ApiError(409, 'Email already exists');
     }
 
-    const patientData = {
-      name: data.name,
-      gender: data.gender,
-      birth_date: data.birthDate,
-      email: data.email,
-    };
+    const { id } = await this.repository.createUser(userData);
 
-    const user = await this.repository.createUser(userData);
-    patientData.user_id = user.id;
-
-    await this.patientService.addPatient(patientData);
+    await this.patientService.addPatient({
+      userId: id,
+      name,
+      email,
+      gender,
+      birthDate,
+    });
   };
 
   getUserByEmail = async (email) => {
@@ -81,19 +85,9 @@ export default class UserService {
     const user = await this.repository.getUserById(id);
 
     if (!user) {
-      throw new ApiError(404, 'User not exists');
+      throw new ApiError(404, 'User doesn\'t exist');
     }
 
     return user;
-  };
-
-  /* not used */
-  updateUser = async (id, data) => {
-    await this.repository.updateUser(id, data);
-  };
-
-  /* not used */
-  deleteUser = async (userId) => {
-    await this.repository.deleteUser(userId);
   };
 }
