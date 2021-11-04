@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import MySQLResolution from '../../src/repository/mysql/resolution.js';
-import db from './mocks/db.mock.js';
+import MySQLResolution from '../../../src/repository/mysql/resolution.js';
+import db from '../mocks/db.mock.js';
 
 const mysqlResolution = new MySQLResolution(db);
 

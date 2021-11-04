@@ -18,7 +18,7 @@ export default class PGPatient {
 
     const patient = await this.pool.query(query, [userId, name, gender, birthDate]);
 
-    return patient.rows;
+    return patient.rows[0];
   };
 
   getPatientById = async (id) => {

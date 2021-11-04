@@ -1,7 +1,9 @@
 import UserService from './user.service.js';
-import { mysqlUser } from '../repository/mysql/index.js';
 import patientService from '../patient/index.js';
+import repository from '../repository/index.js';
 
-const userService = new UserService(mysqlUser, patientService);
+const { user } = repository;
+
+const userService = new UserService(user, patientService);
 
 export default userService;

@@ -16,7 +16,7 @@ export default class MySQLDoctor {
       id,
       userId,
       name,
-      title,
+      specialization: title,
     };
   }
 

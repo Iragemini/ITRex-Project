@@ -10,16 +10,15 @@ export const validator = (schema, property) => (req, res, next) => {
 };
 
 export const checkTTL = (req, res, next) => {
-  let ttl = null;
-  if (req.body.ttl) {
-    ttl = req.body.ttl;
-  }
-  if (!ttl) {
+  if (!req.body.ttl) {
     return next();
   }
-  const valid = ttl > 0;
+
+  const valid = req.body.ttl > 0;
+
   if (!valid) {
     throw new ApiError(400, 'TTL value must be positive numbers only');
   }
+
   return next();
 };

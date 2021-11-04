@@ -32,4 +32,8 @@ const db = {
   }),
 };
 
+export const pool = sinon.stub({
+  query: () => {},
+});
+
 export default db;

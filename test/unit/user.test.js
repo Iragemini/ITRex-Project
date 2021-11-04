@@ -4,16 +4,22 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import MySQLUser from '../../src/repository/mysql/user.js';
 import UserService from '../../src/user/user.service.js';
-import db from './mocks/db.mock.js';
 import patientService from './mocks/patientService.mock.js';
+import db, { pool } from './mocks/db.mock.js';
 import config from '../../config/config.js';
+import constants from '../../src/utils/constants.js';
+import PGUser from '../../src/repository/postgres/user.js';
 
 const {
-  auth: { SECRET, JWT_EXPIRE_TIME },
+  db: { dbType },
+  auth: { SECRET, JWT_EXPIRE_TIME, SALT },
 } = config;
 
-const mysqlUser = new MySQLUser(db);
-const userService = new UserService(mysqlUser, patientService);
+const repository = dbType === constants.repositoryTypes.mysql
+  ? new MySQLUser(db)
+  : new PGUser(pool);
+
+const userService = new UserService(repository, patientService);
 
 const sandbox = sinon.createSandbox();
 
@@ -36,33 +42,31 @@ describe('User tests', () => {
     birthDate,
   };
 
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   describe('Create user', () => {
-    afterEach(() => {
-      sandbox.restore();
-    });
-
     it('should create new user', async () => {
-      const data = {
-        name,
-        gender,
-        birth_date: user.birthDate,
-        email,
-      };
-
-      sandbox.replace(mysqlUser, 'createUser', () => user);
+      sandbox.replace(repository, 'createUser', () => user);
       sandbox.replace(patientService, 'addPatient', () => undefined);
       sandbox.replace(bcrypt, 'hashSync', () => 'hashPassword');
+      sandbox.replace(userService, 'checkIsEmailExists', () => false);
 
-      const spyCreateUser = sandbox.spy(mysqlUser, 'createUser');
+      const spyCreateUser = sandbox.spy(repository, 'createUser');
       const spyAddPatient = sandbox.spy(patientService, 'addPatient');
       const spyBcrypt = sandbox.spy(bcrypt, 'hashSync');
+      const spyCheckIsEmailExists = sandbox.spy(userService, 'checkIsEmailExists');
 
       await userService.createUser(user);
       expect(spyCreateUser.withArgs({ email, password: hashPassword, role: 'patient' }).calledOnce).to.be.true;
       expect(spyCreateUser.returned(user)).to.be.true;
-      expect(spyAddPatient.withArgs({ user_id: user.id, ...data }).calledOnce).to.be.true;
+      expect(spyAddPatient.calledWith(sinon.match.object)).to.be.true;
       expect(spyAddPatient.returned(undefined)).to.be.true;
-      expect(spyBcrypt.withArgs(password, 8).calledOnce).to.be.true;
+      expect(spyBcrypt.withArgs(password, SALT).calledOnce).to.be.true;
+      expect(spyCheckIsEmailExists.calledBefore(spyCreateUser)).to.be.true;
+      expect(spyCreateUser.calledBefore(spyAddPatient)).to.be.true;
+      expect(spyCheckIsEmailExists.withArgs(email).calledOnce).to.be.true;
     });
   });
 
@@ -79,10 +83,6 @@ describe('User tests', () => {
 
     beforeEach(() => {
       sandbox.replace(userService, 'getUserByEmail', () => user);
-    });
-
-    afterEach(() => {
-      sandbox.restore();
     });
 
     it('should return token and user data when password is valid', async () => {
@@ -111,12 +111,8 @@ describe('User tests', () => {
   });
 
   describe('Get user data by email', () => {
-    afterEach(() => {
-      sandbox.restore();
-    });
-
     it('should throw an error when user with specified email not exists', async () => {
-      sandbox.replace(mysqlUser, 'getUserByEmail', () => null);
+      sandbox.replace(repository, 'getUserByEmail', () => null);
       try {
         await userService.getUserByEmail(email);
       } catch (err) {
@@ -125,8 +121,8 @@ describe('User tests', () => {
     });
 
     it('should return user data', async () => {
-      sandbox.replace(mysqlUser, 'getUserByEmail', () => user);
-      const spyGetUserByEmail = sandbox.spy(mysqlUser, 'getUserByEmail');
+      sandbox.replace(repository, 'getUserByEmail', () => user);
+      const spyGetUserByEmail = sandbox.spy(repository, 'getUserByEmail');
 
       expect(await userService.getUserByEmail(email)).to.equal(user);
       expect(spyGetUserByEmail.withArgs(email).calledOnce).to.be.true;
@@ -134,22 +130,18 @@ describe('User tests', () => {
   });
 
   describe('Get user data by id', () => {
-    afterEach(() => {
-      sandbox.restore();
-    });
-
     it('should throw an error when user with specified id not exists', async () => {
-      sandbox.replace(mysqlUser, 'getUserById', () => null);
+      sandbox.replace(repository, 'getUserById', () => null);
       try {
         await userService.getUserById(userId);
       } catch (err) {
-        expect(err.message).to.equal('User not exists');
+        expect(err.message).to.equal('User doesn\'t exist');
       }
     });
 
     it('should return user data', async () => {
-      sandbox.replace(mysqlUser, 'getUserById', () => user);
-      const spyGetUserById = sandbox.spy(mysqlUser, 'getUserById');
+      sandbox.replace(repository, 'getUserById', () => user);
+      const spyGetUserById = sandbox.spy(repository, 'getUserById');
 
       expect(await userService.getUserById(userId)).to.equal(user);
       expect(spyGetUserById.withArgs(userId).calledOnce).to.be.true;

@@ -7,7 +7,7 @@ import queueRouter from './src/queue/queue.routes.js';
 import resolutionRouter from './src/resolution/resolution.routes.js';
 import userRouter from './src/user/user.routes.js';
 import authRouter from './src/auth/auth.routes.js';
-import db from './src/models/index.js';
+import connectSequelize from './src/repository/mysql/connectDB.js';
 
 const PORT = config.server.port;
 const app = express();
@@ -46,5 +46,5 @@ app.use(errorHandler);
 app.listen(PORT, async () => {
   console.log(`Server has been started on port ${PORT}...`);
 
-  await db.init();
+  await connectSequelize();
 });

@@ -1,6 +1,8 @@
 import DoctorService from './doctor.service.js';
-import { mysqlDoctor } from '../repository/mysql/index.js';
+import repository from '../repository/index.js';
 
-const doctorService = new DoctorService(mysqlDoctor);
+const { doctor } = repository;
+
+const doctorService = new DoctorService(doctor);
 
 export default doctorService;

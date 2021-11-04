@@ -54,8 +54,7 @@ export default class ResolutionService {
   deleteResolutionById = async (id) => {
     const resolution = await this.repository.removeResolution(id);
 
-    if (resolution === 0) {
-      // sequelize-specific case, it returns 0 if no rows were destroyed
+    if (resolution.length === 0) {
       throw new ApiError(404, 'Resolution not found');
     }
 
