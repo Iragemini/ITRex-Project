@@ -6,6 +6,7 @@ import PGPatient from './postgres/patient.js';
 import PGDoctor from './postgres/doctor.js';
 import PGResolution from './postgres/resolution.js';
 import PGUser from './postgres/user.js';
+import PGSpecialization from './postgres/specialization.js';
 import db from '../models/index.js';
 import initPG from './postgres/pool.js';
 import config from '../../config/config.js';
@@ -35,6 +36,7 @@ class RepositoryFactory {
       patient: new PGPatient(pool),
       resolution: new PGResolution(pool),
       doctor: new PGDoctor(pool),
+      specialization: new PGSpecialization(pool),
     };
   }
 }

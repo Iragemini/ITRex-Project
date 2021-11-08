@@ -7,6 +7,7 @@ import queueRouter from './src/queue/queue.routes.js';
 import resolutionRouter from './src/resolution/resolution.routes.js';
 import userRouter from './src/user/user.routes.js';
 import authRouter from './src/auth/auth.routes.js';
+import specializationsRouter from './src/specialization/specialization.routes.js';
 import connectSequelize from './src/repository/mysql/connectDB.js';
 
 const PORT = config.server.port;
@@ -31,6 +32,7 @@ app.use('/api/queue', queueRouter);
 app.use('/api/resolutions', resolutionRouter);
 app.use('/api/doctors', doctorRouter);
 app.use('/api/users', userRouter);
+app.use('/api/specializations', specializationsRouter);
 
 app.use((req, res) => {
   res.status(404);
