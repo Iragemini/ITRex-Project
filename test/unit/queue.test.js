@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import factory from '../../src/storage/factory.js';
 import QueueService from '../../src/queue/queue.service.js';
 import config from '../../config/config.js';
 import createClient from './mocks/redis.mock.js';
 import patientService from './mocks/patientService.mock.js';
 import doctorService from './mocks/doctorService.mock.js';
+import RedisQueue from '../../src/storage/redis/queue.storage.js';
 
 const {
   storage: { queueType },
@@ -13,7 +13,7 @@ const {
 
 const client = queueType === 'redis' ? createClient : [];
 
-const queueStorage = factory.createStorage(client);
+const queueStorage = new RedisQueue(client);
 const queueService = new QueueService(queueStorage, patientService, doctorService);
 
 const sandbox = sinon.createSandbox();
