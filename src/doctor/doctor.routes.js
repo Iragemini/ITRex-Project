@@ -4,29 +4,31 @@ import {
   getAllDoctors,
   getDoctorById,
   setDoctorIdFromUserId,
+  createDoctor,
+  updateDoctor,
+  deleteDoctor,
 } from './doctor.controllers.js';
 import verifyToken from '../middlewares/verifyToken.js';
+import restrictTo from '../middlewares/restrictRoute.js';
+import constants from '../utils/constants.js';
 
 const router = Router();
 
-router
-  .route('/')
-  .get(
-    asyncHandler(getAllDoctors),
-  );
+router.use(asyncHandler(verifyToken));
+
+router.get('/me', setDoctorIdFromUserId, asyncHandler(getDoctorById));
+
+router.get('/:doctorId', asyncHandler(getDoctorById));
 
 router
-  .route('/me')
-  .get(
-    asyncHandler(verifyToken),
-    setDoctorIdFromUserId,
-    asyncHandler(getDoctorById),
-  );
+  .route('/')
+  .get(asyncHandler(getAllDoctors))
+  .post(restrictTo(constants.roles.admin), asyncHandler(createDoctor));
 
 router
   .route('/:doctorId')
-  .get(
-    asyncHandler(getDoctorById),
-  );
+  .all(restrictTo(constants.roles.admin))
+  .patch(asyncHandler(updateDoctor))
+  .delete(asyncHandler(deleteDoctor));
 
 export default router;
