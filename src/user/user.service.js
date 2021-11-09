@@ -9,27 +9,43 @@ const {
 } = config;
 
 export default class UserService {
-  constructor(repository, patientService) {
+  constructor(repository, patientService, doctorService) {
     this.repository = repository;
     this.patientService = patientService;
+    this.doctorService = doctorService;
   }
 
-  checkIsEmailExists = async (email) => {
+  checkNewUser = async (data) => {
+    const {
+      email,
+      name,
+      specializationId,
+      role,
+    } = data;
+
     const user = await this.repository.getUserByEmail(email);
+
     if (user) {
-      return true;
+      throw new ApiError(409, 'Email already exists');
     }
-    return false;
+
+    if (role === constants.roles.doctor) {
+      await this.doctorService.checkData({ name, specializationId });
+    }
+  };
+
+  checkPassword = (enteredPassword, userPassword) => {
+    const isPasswordCorrect = bcrypt.compareSync(enteredPassword, userPassword);
+
+    if (!isPasswordCorrect) {
+      throw new ApiError(401, 'Invalid password');
+    }
   };
 
   authenticate = async (user) => {
     const userEntity = await this.getUserByEmail(user.email);
 
-    const isValidPassword = bcrypt.compareSync(user.password, userEntity.password);
-
-    if (!isValidPassword) {
-      throw new ApiError(401, 'Invalid password');
-    }
+    this.checkPassword(user.password, userEntity.password);
 
     const token = jwt.sign({ id: userEntity.id }, SECRET, {
       expiresIn: JWT_EXPIRE_TIME,
@@ -39,36 +55,44 @@ export default class UserService {
   };
 
   createUser = async (data) => {
-    // basically we can create only patients this way
     const {
       email,
       password,
       gender,
       birthDate,
       name,
+      specializationId,
+      role,
     } = data;
 
-    const userData = {
+    await this.checkNewUser(data);
+
+    const { id } = await this.repository.createUser({
       email,
       password: bcrypt.hashSync(password, SALT),
-      role: constants.roles.patient,
-    };
-
-    const isEmailExists = await this.checkIsEmailExists(email);
-
-    if (isEmailExists) {
-      throw new ApiError(409, 'Email already exists');
-    }
-
-    const { id } = await this.repository.createUser(userData);
-
-    await this.patientService.addPatient({
-      userId: id,
-      name,
-      email,
-      gender,
-      birthDate,
+      role,
     });
+
+    switch (role) {
+      case constants.roles.patient:
+        await this.patientService.addPatient({
+          userId: id,
+          name,
+          email,
+          gender,
+          birthDate,
+        });
+        break;
+      case constants.roles.doctor:
+        await this.doctorService.createDoctor({
+          userId: id,
+          name,
+          specializationId,
+        });
+        break;
+      default:
+        break;
+    }
   };
 
   getUserByEmail = async (email) => {
