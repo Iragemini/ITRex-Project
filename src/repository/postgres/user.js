@@ -27,9 +27,9 @@ export default class PGUser {
   createUser = async (data) => {
     const { email, password, role } = data;
 
-    const [{ id: roleId }] = role
+    const [{ id: roleId = null }] = role
       ? await this.getRole({ title: role })
-      : null;
+      : {};
 
     const query = `
       INSERT INTO users (role_id, email, password) 
@@ -41,6 +41,11 @@ export default class PGUser {
     return newUser.rows[0];
   };
 
+  /**
+ *
+ * @param {string} email
+ * @returns {(null|object)} Extended user information (user as doctor or user as patient)
+ */
   getUserByEmail = async (email) => {
     const query = 'SELECT * FROM users WHERE email = $1';
 

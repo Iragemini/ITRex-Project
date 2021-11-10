@@ -5,14 +5,21 @@
 BEGIN;
 INSERT INTO roles(title) VALUES('patient');
 INSERT INTO roles(title) VALUES('doctor');
+INSERT INTO roles(title) VALUES('admin');
 COMMIT;
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+---
+--- ADMIN
+---
+
+INSERT INTO users(email, password, role_id) 
+    VALUES('admin@clinic.com', crypt('admin12345678', gen_salt('bf', 8)), (SELECT id FROM roles WHERE title='admin'));
 
 ---
 ---  SPECIALIZATIONS, USERS, DOCTORS
 ---
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 BEGIN;
 INSERT INTO specializations(title) VALUES('Allergists');

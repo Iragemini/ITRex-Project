@@ -1,3 +1,4 @@
+import constants from '../utils/constants.js';
 import userService from './index.js';
 
 export const setUserIdFromReq = async (req, res, next) => {
@@ -33,6 +34,6 @@ export const authenticate = async (req, res, next) => {
 };
 
 export const create = async (req, res, next) => {
-  await userService.createUser(req.body);
+  await userService.createUser({ ...req.body, role: constants.roles.patient });
   res.sendStatus(201);
 };

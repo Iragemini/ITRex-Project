@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import MySQLUser from '../../src/repository/mysql/user.js';
 import UserService from '../../src/user/user.service.js';
 import patientService from './mocks/patientService.mock.js';
+import doctorService from './mocks/doctorService.mock.js';
 import db, { pool } from './mocks/db.mock.js';
 import config from '../../config/config.js';
 import constants from '../../src/utils/constants.js';
@@ -19,7 +20,7 @@ const repository = dbType === constants.repositoryTypes.mysql
   ? new MySQLUser(db)
   : new PGUser(pool);
 
-const userService = new UserService(repository, patientService);
+const userService = new UserService(repository, patientService, doctorService);
 
 const sandbox = sinon.createSandbox();
 
@@ -30,7 +31,6 @@ describe('User tests', () => {
   const gender = 'male';
   const birthDate = '22.01.2016';
   const password = 'password';
-  const hashPassword = 'hashPassword';
   const userId = 777;
   const token = 'token';
   const user = {
@@ -47,26 +47,50 @@ describe('User tests', () => {
   });
 
   describe('Create user', () => {
-    it('should create new user', async () => {
+    it('should create new user as patient', async () => {
       sandbox.replace(repository, 'createUser', () => user);
       sandbox.replace(patientService, 'addPatient', () => undefined);
       sandbox.replace(bcrypt, 'hashSync', () => 'hashPassword');
-      sandbox.replace(userService, 'checkIsEmailExists', () => false);
+      sandbox.replace(userService, 'checkNewUser', () => undefined);
 
       const spyCreateUser = sandbox.spy(repository, 'createUser');
       const spyAddPatient = sandbox.spy(patientService, 'addPatient');
       const spyBcrypt = sandbox.spy(bcrypt, 'hashSync');
-      const spyCheckIsEmailExists = sandbox.spy(userService, 'checkIsEmailExists');
+      const spyCheckNewUser = sandbox.spy(userService, 'checkNewUser');
 
-      await userService.createUser(user);
-      expect(spyCreateUser.withArgs({ email, password: hashPassword, role: 'patient' }).calledOnce).to.be.true;
+      await userService.createUser({ ...user, role: constants.roles.patient });
+      expect(spyCreateUser.calledWith(sinon.match.object)).to.be.true;
       expect(spyCreateUser.returned(user)).to.be.true;
       expect(spyAddPatient.calledWith(sinon.match.object)).to.be.true;
       expect(spyAddPatient.returned(undefined)).to.be.true;
       expect(spyBcrypt.withArgs(password, SALT).calledOnce).to.be.true;
-      expect(spyCheckIsEmailExists.calledBefore(spyCreateUser)).to.be.true;
+      expect(spyCheckNewUser.calledBefore(spyCreateUser)).to.be.true;
       expect(spyCreateUser.calledBefore(spyAddPatient)).to.be.true;
-      expect(spyCheckIsEmailExists.withArgs(email).calledOnce).to.be.true;
+      expect(spyCheckNewUser.withArgs({ ...user, role: constants.roles.patient }).calledOnce)
+        .to.be.true;
+    });
+
+    it('should create new user as doctor', async () => {
+      sandbox.replace(repository, 'createUser', () => user);
+      sandbox.replace(doctorService, 'createDoctor', () => undefined);
+      sandbox.replace(bcrypt, 'hashSync', () => 'hashPassword');
+      sandbox.replace(userService, 'checkNewUser', () => undefined);
+
+      const spyCreateUser = sandbox.spy(repository, 'createUser');
+      const spyCreateDoctor = sandbox.spy(doctorService, 'createDoctor');
+      const spyBcrypt = sandbox.spy(bcrypt, 'hashSync');
+      const spyCheckNewUser = sandbox.spy(userService, 'checkNewUser');
+
+      await userService.createUser({ ...user, role: constants.roles.doctor });
+      expect(spyCreateUser.calledWith(sinon.match.object)).to.be.true;
+      expect(spyCreateUser.returned(user)).to.be.true;
+      expect(spyCreateDoctor.calledWith(sinon.match.object)).to.be.true;
+      expect(spyCreateDoctor.returned(undefined)).to.be.true;
+      expect(spyBcrypt.withArgs(password, SALT).calledOnce).to.be.true;
+      expect(spyCheckNewUser.calledBefore(spyCreateUser)).to.be.true;
+      expect(spyCreateUser.calledBefore(spyCreateDoctor)).to.be.true;
+      expect(spyCheckNewUser.withArgs({ ...user, role: constants.roles.doctor }).calledOnce)
+        .to.be.true;
     });
   });
 

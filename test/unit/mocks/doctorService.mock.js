@@ -1,8 +1,9 @@
 import sinon from 'sinon';
 
-const patientService = sinon.stub({
+const doctorService = sinon.stub({
   getDoctorById: () => {},
   getDoctorByUserId: () => {},
+  createDoctor: () => {},
 });
 
-export default patientService;
+export default doctorService;

@@ -1,6 +1,7 @@
 const roles = Object.freeze({
   patient: 'patient',
   doctor: 'doctor',
+  admin: 'admin',
 });
 
 const repositoryTypes = Object.freeze({
