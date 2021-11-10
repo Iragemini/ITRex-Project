@@ -1,7 +1,7 @@
 export default class RedisQueue {
   constructor(createClient) {
-    this.listName = 'queue';
-    this.redisClient = createClient();
+    this.prefix = 'queue';
+    this.redisClient = createClient('queue_client');
   }
 
   async reset() {
@@ -9,7 +9,7 @@ export default class RedisQueue {
   }
 
   async getFirstKey(doctorId) {
-    const value = await this.redisClient.LINDEX(`${this.listName}:${doctorId}`, 0);
+    const value = await this.redisClient.LINDEX(`${this.prefix}:${doctorId}`, 0);
 
     if (!value) {
       return null;
@@ -19,14 +19,14 @@ export default class RedisQueue {
   }
 
   async add(patientId, doctorId) {
-    await this.redisClient.RPUSH(`${this.listName}:${doctorId}`, `${patientId}`);
+    await this.redisClient.RPUSH(`${this.prefix}:${doctorId}`, `${patientId}`);
   }
 
   async isEmpty(doctorId) {
-    return (await this.redisClient.LLEN(`${this.listName}:${doctorId}`)) === 0;
+    return (await this.redisClient.LLEN(`${this.prefix}:${doctorId}`)) === 0;
   }
 
   async remove(doctorId) {
-    await this.redisClient.LPOP(`${this.listName}:${doctorId}`);
+    await this.redisClient.LPOP(`${this.prefix}:${doctorId}`);
   }
 }

@@ -10,7 +10,7 @@ const {
   },
 } = config;
 
-const createClient = () => {
+const createClient = (type) => {
   const redisClient = redis.createClient({ host, port });
 
   redisClient.on('error', (err) => {
@@ -18,7 +18,7 @@ const createClient = () => {
   });
 
   redisClient.on('connect', () => {
-    console.log('connect');
+    console.log(`${type} connect`);
   });
 
   return promisifyRedis(redisClient);

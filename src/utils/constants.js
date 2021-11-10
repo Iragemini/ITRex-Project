@@ -9,4 +9,9 @@ const repositoryTypes = Object.freeze({
   postgres: 'postgres',
 });
 
-export default { roles, repositoryTypes };
+const doctorCache = Object.freeze({
+  allDoctors: 'cachedData:doctors:all',
+  prefix: 'cachedData:doctor:id',
+});
+
+export default { roles, repositoryTypes, doctorCache };

@@ -1,11 +1,11 @@
 import QueueService from './queue.service.js';
-import factory from '../storage/factory.js';
 import patientService from '../patient/index.js';
 import doctorService from '../doctor/index.js';
 import createClient from '../storage/redis/client.js';
+import RedisQueue from '../storage/redis/queue.storage.js';
 
-const queueStorage = factory.createStorage(createClient);
-queueStorage.reset();
+const queueStorage = new RedisQueue(createClient);
+
 const queueService = new QueueService(queueStorage, patientService, doctorService);
 
 export default queueService;
