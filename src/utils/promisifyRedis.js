@@ -8,6 +8,9 @@ const promisifyRedis = (redisClient) => {
   client.LPOP = promisify(redisClient.LPOP).bind(redisClient);
   client.LINDEX = promisify(redisClient.LINDEX).bind(redisClient);
   client.FLUSHALL = promisify(redisClient.FLUSHALL).bind(redisClient);
+  client.SETEX = promisify(redisClient.SETEX).bind(redisClient);
+  client.GET = promisify(redisClient.GET).bind(redisClient);
+  client.DEL = promisify(redisClient.DEL).bind(redisClient);
 
   return client;
 };
