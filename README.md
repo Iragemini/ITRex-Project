@@ -2,7 +2,7 @@
 
 A backend part of ITRex lab
 
-## Swagger documentation
+## Swagger documentation (outdated)
 
 - Start
 
