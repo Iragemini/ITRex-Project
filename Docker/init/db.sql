@@ -2,20 +2,22 @@
 -- PostgreSQL database med_center
 --
 
-psql -U postgres
+--psql -U postgres
 
-CREATE USER admin WITH PASSWORD 'admin';
-ALTER ROLE admin CREATEDB CREATEROLE;
-\q
+-- CREATE USER admin WITH PASSWORD 'admin';
+-- ALTER ROLE admin CREATEDB CREATEROLE;
+--\q
 
-psql -d postgres -U admin
+--psql -d postgres -U admin
 
-CREATE USER client WITH PASSWORD 'client';
-GRANT admin TO client;
+-- CREATE USER client WITH PASSWORD 'client';
+-- GRANT admin TO client;
 
-CREATE DATABASE med_center;
+-- DROP DATABASE IF EXISTS med_center;
 
-\c med_center
+-- CREATE DATABASE med_center;
+
+-- \c med_center;
 
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
