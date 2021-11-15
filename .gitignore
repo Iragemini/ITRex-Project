@@ -23,3 +23,6 @@ yarn-error.log*
 
 # Tests
 .nyc_output
+
+# Postgres
+postgres-data/

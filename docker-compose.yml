@@ -4,21 +4,31 @@ services:
     image: 'redis'
     expose:
       - '6379'
-  mysqldb:
-    image: mysql
+  postgresdb:
+    image: postgres:14
+    container_name: postgres_container
     restart: always
     env_file: ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      - POSTGRES_DB=$DB_NAME
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./Docker/init.sh:/docker-entrypoint-initdb.d/0-init-user-db.sh
+      - ./Docker/init/db.sql:/docker-entrypoint-initdb.d/1-init.sql
+      - ./Docker/init/seeding.sql:/docker-entrypoint-initdb.d/2-seed.sql
     healthcheck:
-      test: "mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD"
+      test: ["CMD-SHELL", "pg_isready -U $$DB_USER -d $$DB_NAME"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     expose:
-      - '3306'
+      - '5432'
   itrex-project:
     build: .
     depends_on:
-      mysqldb :
+      postgresdb :
           condition: service_healthy
     restart: always
     env_file: ./.env
@@ -28,9 +38,9 @@ services:
       - PORT=3000
       - REDIS_HOST=redis-server
       - REDIS_PORT=6379
-      - DB_HOST=mysqldb
-      - DB_USER=$MYSQLDB_USER
-      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - DB_NAME=$MYSQLDB_DATABASE
-      - DB_PORT=$MYSQLDB_DOCKER_PORT
+      - DB_HOST=postgresdb
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_NAME=$DB_NAME
+      - DB_PORT=$PG_DOCKER_PORT
       - JWT_SECRET=$JWT_SECRET
